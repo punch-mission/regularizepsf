@@ -15,5 +15,12 @@ class EvaluatedModelInconsistentSizeError(ValidationError):
     pass
 
 
+class ParameterMismatchOnConstructionError(ValidationError):
+    pass
+
+
+class ParameterMismatchOnEvaluationError(ValidationError):
+    pass
+
 class UnevaluatedPointError(Exception):
     pass
