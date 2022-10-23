@@ -4,15 +4,15 @@ from typing import Any
 
 import numpy as np
 
-from psfpy import psf, varied_psf, FunctionalCorrector
+from psfpy import simple_psf, varied_psf, FunctionalCorrector
 
 
-@psf
+@simple_psf
 def gaussian(x, y, x0, y0, sigma_x, sigma_y):
     return np.exp(-(np.square(x-x0)/(2*np.square(sigma_x)) + np.square(y-y0)/(2*np.square(sigma_y))))
 
 
-@psf
+@simple_psf
 def target_model(x, y):
     x0 = 16
     y0 = 16
@@ -34,7 +34,7 @@ def my_psf(x: Real | np.ndarray, y: Real | np.ndarray) -> dict[str, Any]:
 if __name__ == "__main__":
     uncorrected_image = np.zeros((100, 100))
 
-    my_model = FunctionalCorrector(gaussian, my_psf, target_model)
+    my_model = FunctionalCorrector(my_psf, target_model)
     my_model.save("functional_model.psfpy")
     reloaded_model = FunctionalCorrector.load("functional_model.psfpy")
     print(type(reloaded_model))

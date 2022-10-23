@@ -1,1 +1,2 @@
-from psfpy.model import psf, varied_psf, ArrayCorrector, FunctionalCorrector
+from psfpy.psf import simple_psf, varied_psf
+from psfpy.corrector import FunctionalCorrector, ArrayCorrector
