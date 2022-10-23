@@ -23,7 +23,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -r ./docs/equirements.txt
+        pip install -r ./docs/requirements.txt
 
     # Build the book
     - name: Build the book
