@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, TypeAlias, Any
+from typing import Callable, TypeAlias, Any, cast, Generic
 from numbers import Real
 import inspect
 from functools import wraps, partial, update_wrapper
@@ -8,6 +8,7 @@ from functools import wraps, partial, update_wrapper
 
 import numpy as np
 from spectrum import create_window
+import dill
 
 from psfpy.exceptions import (ParameterValidationError,
                               InvalidSizeError,
@@ -19,94 +20,135 @@ from psfpy.exceptions import (ParameterValidationError,
 Point: TypeAlias = tuple[int, int]
 
 
-class base_equation:
+class PSF:
     def __init__(self, function: Callable):
-        self.function: Callable = function
-        self.signature: inspect.Signature = inspect.signature(function)
-        self.parameters: set[str] = set()
+        self._f: Callable = function
+        self._signature: inspect.Signature = inspect.signature(function)
+        self._parameters: set[str] = set()
 
-        if len(self.signature.parameters) < 2:
+        if len(self._signature.parameters) < 2:
             raise ParameterValidationError("x and y must be the first two arguments in your model equation.")
 
-        for i, variable in enumerate(self.signature.parameters):
+        for i, variable in enumerate(self._signature.parameters):
             if i == 0 and variable != "x":
                 raise ParameterValidationError("x must be the first arguments in your model equation.")
             elif i == 1 and variable != "y":
                 raise ParameterValidationError("y must be the second arguments in your model equation")
             if i >= 2:
-                self.parameters.add(variable)
+                self._parameters.add(variable)
 
     def __call__(self, *args, **kwargs) -> Real | np.ndarray:
-        return self.function(*args, **kwargs)
+        return self._f(*args, **kwargs)
+
+    @property
+    def parameters(self) -> set[str]:
+        return self._parameters
 
 
-class base_parameterization:
-    def __new__(cls, function=None, *, reference_function: base_equation):
-        if function is None:
-            return partial(cls, reference_function=reference_function)
-        self = super().__new__(cls)
+def psf(arg=None) -> PSF:
+    if callable(arg):
+        return PSF(arg)
+    else:
+        raise Exception("psf decorator must have no arguments.")
 
-        self._function = function
-        self._signature: inspect.Signature = inspect.signature(function)
 
-        if len(self._signature.parameters) < 2:
-            raise ParameterValidationError(f"Found {len(self._signature.parameters)}")
+class VariedPSF:
+    def __init__(self, vary_function: Callable, base_psf: PSF, check_at_call: bool = True):
+        self._vary_function = vary_function
+        self._base_psf = base_psf
+        self.check_at_call = check_at_call
 
-        if len(self._signature.parameters) > 2:
-            raise ParameterValidationError(f"Found function requiring {len(self._signature.parameters)} arguments."
-                                           "Expected 2, only `x` and `y`.")
+        self.parameterization_signature = inspect.signature(vary_function)
+        if len(self.parameterization_signature.parameters) < 2:
+            raise ParameterValidationError(f"Found {len(self.parameterization_signature.parameters)}")
 
-        for i, variable in enumerate(self._signature.parameters):
+        if len(self.parameterization_signature.parameters) > 2:
+            raise ParameterValidationError(
+                f"Found function requiring {len(self.parameterization_signature.parameters)} arguments."
+                "Expected 2, only `x` and `y`.")
+
+        for i, variable in enumerate(self.parameterization_signature.parameters):
             if i == 0 and variable != "x":
                 raise ParameterValidationError("x must be the first argument in your parameterization equation.")
             elif i == 1 and variable != "y":
                 raise ParameterValidationError("y must be the second argument in your parameterization equation")
 
-        origin_evaluation: dict[str, Any] = self._function(0, 0)
-        self._parameters: set[str] = set(origin_evaluation.keys())
-
-        self._reference_function = reference_function
-        if self._reference_function.parameters != self._parameters:
-            msg = (f"The reference function has parameters {self._reference_function.parameters} "
-                   f"while the parameterization has {self._parameters}. These do not match.")
+        origin_evaluation: dict[str, Any] = vary_function(0, 0)
+        self.parameterization_parameters: set[str] = set(origin_evaluation.keys())
+        if self._base_psf.parameters != self.parameterization_parameters:
+            msg = (f"The reference function has parameters {self._base_psf.parameters} "
+                   f"while the parameterization has {self.parameterization_parameters}. These do not match.")
             raise ParameterMismatchOnConstructionError(msg)
 
-        update_wrapper(self, function)
-        return self
-
-    def __call__(self, *args, check_parameters=True, **kwargs) -> dict[str, Any]:
-        output = self._function(*args, **kwargs)
-        if check_parameters:
-            if set(output.keys()) != self._parameters:
-                raise ParameterMismatchOnEvaluationError(f"Evaluated to {set(output.keys())}" 
-                                                         f"when the parameters were expected as {self._parameters}.")
-        return output
+    def __call__(self, *args, **kwargs):
+        result = self._vary_function(*args, **kwargs)
+        if self.check_at_call:
+            if set(result.keys()) != self.parameterization_parameters:
+                raise ParameterMismatchOnEvaluationError(f"Evaluated to {set(result.keys())} "
+                                                         f"when the parameters were expected as {self.parameterization_parameters}.")
+        return result
 
 
-class FunctionalModel:
-    def __init__(self, equation: base_equation,
-                 parameterization: base_parameterization | None,
-                 target_model: base_equation | None):
-        self._base_model: base_equation = equation
+def _varied_psf(base_psf: PSF):
+    if base_psf is None:
+        raise Exception("A base_psf must be provided to the varied_psf decorator.")
+
+    def inner(__fn=None, *, check_at_call: bool = True):
+        if __fn:
+            return VariedPSF(__fn, base_psf, check_at_call=check_at_call)
+        else:
+            return partial(inner, check_at_call=check_at_call)
+    return inner
+
+
+def varied_psf(base_psf: PSF = None) -> VariedPSF:
+    if isinstance(base_psf, PSF):
+        return cast(VariedPSF, _varied_psf(base_psf))
+    else:
+        if callable(base_psf):
+            raise Exception("varied_psf decorator must be called with an argument for the base_psf.")
+        else:
+            raise Exception("varied_psf decorator expects exactly one argument of type PSF.")
+
+
+class FunctionalCorrector:
+    def __init__(self, equation: psf,
+                 parameterization: VariedPSF | None,
+                 target_model: PSF | None):
+        self._base_model: equation = equation
         self.variable = parameterization is not None
-        self._parameterization: base_parameterization | None = parameterization
+        self._parameterization: VariedPSF | None = parameterization
         self._target_model = target_model
 
-    def evaluate(self, x: Real | np.ndarray, y: Real | np.ndarray, size: int) -> EvaluatedModel:
+    def evaluate(self, x: np.ndarray, y: np.ndarray, size: int) -> ArrayCorrector:
         grid_x, grid_y = np.meshgrid(np.arange(size), np.arange(size))
         evaluations = dict()
-        for xx in np.asarray(x):
-            for yy in np.asarray(y):
+        for xx in x:
+            for yy in y:
                 if self.variable:
                     evaluations[(xx, yy)] = self._base_model(grid_x, grid_y, **self._parameterization(x, y))
                 else:
                     evaluations[(xx, yy)] = self._base_model(grid_x, grid_y)
 
         target_evaluation = self._target_model(grid_x, grid_y)
-        return EvaluatedModel(evaluations, target_evaluation)
+        return ArrayCorrector(evaluations, target_evaluation)
+
+    def correct_image(self, image: np.ndarray, size: int = None,
+                      alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
+        return self.evaluate(None, None, size).correct_image(image, size=size, alpha=alpha,
+                                                             epsilon=epsilon, use_gpu=use_gpu)
+
+    def save(self, path):
+        with open(path, 'wb') as f:
+            dill.dump(self, f)
+
+    @staticmethod
+    def load(path):
+        with open(path, 'rb') as f:
+            return dill.load(f)
 
 
-class EvaluatedModel:
+class ArrayCorrector:
     def __init__(self, evaluations: dict[Point, np.ndarray], target_evaluation: np.ndarray):
         self._evaluation_points: list[Point] = list(evaluations.keys())
 
@@ -123,7 +165,8 @@ class EvaluatedModel:
 
         self._target_evaluation = target_evaluation
 
-    def correct_image(self, image: np.ndarray, alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
+    def correct_image(self, image: np.ndarray, size: int = None,
+                      alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
         # assert len(image.shape) == 2, "img must be a 2-d numpy array."
         # psf_i_shape = next(iter(psf_i.values())).shape
         # assert len(psf_i_shape) == 2, "psf_i entries must be 2-d numpy arrays."
@@ -188,7 +231,7 @@ class EvaluatedModel:
         else:
             raise UnevaluatedPointError(f"Model not evaluated at {xy}.")
 
-    def pad(self, new_size: int) -> EvaluatedModel:
+    def pad(self, new_size: int) -> ArrayCorrector:
         pass
 
 
