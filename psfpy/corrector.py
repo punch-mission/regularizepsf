@@ -8,6 +8,7 @@ import warnings
 import dill
 import numpy as np
 from spectrum import create_window
+import deepdish as dd
 
 from psfpy.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
 from psfpy.psf import VariedPSF, SimplePSF, PointSpreadFunctionABC
@@ -30,9 +31,9 @@ class CorrectorABC(metaclass=abc.ABCMeta):
         None
         """
 
-    @staticmethod
+    @classmethod
     @abc.abstractmethod
-    def load(path: str | Path) -> CorrectorABC:
+    def load(cls, path: str | Path) -> CorrectorABC:
         """Loads a model from the path
 
         Parameters
@@ -113,8 +114,8 @@ class FunctionalCorrector(CorrectorABC):
         with open(path, 'wb') as f:
             dill.dump(self, f)
 
-    @staticmethod
-    def load(path):
+    @classmethod
+    def load(cls, path):
         with open(path, 'rb') as f:
             return dill.load(f)
 
@@ -203,11 +204,12 @@ class ArrayCorrector(CorrectorABC):
         pass
 
     def save(self, path):
-        raise NotImplementedError("Oh no!")
+        dd.io.save(path, (self._evaluations, self._target_evaluation))
 
-    @staticmethod
-    def load(path):
-        raise NotImplementedError("Oh no!")
+    @classmethod
+    def load(cls, path):
+        evaluations, target_evaluation = dd.io.load(path)
+        return cls(evaluations, target_evaluation)
 
 
 def get_padded_img_section(padded_img, x, y, psf_size) -> np.ndarray:

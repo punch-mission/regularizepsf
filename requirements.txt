@@ -1,3 +1,4 @@
 numpy
 spectrum
 dill
+deepdish

@@ -4,7 +4,7 @@ from typing import Any
 
 import numpy as np
 
-from psfpy import simple_psf, varied_psf, FunctionalCorrector
+from psfpy import simple_psf, varied_psf, FunctionalCorrector, ArrayCorrector
 
 
 @simple_psf
@@ -35,8 +35,11 @@ if __name__ == "__main__":
     uncorrected_image = np.zeros((1048, 1048))
 
     my_model = FunctionalCorrector(my_psf, target_model)
-    my_model.correct_image(uncorrected_image, 100)
-
+    #my_model.correct_image(uncorrected_image, 100)
+    array_corrector = my_model.evaluate_to_array_form(np.arange(10), np.arange(10), 10)
+    array_corrector.save("array_corrector.corr")
+    loaded = ArrayCorrector.load("array_corrector.corr")
+    print(type(loaded))
     # evaluated_model = my_model.evaluate(np.arange(100), np.arange(100), 100)
     # print(evaluated_model[0, 0])
     # corrected_image = evaluated_model.correct_image(uncorrected_image)
