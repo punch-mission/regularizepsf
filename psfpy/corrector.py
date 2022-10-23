@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TypeAlias
 import abc
 from pathlib import Path
+import warnings
 
 import dill
 import numpy as np
@@ -73,20 +74,40 @@ class FunctionalCorrector(CorrectorABC):
     def variable(self) -> bool:
         return self._variable
 
-    def evaluate(self, x: np.ndarray, y: np.ndarray, size: int) -> ArrayCorrector:
-        grid_x, grid_y = np.meshgrid(np.arange(size), np.arange(size))
+    def evaluate_to_array_form(self, x: np.ndarray, y: np.ndarray, size: int) -> ArrayCorrector:
+        if size % 2 != 0:
+            raise InvalidSizeError(f"size must be even. Found size={size}.")
+
+        image_x, image_y = np.meshgrid(np.arange(size), np.arange(size))
         evaluations = dict()
         for xx in x:
             for yy in y:
-                evaluations[(xx, yy)] = self._psf(grid_x, grid_y)
+                evaluations[(xx, yy)] = self._psf(image_x, image_y)
 
-        target_evaluation = self._target_model(grid_x, grid_y)
+        target_evaluation = self._target_model(image_x, image_y)
         return ArrayCorrector(evaluations, target_evaluation)
 
     def correct_image(self, image: np.ndarray, size: int = None,
                       alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
-        return self.evaluate(None, None, size).correct_image(image, size=size, alpha=alpha,
-                                                             epsilon=epsilon, use_gpu=use_gpu)
+        half_size = size // 2
+
+        # x1, y1 are the primary grid. x2, y2 are the offset grid. Together they fully cover the image twice.
+        x1 = np.arange(-half_size, image.shape[0] + half_size, size)
+        y1 = np.arange(-half_size, image.shape[1] + half_size, size)
+        x2 = (x1 + half_size)[:-1]
+        y2 = (y1 + half_size)[:-1]
+
+        x1, y1 = np.meshgrid(x1, y1)
+        x2, y2 = np.meshgrid(x2, y2)
+
+        x1, y1 = x1.flatten(), y1.flatten()
+        x2, y2 = x2.flatten(), y2.flatten()
+
+        x = np.concatenate([x1, x2])
+        y = np.concatenate([y1, y2])
+
+        array_corrector = self.evaluate_to_array_form(x, y, size)
+        return array_corrector.correct_image(image, size=size, alpha=alpha, epsilon=epsilon, use_gpu=use_gpu)
 
     def save(self, path):
         with open(path, 'wb') as f:
@@ -102,9 +123,13 @@ class ArrayCorrector(CorrectorABC):
     def __init__(self, evaluations: dict[Point, np.ndarray], target_evaluation: np.ndarray):
         self._evaluation_points: list[Point] = list(evaluations.keys())
 
+        if len(evaluations[self._evaluation_points[0]].shape) != 2:
+            raise InvalidSizeError(f"PSF evaluations must be 2-D numpy arrays.")
         self._size = evaluations[self._evaluation_points[0]].shape[0]
         if self._size <= 0:
-            raise InvalidSizeError("Found size of {self._size}. Must be >= 1")
+            raise InvalidSizeError(f"Found size of {self._size}. Must be >= 1")
+        if self._size % 2 != 0:
+            raise InvalidSizeError(f"Size must be even. Found {self._size}")
 
         self._evaluations: dict[Point, np.ndarray] = evaluations
         for (x, y), evaluation in self._evaluations.items():
@@ -114,24 +139,16 @@ class ArrayCorrector(CorrectorABC):
                                                           f"at {(x, y)}.")
 
         self._target_evaluation = target_evaluation
+        if self._target_evaluation.shape != (self._size, self._size):
+            raise EvaluatedModelInconsistentSizeError("The target and evaluations must have the same shape.")
 
     def correct_image(self, image: np.ndarray, size: int = None,
                       alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
-        # assert len(image.shape) == 2, "img must be a 2-d numpy array."
-        # psf_i_shape = next(iter(psf_i.values())).shape
-        # assert len(psf_i_shape) == 2, "psf_i entries must be 2-d numpy arrays."
-        # assert psf_i_shape[0] == psf_i_shape[1], "PSFs must be square"
-        # assert psf_i_shape[0] % 2 == 0, "PSF size must be even in both dimensions"
-        # assert all(
-        #     v.shape == psf_i_shape for v in psf_i.values()
-        # ), "All psf_i entries must be the same shape."
-        # assert (
-        #     psf_target.shape == psf_i_shape
-        # ), "Shapes of psf_i and psf_target do not match."
-        # assert all(
-        #     img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(img.shape, psf_i_shape)
-        # ), "img must be at least as large as the PSFs in all dimensions"
+        if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape, (self._size, self._size))):
+            raise InvalidSizeError("The image must be at least as large as the PSFs in all dimensions")
+
         if use_gpu:
+            warnings.warn("The GPU acceleration is untested.", Warning)
             try:
                 from cupy.fft import fft2, ifft2
             except ImportError as e:
@@ -142,14 +159,14 @@ class ArrayCorrector(CorrectorABC):
             except ImportError:
                 raise ImportError("numpy is found for CPU execution. numpy was not found.")
 
-        psf_size = self._size
-        padding_shape = ((psf_size // 2, psf_size // 2), (psf_size // 2, psf_size // 2))
+        padding_shape = ((self._size, self._size), (self._size, self._size))
         padded_img = np.pad(image, padding_shape, mode="constant")
         result_img = np.zeros_like(padded_img)
 
-        psf_target_hat = fft2(self._target_evaluation)
+        psf_target_padded = np.pad(self._target_evaluation, padding_shape, mode="constant")
+        psf_target_hat = fft2(psf_target_padded)
 
-        window1d = create_window(psf_size, "cosine")
+        window1d = create_window(self._size, "cosine")
         apodization_window = np.sqrt(np.outer(window1d, window1d))
 
         for (x, y), this_psf_i in self._evaluations.items():
@@ -161,18 +178,19 @@ class ArrayCorrector(CorrectorABC):
                 / (np.power(this_psf_i_hat_abs, alpha + 1) + np.power(epsilon, alpha + 1))
             )
 
-            img_i = get_padded_img_section(padded_img, x, y, psf_size)
+            img_i = get_padded_img_section(padded_img, x, y, self._size)
             img_i_apodized_padded = np.pad(img_i * apodization_window, padding_shape)
             img_i_hat = fft2(img_i_apodized_padded)
 
             corrected_i = np.real(ifft2(img_i_hat * this_psf_i_hat_norm * psf_target_hat))[
-                psf_size:psf_size:
+                self._size:self._size*2, self._size:self._size*2
             ]
             corrected_i = corrected_i * apodization_window
-            set_padded_img_section(result_img, x, y, psf_size, corrected_i)
+            set_padded_img_section(result_img, x, y, self._size, corrected_i)
+
         return result_img[
-            psf_size // 2: image.shape[0] + psf_size // 2,
-            psf_size // 2: image.shape[1] + psf_size // 2,
+            self._size // 2: image.shape[0] + self._size // 2,
+            self._size // 2: image.shape[1] + self._size // 2,
         ]
 
     def __getitem__(self, xy: Point) -> np.ndarray:
@@ -184,15 +202,22 @@ class ArrayCorrector(CorrectorABC):
     def pad(self, new_size: int) -> ArrayCorrector:
         pass
 
+    def save(self, path):
+        raise NotImplementedError("Oh no!")
+
+    @staticmethod
+    def load(path):
+        raise NotImplementedError("Oh no!")
+
 
 def get_padded_img_section(padded_img, x, y, psf_size) -> np.ndarray:
     x_prime, y_prime = x + psf_size // 2, y + psf_size // 2
-    return padded_img[x_prime : x_prime + psf_size, y_prime : y_prime + psf_size]
+    return padded_img[x_prime: x_prime + psf_size, y_prime: y_prime + psf_size]
 
 
 def set_padded_img_section(padded_img, x, y, psf_size, new_values) -> None:
     assert new_values.shape == (psf_size, psf_size)
     x_prime, y_prime = x + psf_size // 2, y + psf_size // 2
-    padded_img[x_prime : x_prime + psf_size, y_prime : y_prime + psf_size] = new_values
+    padded_img[x_prime: x_prime + psf_size, y_prime: y_prime + psf_size] = new_values
 
 

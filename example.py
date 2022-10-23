@@ -32,13 +32,11 @@ def my_psf(x: Real | np.ndarray, y: Real | np.ndarray) -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    uncorrected_image = np.zeros((100, 100))
+    uncorrected_image = np.zeros((1048, 1048))
 
     my_model = FunctionalCorrector(my_psf, target_model)
-    my_model.save("functional_model.psfpy")
-    reloaded_model = FunctionalCorrector.load("functional_model.psfpy")
-    print(type(reloaded_model))
+    my_model.correct_image(uncorrected_image, 100)
 
-    evaluated_model = my_model.evaluate(np.arange(100), np.arange(100), 100)
-    print(evaluated_model[0, 0])
+    # evaluated_model = my_model.evaluate(np.arange(100), np.arange(100), 100)
+    # print(evaluated_model[0, 0])
     # corrected_image = evaluated_model.correct_image(uncorrected_image)
