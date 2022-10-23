@@ -1,7 +1,7 @@
 import pytest
 
 from psfpy.psf import simple_psf, varied_psf, SimplePSF, VariedPSF
-from psfpy.exceptions import ParameterValidationError
+from psfpy.exceptions import PSFParameterValidationError
 
 
 def test_simple_psf_valid():
@@ -24,19 +24,19 @@ def test_simple_psf_two_parameters():
 
 def test_simple_psf_missing_xy_fails():
     """ Confirms that a psf without x and y arguments fails"""
-    with pytest.raises(ParameterValidationError):
+    with pytest.raises(PSFParameterValidationError):
         simple_psf(lambda: 1)
 
 
 def test_simple_psf_swap_x_and_y_fails():
     """ Ensures x and y must be in the proper order"""
-    with pytest.raises(ParameterValidationError):
+    with pytest.raises(PSFParameterValidationError):
         simple_psf(lambda y, x: x + y)
 
 
 def test_simple_psf_missing_y_fails():
     """ Ensures y must be the second argument"""
-    with pytest.raises(ParameterValidationError):
+    with pytest.raises(PSFParameterValidationError):
         simple_psf(lambda x, sigma: x + sigma)
 
 
@@ -52,26 +52,26 @@ def test_varied_psf_simple_is_valid():
 def test_varied_psf_too_few_parameters_fails():
     """ Confirms that a varied psf that has too few parameters compared to the base model fails"""
     base = simple_psf(lambda x, y, sigma, mu: x + y)
-    with pytest.raises(ParameterValidationError):
+    with pytest.raises(PSFParameterValidationError):
         varied_psf(base)(lambda: {'sigma': 0.1})
 
 
 def test_varied_psf_too_many_parameters_fails():
     """ Confirms that a varied psf with too many parameters compared to the base model fails"""
     ref = simple_psf(lambda x, y: x + y)
-    with pytest.raises(ParameterValidationError):
+    with pytest.raises(PSFParameterValidationError):
         varied_psf(ref)(lambda x, y, c: {'sigma': 0.1})
 
 
 def test_varied_psf_missing_x_fails():
     """ Confirms a varied psf model with a missing x fails"""
     ref = simple_psf(lambda x, y: x + y)
-    with pytest.raises(ParameterValidationError):
+    with pytest.raises(PSFParameterValidationError):
         varied_psf(ref)(lambda c, y: {'sigma': 0.1})
 
 
 def test_varied_psf_missing_y_fails():
     """ Confirms a varied psf model with a missing y fails"""
     ref = simple_psf(lambda x, y: x + y)
-    with pytest.raises(ParameterValidationError):
+    with pytest.raises(PSFParameterValidationError):
         varied_psf(ref)(lambda x, c: {'sigma': 0.1})

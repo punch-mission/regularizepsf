@@ -3,7 +3,7 @@ class ValidationError(Exception):
     pass
 
 
-class ParameterValidationError(ValidationError):
+class PSFParameterValidationError(ValidationError):
     pass
 
 
@@ -15,12 +15,9 @@ class EvaluatedModelInconsistentSizeError(ValidationError):
     pass
 
 
-class ParameterMismatchOnConstructionError(ValidationError):
+class VariedPSFParameterMismatchError(ValidationError):
     pass
 
-
-class ParameterMismatchOnEvaluationError(ValidationError):
-    pass
 
 class UnevaluatedPointError(Exception):
     pass

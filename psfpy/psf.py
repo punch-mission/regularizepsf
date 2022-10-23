@@ -8,9 +8,8 @@ import abc
 
 import numpy as np
 
-from psfpy.exceptions import (ParameterValidationError,
-                              ParameterMismatchOnEvaluationError,
-                              ParameterMismatchOnConstructionError)
+from psfpy.exceptions import (PSFParameterValidationError,
+                              VariedPSFParameterMismatchError)
 
 
 class PointSpreadFunctionABC(metaclass=abc.ABCMeta):
@@ -52,13 +51,13 @@ class SimplePSF(PointSpreadFunctionABC):
         self._parameters: set[str] = set()
 
         if len(self._signature.parameters) < 2:
-            raise ParameterValidationError("x and y must be the first two arguments in your model equation.")
+            raise PSFParameterValidationError("x and y must be the first two arguments in your model equation.")
 
         for i, variable in enumerate(self._signature.parameters):
             if i == 0 and variable != "x":
-                raise ParameterValidationError("x must be the first arguments in your model equation.")
+                raise PSFParameterValidationError("x must be the first arguments in your model equation.")
             elif i == 1 and variable != "y":
-                raise ParameterValidationError("y must be the second arguments in your model equation")
+                raise PSFParameterValidationError("y must be the second arguments in your model equation")
             if i >= 2:
                 self._parameters.add(variable)
 
@@ -85,18 +84,18 @@ class VariedPSF(PointSpreadFunctionABC):
 
         self.parameterization_signature = inspect.signature(vary_function)
         if len(self.parameterization_signature.parameters) < 2:
-            raise ParameterValidationError(f"Found {len(self.parameterization_signature.parameters)}")
+            raise PSFParameterValidationError(f"Found {len(self.parameterization_signature.parameters)}")
 
         if len(self.parameterization_signature.parameters) > 2:
-            raise ParameterValidationError(
+            raise PSFParameterValidationError(
                 f"Found function requiring {len(self.parameterization_signature.parameters)} arguments."
                 "Expected 2, only `x` and `y`.")
 
         for i, variable in enumerate(self.parameterization_signature.parameters):
             if i == 0 and variable != "x":
-                raise ParameterValidationError("x must be the first argument in your parameterization equation.")
+                raise PSFParameterValidationError("x must be the first argument in your parameterization equation.")
             elif i == 1 and variable != "y":
-                raise ParameterValidationError("y must be the second argument in your parameterization equation")
+                raise PSFParameterValidationError("y must be the second argument in your parameterization equation")
 
         # check the parameters at the origin
         origin_evaluation: dict[str, Any] = vary_function(0, 0)
@@ -104,14 +103,14 @@ class VariedPSF(PointSpreadFunctionABC):
         if self._base_psf.parameters != self._origin_parameters:
             msg = (f"The base PSF model has parameters {self._base_psf.parameters} "
                    f"while the varied psf supplies {self._origin_parameters} at the origin. These must match.")
-            raise ParameterMismatchOnConstructionError(msg)
+            raise VariedPSFParameterMismatchError(msg)
 
     def __call__(self, x, y):
         variance = self._vary_function(x, y)
         if self.validate_at_call:
             if set(variance.keys()) != self.parameters:
-                raise ParameterMismatchOnEvaluationError(f"At (x, y) the varying parameters were {set(variance.keys())}"
-                                                         f" when the parameters were expected as {self.parameters}.")
+                raise VariedPSFParameterMismatchError(f"At (x, y) the varying parameters were {set(variance.keys())}"
+                                                      f" when the parameters were expected as {self.parameters}.")
         return self._base_psf(x, y, **variance)
 
     @property
