@@ -90,23 +90,7 @@ class FunctionalCorrector(CorrectorABC):
 
     def correct_image(self, image: np.ndarray, size: int = None,
                       alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
-        half_size = size // 2
-
-        # x1, y1 are the primary grid. x2, y2 are the offset grid. Together they fully cover the image twice.
-        x1 = np.arange(-half_size, image.shape[0] + half_size, size)
-        y1 = np.arange(-half_size, image.shape[1] + half_size, size)
-        x2 = (x1 + half_size)[:-1]
-        y2 = (y1 + half_size)[:-1]
-
-        x1, y1 = np.meshgrid(x1, y1)
-        x2, y2 = np.meshgrid(x2, y2)
-
-        x1, y1 = x1.flatten(), y1.flatten()
-        x2, y2 = x2.flatten(), y2.flatten()
-
-        x = np.concatenate([x1, x2])
-        y = np.concatenate([y1, y2])
-
+        x, y = calculate_covering(image.shape, size)
         array_corrector = self.evaluate_to_array_form(x, y, size)
         return array_corrector.correct_image(image, size=size, alpha=alpha, epsilon=epsilon, use_gpu=use_gpu)
 
@@ -200,9 +184,6 @@ class ArrayCorrector(CorrectorABC):
         else:
             raise UnevaluatedPointError(f"Model not evaluated at {xy}.")
 
-    def pad(self, new_size: int) -> ArrayCorrector:
-        pass
-
     def save(self, path):
         dd.io.save(path, (self._evaluations, self._target_evaluation))
 
@@ -223,3 +204,21 @@ def set_padded_img_section(padded_img, x, y, psf_size, new_values) -> None:
     padded_img[x_prime: x_prime + psf_size, y_prime: y_prime + psf_size] = new_values
 
 
+def calculate_covering(image_shape: tuple[int, int], size: int) -> tuple[np.ndarray, np.ndarray]:
+    half_size = size // 2
+
+    # x1, y1 are the primary grid. x2, y2 are the offset grid. Together they fully cover the image twice.
+    x1 = np.arange(-half_size, image_shape[0] + half_size, size)
+    y1 = np.arange(-half_size, image_shape[1] + half_size, size)
+    x2 = (x1 + half_size)[:-1]
+    y2 = (y1 + half_size)[:-1]
+
+    x1, y1 = np.meshgrid(x1, y1)
+    x2, y2 = np.meshgrid(x2, y2)
+
+    x1, y1 = x1.flatten(), y1.flatten()
+    x2, y2 = x2.flatten(), y2.flatten()
+
+    x = np.concatenate([x1, x2])
+    y = np.concatenate([y1, y2])
+    return x, y
