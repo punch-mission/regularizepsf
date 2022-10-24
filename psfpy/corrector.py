@@ -194,18 +194,19 @@ class ArrayCorrector(CorrectorABC):
 
 
 def get_padded_img_section(padded_img, x, y, psf_size) -> np.ndarray:
-    x_prime, y_prime = x + psf_size // 2, y + psf_size // 2
+    """ Assumes an image is padded by ((psf_size, psf_size), (psf_size, psf_size))"""
+    x_prime, y_prime = x + psf_size, y + psf_size
     return padded_img[x_prime: x_prime + psf_size, y_prime: y_prime + psf_size]
 
 
 def set_padded_img_section(padded_img, x, y, psf_size, new_values) -> None:
     assert new_values.shape == (psf_size, psf_size)
-    x_prime, y_prime = x + psf_size // 2, y + psf_size // 2
+    x_prime, y_prime = x + psf_size, y + psf_size
     padded_img[x_prime: x_prime + psf_size, y_prime: y_prime + psf_size] = new_values
 
 
-def calculate_covering(image_shape: tuple[int, int], size: int) -> tuple[np.ndarray, np.ndarray]:
-    half_size = size // 2
+def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
+    half_size = np.ceil(size / 2).astype(int)
 
     # x1, y1 are the primary grid. x2, y2 are the offset grid. Together they fully cover the image twice.
     x1 = np.arange(-half_size, image_shape[0] + half_size, size)
@@ -221,4 +222,4 @@ def calculate_covering(image_shape: tuple[int, int], size: int) -> tuple[np.ndar
 
     x = np.concatenate([x1, x2])
     y = np.concatenate([y1, y2])
-    return x, y
+    return np.stack([x, y], -1)

@@ -75,3 +75,23 @@ def test_varied_psf_missing_y_fails():
     ref = simple_psf(lambda x, y: x + y)
     with pytest.raises(PSFParameterValidationError):
         varied_psf(ref)(lambda x, c: {'sigma': 0.1})
+
+
+def test_varied_psf_called_without_arguments():
+    with pytest.raises(Exception):
+        varied_psf()(lambda x, y: {"sigma": 0.2})
+
+
+def test_varied_psf_called_with_none_base_psf():
+    with pytest.raises(Exception):
+        @varied_psf(None)
+        def func(x, y):
+            return {"sigma": 0.2}
+
+
+def test_varied_psf_called_naked():
+    with pytest.raises(Exception):
+        @varied_psf
+        def func(x, y):
+            return {"sigma": 0.1}
+
