@@ -2,3 +2,4 @@ numpy
 spectrum
 dill
 deepdish
+astropy
