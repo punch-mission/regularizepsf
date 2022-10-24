@@ -3,8 +3,10 @@ from numbers import Real
 from typing import Any
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from psfpy import simple_psf, varied_psf, FunctionalCorrector, ArrayCorrector
+from psfpy.corrector import calculate_covering
 
 
 @simple_psf
@@ -32,14 +34,27 @@ def my_psf(x: Real | np.ndarray, y: Real | np.ndarray) -> dict[str, Any]:
 
 
 if __name__ == "__main__":
+    show_steps = True
+
     uncorrected_image = np.zeros((1048, 1048))
 
     my_model = FunctionalCorrector(my_psf, target_model)
-    #my_model.correct_image(uncorrected_image, 100)
-    array_corrector = my_model.evaluate_to_array_form(np.arange(10), np.arange(10), 10)
-    array_corrector.save("array_corrector.corr")
-    loaded = ArrayCorrector.load("array_corrector.corr")
-    print(type(loaded))
+    if show_steps:
+        corners = calculate_covering(uncorrected_image.shape, 250)
+        array_corrector = my_model.evaluate_to_array_form(corners[:, 0], corners[:, 1], 250)
+        corrected_image = array_corrector.correct_image(uncorrected_image)
+    else:
+        corrected_image = my_model.correct_image(uncorrected_image, 250)
+
+    fig, axs = plt.subplots(ncols=2, sharex=True, sharey=True)
+    axs[0].imshow(uncorrected_image)
+    axs[1].imshow(uncorrected_image)
+    plt.show()
+
+    #array_corrector = my_model.evaluate_to_array_form(np.arange(10), np.arange(10), 10)
+    # array_corrector.save("array_corrector.corr")
+    # loaded = ArrayCorrector.load("array_corrector.corr")
+    # print(type(loaded))
     # evaluated_model = my_model.evaluate(np.arange(100), np.arange(100), 100)
     # print(evaluated_model[0, 0])
     # corrected_image = evaluated_model.correct_image(uncorrected_image)

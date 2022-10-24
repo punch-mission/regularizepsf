@@ -22,6 +22,9 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         else:
             self._size = None
 
+    def __len__(self):
+        return len(self._patches)
+
     @classmethod
     @abc.abstractmethod
     def extract(cls, images: list[np.ndarray], coordinates: list, size: int) -> PatchCollectionABC:
@@ -38,7 +41,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
 
         """
 
-    def get(self, identifier) -> np.ndarray:
+    def __getitem__(self, identifier) -> np.ndarray:
         """
 
         Parameters
@@ -53,6 +56,19 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
             return self._patches[identifier]
         else:
             raise IndexError(f"{identifier} is not used to identify a patch in this collection.")
+
+    def __contains__(self, identifier):
+        """
+
+        Parameters
+        ----------
+        identifier
+
+        Returns
+        -------
+
+        """
+        return identifier in self._patches
 
     def add(self, identifier, patch: np.ndarray) -> None:
         """
@@ -111,6 +127,18 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
     def load(cls, path):
         return cls(dd.io.load(path))
 
+    def keys(self):
+        return self._patches.keys()
+
+    def values(self):
+        return self._patches.values()
+
+    def items(self):
+        return self._patches.items()
+
+    def __next__(self):
+        # TODO: implement
+        pass
 
 CoordinateIdentifier = namedtuple("CoordinateIdentifier", "image_index, x, y")
 
@@ -121,8 +149,15 @@ class CoordinatePatchCollection(PatchCollectionABC):
                 coordinates: list[CoordinateIdentifier],
                 size: int) -> PatchCollectionABC:
         out = cls(dict())
+
+        # pad in case someone selects a region on the edge of the image
+        padding_shape = ((size, size), (size, size))
+        padded_images = [np.pad(image, padding_shape, mode='constant') for image in images]
+
+        # TODO: prevent someone from selecting a region completing outside of the image
         for coordinate in coordinates:
-            patch = images[coordinate.image_index][coordinate.x:coordinate.x+size, coordinate.y:coordinate.y+size]
+            patch = padded_images[coordinate.image_index][coordinate.x+size:coordinate.x+2*size,
+                                                          coordinate.y+size:coordinate.y+2*size]
             out.add(coordinate, patch)
         return out
 

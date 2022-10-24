@@ -90,8 +90,8 @@ class FunctionalCorrector(CorrectorABC):
 
     def correct_image(self, image: np.ndarray, size: int = None,
                       alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
-        x, y = calculate_covering(image.shape, size)
-        array_corrector = self.evaluate_to_array_form(x, y, size)
+        corners = calculate_covering(image.shape, size)
+        array_corrector = self.evaluate_to_array_form(corners[:, 0], corners[:, 1], size)
         return array_corrector.correct_image(image, size=size, alpha=alpha, epsilon=epsilon, use_gpu=use_gpu)
 
     def save(self, path):
@@ -144,7 +144,7 @@ class ArrayCorrector(CorrectorABC):
             except ImportError:
                 raise ImportError("numpy is found for CPU execution. numpy was not found.")
 
-        padding_shape = ((self._size, self._size), (self._size, self._size))
+        padding_shape = ((2*self._size, 2*self._size), (2*self._size, 2*self._size))
         padded_img = np.pad(image, padding_shape, mode="constant")
         result_img = np.zeros_like(padded_img)
 
@@ -195,24 +195,47 @@ class ArrayCorrector(CorrectorABC):
 
 def get_padded_img_section(padded_img, x, y, psf_size) -> np.ndarray:
     """ Assumes an image is padded by ((psf_size, psf_size), (psf_size, psf_size))"""
-    x_prime, y_prime = x + psf_size, y + psf_size
+    x_prime, y_prime = x + 2*psf_size, y + 2*psf_size
     return padded_img[x_prime: x_prime + psf_size, y_prime: y_prime + psf_size]
 
 
 def set_padded_img_section(padded_img, x, y, psf_size, new_values) -> None:
     assert new_values.shape == (psf_size, psf_size)
-    x_prime, y_prime = x + psf_size, y + psf_size
+    x_prime, y_prime = x + 2*psf_size, y + 2*psf_size
     padded_img[x_prime: x_prime + psf_size, y_prime: y_prime + psf_size] = new_values
 
+
+# def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
+#     half_size = np.ceil(size / 2).astype(int)
+#
+#     # x1, y1 are the primary grid. x2, y2 are the offset grid. Together they fully cover the image twice.
+#     x1 = np.arange(-half_size, image_shape[0] + half_size, size)
+#     y1 = np.arange(-half_size, image_shape[1] + half_size, size)
+#     x1 = x1[x1 <= image_shape[0]+1]
+#     y1 = y1[y1 <= image_shape[1]+1]
+#
+#     x2 = (x1 + half_size)[:-1]
+#     y2 = (y1 + half_size)[:-1]
+#
+#     x1, y1 = np.meshgrid(x1, y1)
+#     x2, y2 = np.meshgrid(x2, y2)
+#
+#     x1, y1 = x1.flatten(), y1.flatten()
+#     x2, y2 = x2.flatten(), y2.flatten()
+#
+#     x = np.concatenate([x1, x2])
+#     y = np.concatenate([y1, y2])
+#     return np.stack([x, y], -1)
 
 def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
     half_size = np.ceil(size / 2).astype(int)
 
     # x1, y1 are the primary grid. x2, y2 are the offset grid. Together they fully cover the image twice.
-    x1 = np.arange(-half_size, image_shape[0] + half_size, size)
-    y1 = np.arange(-half_size, image_shape[1] + half_size, size)
-    x2 = (x1 + half_size)[:-1]
-    y2 = (y1 + half_size)[:-1]
+    x1 = np.arange(0, image_shape[0], size)
+    y1 = np.arange(0, image_shape[1], size)
+
+    x2 = np.arange(-half_size, image_shape[0]+half_size, size)
+    y2 = np.arange(-half_size, image_shape[1]+half_size, size)
 
     x1, y1 = np.meshgrid(x1, y1)
     x2, y2 = np.meshgrid(x2, y2)
