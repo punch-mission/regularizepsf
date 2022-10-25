@@ -164,19 +164,21 @@ class ArrayCorrector(CorrectorABC):
             )
 
             img_i = get_padded_img_section(padded_img, x, y, self._size)
-            img_i_apodized_padded = np.pad(img_i * apodization_window, padding_shape)
+            # img_i_apodized_padded = np.pad(img_i * apodization_window, padding_shape)
+            img_i_apodized_padded = np.pad(img_i, padding_shape)
             img_i_hat = fft2(img_i_apodized_padded)
 
-            corrected_i = np.real(ifft2(img_i_hat * this_psf_i_hat_norm * psf_target_hat))[
-                self._size:self._size*2, self._size:self._size*2
-            ]
-            corrected_i = corrected_i * apodization_window
+            corrected_i = np.real(ifft2(img_i_hat * this_psf_i_hat_norm * psf_target_hat))[self._size*2:self._size*3, self._size*2:self._size*3]
+            #[self._size:self._size*2, self._size:self._size*2]
+
+            # corrected_i = corrected_i * apodization_window
             set_padded_img_section(result_img, x, y, self._size, corrected_i)
 
-        return result_img[
-            self._size // 2: image.shape[0] + self._size // 2,
-            self._size // 2: image.shape[1] + self._size // 2,
-        ]
+        return result_img
+        # [
+        #     self._size // 2: image.shape[0] + self._size // 2,
+        #     self._size // 2: image.shape[1] + self._size // 2,
+        # ]
 
     def __getitem__(self, xy: Point) -> np.ndarray:
         if xy in self._evaluation_points:
@@ -194,7 +196,7 @@ class ArrayCorrector(CorrectorABC):
 
 
 def get_padded_img_section(padded_img, x, y, psf_size) -> np.ndarray:
-    """ Assumes an image is padded by ((psf_size, psf_size), (psf_size, psf_size))"""
+    """ Assumes an image is padded by ((2*psf_size, 2*psf_size), (2*psf_size, 2*psf_size))"""
     x_prime, y_prime = x + 2*psf_size, y + 2*psf_size
     return padded_img[x_prime: x_prime + psf_size, y_prime: y_prime + psf_size]
 
