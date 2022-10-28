@@ -163,7 +163,7 @@ class ArrayCorrector(CorrectorABC):
             this_psf_i_hat_abs = np.abs(this_psf_i_hat)
             this_psf_i_hat_norm = (np.conj(this_psf_i_hat) / this_psf_i_hat_abs) * (
                 np.power(this_psf_i_hat_abs, alpha)
-                / (np.power(this_psf_i_hat_abs, alpha + 1) + np.power(epsilon, alpha + 1))
+                / (np.power(this_psf_i_hat_abs, alpha + 1) + np.power(epsilon * np.abs(psf_target_hat), alpha + 1))
             )
 
             img_i = get_padded_img_section(padded_img, x, y, self._size)
