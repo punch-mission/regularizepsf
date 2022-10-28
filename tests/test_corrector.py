@@ -6,12 +6,12 @@ from hypothesis import given, strategies as st, settings
 from psfpy.corrector import calculate_covering, get_padded_img_section, set_padded_img_section
 
 
-def confirm_full_double_covering(corners, img_shape, patch_size):
+def confirm_full_four_covering(corners, img_shape, patch_size):
     counts = np.zeros(img_shape)
     for i, (x, y) in enumerate(corners):
         counts[np.max([0, x]):np.min([img_shape[0], x + patch_size]),
                np.max([0, y]):np.min([img_shape[1], y + patch_size])] += 1
-    assert np.all(counts == 2)
+    assert np.all(counts == 4)
 
 
 @pytest.mark.parametrize("img_shape, patch_size",
@@ -22,7 +22,7 @@ def confirm_full_double_covering(corners, img_shape, patch_size):
                           ((100, 100), 11)])
 def test_calculate_covering_with_given_sizes(img_shape, patch_size):
     corners = calculate_covering(img_shape, patch_size)
-    confirm_full_double_covering(corners, img_shape, patch_size)
+    confirm_full_four_covering(corners, img_shape, patch_size)
 
 
 @given(img_dim=st.integers(min_value=100, max_value=200), patch_fraction=st.fractions(min_value=0.1, max_value=0.8))
@@ -31,7 +31,7 @@ def test_calculate_covering_random_square_images_always_covered(img_dim, patch_f
     img_shape = (img_dim, img_dim)
     patch_size = np.ceil(img_dim * patch_fraction)
     corners = calculate_covering(img_shape, patch_size)
-    confirm_full_double_covering(corners, img_shape, patch_size)
+    confirm_full_four_covering(corners, img_shape, patch_size)
 
 
 @fixture
