@@ -95,7 +95,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
             # TODO : enforce square constraint
 
     @abc.abstractmethod
-    def average(self, corners: np.ndarray, step: int, size: int) -> PatchCollectionABC:
+    def average(self, corners: np.ndarray, step: int, size: int, mode: str) -> PatchCollectionABC:
         """
 
         Parameters
@@ -180,18 +180,16 @@ class CoordinatePatchCollection(PatchCollectionABC):
             out.add(coordinate, patch)
         return out
 
-    def average(self, corners: np.ndarray, step: int, size: int) -> PatchCollectionABC:
-        pad_amount = size - self._size
-        if pad_amount < 0:
-            raise InvalidSizeError(f"The average window size (found {size})" 
-                                   f"must be larger than the existing patch size (found {self._size}).")
-        if pad_amount % 2 != 0:
-            raise InvalidSizeError(f"The average window size (found {size})" 
-                                   f"must be the same parity as the existing patch size (found {self._size}).")
-        pad_shape = ((pad_amount//2, pad_amount//2), (pad_amount//2, pad_amount//2))
+    def average(self, corners: np.ndarray, step: int, size: int,
+                mode: str = "median") -> PatchCollectionABC:
+        self._validate_average_mode(mode)
+        pad_shape = self._calculate_pad_shape(size)
 
-        averages = {tuple(corner): np.zeros((size, size)) for corner in corners}
-        counts = {tuple(corner): 0 for corner in corners}
+        if mode == "mean":
+            mean_stack = {tuple(corner): np.zeros((size, size)) for corner in corners}
+            counts = {tuple(corner): 0 for corner in corners}
+        elif mode == "median":
+            median_stack = {tuple(corner): [] for corner in corners}
 
         corners_x, corners_y = corners[:, 0], corners[:, 1]
         x_bounds = np.stack([corners_x, corners_x + step], axis=-1)
@@ -211,50 +209,37 @@ class CoordinatePatchCollection(PatchCollectionABC):
             # add to averages and increment count
             for match_index in match_indices:
                 match_corner = tuple(corners[match_index])
-                averages[match_corner] = np.nansum([averages[match_corner], padded_patch], axis=0)
-                counts[match_corner] += 1
+                if mode == "mean":
+                    mean_stack[match_corner] = np.nansum([mean_stack[match_corner], padded_patch], axis=0)
+                    counts[match_corner] += 1
+                elif mode == "median":
+                    median_stack[match_corner].append(padded_patch)
 
-        averages = {CoordinateIdentifier(None, corner[0], corner[1]): averages[corner]/counts[corner]
-                    for corner in averages}
-        return CoordinatePatchCollection(averages)
-
-    def median(self, corners: np.ndarray, step: int, size: int) -> PatchCollectionABC:
-        pad_amount = size - self._size
-        if pad_amount < 0:
-            raise InvalidSizeError(f"The average window size (found {size})" 
-                                   f"must be larger than the existing patch size (found {self._size}).")
-        if pad_amount % 2 != 0:
-            raise InvalidSizeError(f"The average window size (found {size})" 
-                                   f"must be the same parity as the existing patch size (found {self._size}).")
-        pad_shape = ((pad_amount//2, pad_amount//2), (pad_amount//2, pad_amount//2))
-
-        median_stack = {tuple(corner): [] for corner in corners}
-
-        corners_x, corners_y = corners[:, 0], corners[:, 1]
-        x_bounds = np.stack([corners_x, corners_x + step], axis=-1)
-        y_bounds = np.stack([corners_y, corners_y + step], axis=-1)
-
-        for identifier, patch in self._patches.items():
-            # pad patch with zeros
-            padded_patch = np.pad(patch / np.max(patch), pad_shape, mode='constant')
-
-            # Determine which average region it belongs to
-            center_x = identifier.x + self._size // 2
-            center_y = identifier.y + self._size // 2
-            x_matches = (x_bounds[:, 0] <= center_x) * (center_x < x_bounds[:, 1])
-            y_matches = (y_bounds[:, 0] <= center_y) * (center_y < y_bounds[:, 1])
-            match_indices = np.where(x_matches * y_matches)[0]
-
-            # add to averages and increment count
-            for match_index in match_indices:
-                match_corner = tuple(corners[match_index])
-                median_stack[match_corner].append(padded_patch)
-
-        averages = {CoordinateIdentifier(None, corner[0], corner[1]):
-                        np.nanmedian(median_stack[corner], axis=0)
+        if mode == "mean":
+            averages = {CoordinateIdentifier(None, corner[0], corner[1]): mean_stack[corner]/counts[corner]
+                        for corner in mean_stack}
+        elif mode == "median":
+            averages = {CoordinateIdentifier(None, corner[0], corner[1]):
+                            np.nanmedian(median_stack[corner], axis=0)
                             if len(median_stack[corner]) > 0 else np.zeros((size, size))
-                    for corner in median_stack}
+                        for corner in median_stack}
         return CoordinatePatchCollection(averages)
+
+    def _validate_average_mode(self, mode: str):
+        valid_modes = ['median', 'mean']
+        if mode not in valid_modes:
+            raise ValueError(f"Found a mode of {mode} but it must be in the list {valid_modes}.")
+
+    def _calculate_pad_shape(self, size):
+        pad_amount = size - self._size
+        if pad_amount < 0:
+            raise InvalidSizeError(f"The average window size (found {size})" 
+                                   f"must be larger than the existing patch size (found {self._size}).")
+        if pad_amount % 2 != 0:
+            raise InvalidSizeError(f"The average window size (found {size})" 
+                                   f"must be the same parity as the existing patch size (found {self._size}).")
+        pad_shape = ((pad_amount//2, pad_amount//2), (pad_amount//2, pad_amount//2))
+        return pad_shape
 
     def fit(self, base_psf: SimplePSF, is_varied: bool = False) -> PointSpreadFunctionABC:
         raise NotImplementedError("TODO")  # TODO: implement
