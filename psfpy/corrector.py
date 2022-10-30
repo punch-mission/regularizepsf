@@ -1,17 +1,21 @@
 from __future__ import annotations
 
+import os
 from typing import TypeAlias
 import abc
 from pathlib import Path
 import warnings
+from multiprocessing import Process, Semaphore, Lock, Pool
 
 import dill
 import numpy as np
 from spectrum import create_window
 import deepdish as dd
+from numpy.fft import fft2, ifft2
 
 from psfpy.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
 from psfpy.psf import VariedPSF, SimplePSF, PointSpreadFunctionABC
+from psfpy.helper import _correct_image
 
 Point: TypeAlias = tuple[int, int]
 
@@ -131,49 +135,7 @@ class ArrayCorrector(CorrectorABC):
                       alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
         if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape, (self._size, self._size))):
             raise InvalidSizeError("The image must be at least as large as the PSFs in all dimensions")
-
-        if use_gpu:
-            warnings.warn("The GPU acceleration is untested.", Warning)
-            try:
-                from cupy.fft import fft2, ifft2
-            except ImportError as e:
-                raise ImportError("cupy is required for GPU acceleration. cupy was not found.")
-        else:
-            try:
-                from numpy.fft import fft2, ifft2
-            except ImportError:
-                raise ImportError("numpy is found for CPU execution. numpy was not found.")
-
-        padding_shape = ((2*self._size, 2*self._size), (2*self._size, 2*self._size))
-        padded_img = np.pad(image, padding_shape, mode="constant")
-        result_img = np.zeros_like(padded_img)
-
-        psf_target_padded = self._target_evaluation
-        psf_target_hat = fft2(psf_target_padded)
-
-        xx, yy = np.meshgrid(np.arange(self._size), np.arange(self._size))
-        apodization_window = np.square(np.sin((xx + 0.5) * np.pi / self._size)) * np.square(
-            np.sin((yy + 0.5) * np.pi / self._size))
-
-        for (x, y), this_psf_i in self._evaluations.items():
-            this_psf_i_hat = fft2(this_psf_i)
-            this_psf_i_hat_abs = np.abs(this_psf_i_hat)
-            this_psf_i_hat_norm = (np.conj(this_psf_i_hat) / this_psf_i_hat_abs) * (
-                np.power(this_psf_i_hat_abs, alpha)
-                / (np.power(this_psf_i_hat_abs, alpha + 1) + np.power(epsilon * np.abs(psf_target_hat), alpha + 1))
-            )
-
-            img_i = get_padded_img_section(padded_img, x, y, self._size)
-            img_i_apodized = img_i * apodization_window
-            img_i_hat = fft2(img_i_apodized)
-
-            corrected_i = np.real(ifft2(img_i_hat * this_psf_i_hat_norm * psf_target_hat))
-
-            corrected_i = corrected_i * apodization_window
-            add_padded_img_section(result_img, x, y, self._size, corrected_i)
-
-        return result_img[2*self._size:image.shape[0]+2*self._size,
-                          2*self._size:image.shape[1]+2*self._size]
+        return _correct_image(image, self._size, self._target_evaluation, self._evaluations, alpha, epsilon)
 
     def __getitem__(self, xy: Point) -> np.ndarray:
         if xy in self._evaluation_points:
@@ -188,24 +150,6 @@ class ArrayCorrector(CorrectorABC):
     def load(cls, path):
         evaluations, target_evaluation = dd.io.load(path)
         return cls(evaluations, target_evaluation)
-
-
-def get_padded_img_section(padded_img, x, y, psf_size) -> np.ndarray:
-    """ Assumes an image is padded by ((2*psf_size, 2*psf_size), (2*psf_size, 2*psf_size))"""
-    x_prime, y_prime = x + 2*psf_size, y + 2*psf_size
-    return padded_img[x_prime: x_prime + psf_size, y_prime: y_prime + psf_size]
-
-
-def set_padded_img_section(padded_img, x, y, psf_size, new_values) -> None:
-    assert new_values.shape == (psf_size, psf_size)
-    x_prime, y_prime = x + 2*psf_size, y + 2*psf_size
-    padded_img[x_prime: x_prime + psf_size, y_prime: y_prime + psf_size] = new_values
-
-
-def add_padded_img_section(padded_img, x, y, psf_size, new_values) -> None:
-    assert new_values.shape == (psf_size, psf_size)
-    prior = get_padded_img_section(padded_img, x, y, psf_size)
-    set_padded_img_section(padded_img, x, y, psf_size, new_values + prior)
 
 
 def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
