@@ -148,7 +148,6 @@ class ArrayCorrector(CorrectorABC):
         padded_img = np.pad(image, padding_shape, mode="constant")
         result_img = np.zeros_like(padded_img)
 
-        #psf_target_padded = np.pad(self._target_evaluation, padding_shape, mode="constant")
         psf_target_padded = self._target_evaluation
         psf_target_hat = fft2(psf_target_padded)
 
@@ -157,9 +156,7 @@ class ArrayCorrector(CorrectorABC):
             np.sin((yy + 0.5) * np.pi / self._size))
 
         for (x, y), this_psf_i in self._evaluations.items():
-            #this_psf_i_padded = np.pad(this_psf_i, padding_shape)
-            this_psf_i_padded = this_psf_i
-            this_psf_i_hat = fft2(this_psf_i_padded)
+            this_psf_i_hat = fft2(this_psf_i)
             this_psf_i_hat_abs = np.abs(this_psf_i_hat)
             this_psf_i_hat_norm = (np.conj(this_psf_i_hat) / this_psf_i_hat_abs) * (
                 np.power(this_psf_i_hat_abs, alpha)
@@ -167,22 +164,16 @@ class ArrayCorrector(CorrectorABC):
             )
 
             img_i = get_padded_img_section(padded_img, x, y, self._size)
-            #img_i_apodized_padded = np.pad(img_i * apodization_window, padding_shape)
-            # img_i_apodized_padded = np.pad(img_i, padding_shape)
-            img_i_apodized_padded = img_i * apodization_window
-            img_i_hat = fft2(img_i_apodized_padded)
+            img_i_apodized = img_i * apodization_window
+            img_i_hat = fft2(img_i_apodized)
 
-            corrected_i = np.real(ifft2(img_i_hat * this_psf_i_hat_norm * psf_target_hat))#[self._size*2:self._size*3, self._size*2:self._size*3]
-            #[self._size:self._size*2, self._size:self._size*2]
+            corrected_i = np.real(ifft2(img_i_hat * this_psf_i_hat_norm * psf_target_hat))
 
             corrected_i = corrected_i * apodization_window
             add_padded_img_section(result_img, x, y, self._size, corrected_i)
 
-        return result_img
-        # [
-        #     self._size // 2: image.shape[0] + self._size // 2,
-        #     self._size // 2: image.shape[1] + self._size // 2,
-        # ]
+        return result_img[2*self._size:image.shape[0]+2*self._size,
+                          2*self._size:image.shape[1]+2*self._size]
 
     def __getitem__(self, xy: Point) -> np.ndarray:
         if xy in self._evaluation_points:
@@ -216,48 +207,6 @@ def add_padded_img_section(padded_img, x, y, psf_size, new_values) -> None:
     prior = get_padded_img_section(padded_img, x, y, psf_size)
     set_padded_img_section(padded_img, x, y, psf_size, new_values + prior)
 
-
-# def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
-#     half_size = np.ceil(size / 2).astype(int)
-#
-#     # x1, y1 are the primary grid. x2, y2 are the offset grid. Together they fully cover the image twice.
-#     x1 = np.arange(-half_size, image_shape[0] + half_size, size)
-#     y1 = np.arange(-half_size, image_shape[1] + half_size, size)
-#     x1 = x1[x1 <= image_shape[0]+1]
-#     y1 = y1[y1 <= image_shape[1]+1]
-#
-#     x2 = (x1 + half_size)[:-1]
-#     y2 = (y1 + half_size)[:-1]
-#
-#     x1, y1 = np.meshgrid(x1, y1)
-#     x2, y2 = np.meshgrid(x2, y2)
-#
-#     x1, y1 = x1.flatten(), y1.flatten()
-#     x2, y2 = x2.flatten(), y2.flatten()
-#
-#     x = np.concatenate([x1, x2])
-#     y = np.concatenate([y1, y2])
-#     return np.stack([x, y], -1)
-
-# def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
-#     half_size = np.ceil(size / 2).astype(int)
-#
-#     # x1, y1 are the primary grid. x2, y2 are the offset grid. Together they fully cover the image twice.
-#     x1 = np.arange(0, image_shape[0], size)
-#     y1 = np.arange(0, image_shape[1], size)
-#
-#     x2 = np.arange(-half_size, image_shape[0]+half_size, size)
-#     y2 = np.arange(-half_size, image_shape[1]+half_size, size)
-#
-#     x1, y1 = np.meshgrid(x1, y1)
-#     x2, y2 = np.meshgrid(x2, y2)
-#
-#     x1, y1 = x1.flatten(), y1.flatten()
-#     x2, y2 = x2.flatten(), y2.flatten()
-#
-#     x = np.concatenate([x1, x2])
-#     y = np.concatenate([y1, y2])
-#     return np.stack([x, y], -1)
 
 def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
     half_size = np.ceil(size / 2).astype(int)
