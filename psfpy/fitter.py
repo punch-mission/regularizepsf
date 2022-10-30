@@ -4,9 +4,12 @@ import abc
 import warnings
 from typing import Any
 from collections import namedtuple
+from numbers import Real
 
 import numpy as np
 import deepdish as dd
+from lmfit import Parameters, minimize, report_fit
+from lmfit.minimizer import MinimizerResult
 
 from psfpy.psf import SimplePSF, VariedPSF, PointSpreadFunctionABC
 from psfpy.exceptions import InvalidSizeError
@@ -140,6 +143,22 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         # TODO: implement
         pass
 
+    def _fit_lmfit(self, base_psf: SimplePSF, initial_guesses: dict[str, Real]) -> dict[Any, MinimizerResult]:
+        initial = Parameters()
+        for parameter in base_psf.parameters:
+            initial.add(parameter, value=initial_guesses[parameter])
+
+        xx, yy = np.meshgrid(np.arange(self._size), np.arange(self._size))
+
+        results = dict()
+        for identifier, patch in self._patches.items():
+            results[identifier] = minimize(
+                lambda current_parameters, x, y, data: data - base_psf(x, y, **current_parameters.valuesdict()),
+                initial,
+                args=(xx, yy, patch))
+        return results
+
+
 CoordinateIdentifier = namedtuple("CoordinateIdentifier", "image_index, x, y")
 
 
@@ -199,5 +218,45 @@ class CoordinatePatchCollection(PatchCollectionABC):
                     for corner in averages}
         return CoordinatePatchCollection(averages)
 
+    def median(self, corners: np.ndarray, step: int, size: int) -> PatchCollectionABC:
+        pad_amount = size - self._size
+        if pad_amount < 0:
+            raise InvalidSizeError(f"The average window size (found {size})" 
+                                   f"must be larger than the existing patch size (found {self._size}).")
+        if pad_amount % 2 != 0:
+            raise InvalidSizeError(f"The average window size (found {size})" 
+                                   f"must be the same parity as the existing patch size (found {self._size}).")
+        pad_shape = ((pad_amount//2, pad_amount//2), (pad_amount//2, pad_amount//2))
+
+        median_stack = {tuple(corner): [] for corner in corners}
+
+        corners_x, corners_y = corners[:, 0], corners[:, 1]
+        x_bounds = np.stack([corners_x, corners_x + step], axis=-1)
+        y_bounds = np.stack([corners_y, corners_y + step], axis=-1)
+
+        for identifier, patch in self._patches.items():
+            # pad patch with zeros
+            padded_patch = np.pad(patch / np.max(patch), pad_shape, mode='constant')
+
+            # Determine which average region it belongs to
+            center_x = identifier.x + self._size // 2
+            center_y = identifier.y + self._size // 2
+            x_matches = (x_bounds[:, 0] <= center_x) * (center_x < x_bounds[:, 1])
+            y_matches = (y_bounds[:, 0] <= center_y) * (center_y < y_bounds[:, 1])
+            match_indices = np.where(x_matches * y_matches)[0]
+
+            # add to averages and increment count
+            for match_index in match_indices:
+                match_corner = tuple(corners[match_index])
+                median_stack[match_corner].append(padded_patch)
+
+        averages = {CoordinateIdentifier(None, corner[0], corner[1]):
+                        np.nanmedian(median_stack[corner], axis=0)
+                            if len(median_stack[corner]) > 0 else np.zeros((size, size))
+                    for corner in median_stack}
+        return CoordinatePatchCollection(averages)
+
     def fit(self, base_psf: SimplePSF, is_varied: bool = False) -> PointSpreadFunctionABC:
         raise NotImplementedError("TODO")  # TODO: implement
+
+

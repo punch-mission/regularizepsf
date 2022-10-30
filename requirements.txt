@@ -3,3 +3,4 @@ spectrum
 dill
 deepdish
 astropy
+lmfit
