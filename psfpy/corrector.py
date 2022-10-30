@@ -128,7 +128,7 @@ class ArrayCorrector(CorrectorABC):
             raise EvaluatedModelInconsistentSizeError("The target and evaluations must have the same shape.")
 
     def correct_image(self, image: np.ndarray, size: int = None,
-                      alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False, apodize=True) -> np.ndarray:
+                      alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
         if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape, (self._size, self._size))):
             raise InvalidSizeError("The image must be at least as large as the PSFs in all dimensions")
 
