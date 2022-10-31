@@ -10,17 +10,14 @@ ext_modules = [Extension('psfpy.helper',
                          extra_compile_args=['-std=c99', '-O3'],
                          extra_link_args=['-Wl,-rpath,lib']
                          ),
-               Extension('tester',
-                         sources=['fft_speed.c', 'speedy.pyx'],
+               Extension('psfpy.speedy',
+                         sources=['psfpy/fft_speed.c', 'psfpy/speedy.pyx'],
                          include_dirs=['include', numpy.get_include()],
                          libraries=['m', 'fftw3'],
                          library_dirs=['lib'],
                          extra_compile_args=['-std=c99', '-O3'],
                          extra_link_args=['-Wl,-rpath,lib']
                          )]
-#
-# for e in ext_modules:
-#     e.cython_directives = {'language_level': "3"}
 
 setup(
     name='psfpy',

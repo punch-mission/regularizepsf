@@ -15,7 +15,8 @@ from numpy.fft import fft2, ifft2
 
 from psfpy.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
 from psfpy.psf import VariedPSF, SimplePSF, PointSpreadFunctionABC
-from psfpy.helper import _correct_image
+# from psfpy.helper import _correct_image
+from psfpy.speedy import correct_image as c_correct_image
 
 Point: TypeAlias = tuple[int, int]
 
@@ -139,7 +140,7 @@ class ArrayCorrector(CorrectorABC):
         x = np.array([x for x, _ in self._evaluations.keys()])
         y = np.array([y for _, y in self._evaluations.keys()])
         values = np.array([v for v in self._evaluations.values()])
-        return _correct_image(image, self._target_evaluation, x, y, values, alpha, epsilon)
+        return c_correct_image(image, x, y, values, self._target_evaluation, alpha=alpha, epsilon=epsilon)
 
     def __getitem__(self, xy: Point) -> np.ndarray:
         if xy in self._evaluation_points:
