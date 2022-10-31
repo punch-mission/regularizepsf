@@ -8,16 +8,17 @@ ext_modules = [Extension('psfpy.helper',
                          libraries=['m', 'fftw3'],
                          library_dirs=['lib'],
                          extra_compile_args=['-std=c99', '-O3'],
-                         extra_link_args=['-Wl,-rpath,lib']
-                         ),
-               Extension('psfpy.speedy',
-                         sources=['psfpy/fft_speed.c', 'psfpy/speedy.pyx'],
-                         include_dirs=['include', numpy.get_include()],
-                         libraries=['m', 'fftw3'],
-                         library_dirs=['lib'],
-                         extra_compile_args=['-std=c99', '-O3'],
-                         extra_link_args=['-Wl,-rpath,lib']
-                         )]
+                         extra_link_args=['-Wl,-rpath,lib'])
+               #           ),
+               # Extension('psfpy.speedy',
+               #           sources=['psfpy/fft_speed.c', 'psfpy/speedy.pyx'],
+               #           include_dirs=['include', numpy.get_include()],
+               #           libraries=['m', 'fftw3'],
+               #           library_dirs=['lib'],
+               #           extra_compile_args=['-std=c99', '-O3'],
+               #           extra_link_args=['-Wl,-rpath,lib']
+               #           )
+                ]
 
 setup(
     name='psfpy',

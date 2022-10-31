@@ -89,9 +89,9 @@ def correct_image(image_filename: str):
 
 
 if __name__ == "__main__":
-    create_array_psf()
-
-    convert_array_patch_collection_to_array_corrector()
+    # create_array_psf()
+    #
+    # convert_array_patch_collection_to_array_corrector()
 
     image_directory = ("/Users/jhughes/Nextcloud/23103_PUNCH_Data/"
                        "SOC_Data/PUNCH_WFI_EM_Starfield_campaign2_night2_phase3/calibrated/")

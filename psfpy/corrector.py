@@ -4,6 +4,7 @@ import os
 from typing import TypeAlias
 import abc
 from pathlib import Path
+import time
 import warnings
 from multiprocessing import Process, Semaphore, Lock, Pool
 
@@ -15,8 +16,8 @@ from numpy.fft import fft2, ifft2
 
 from psfpy.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
 from psfpy.psf import VariedPSF, SimplePSF, PointSpreadFunctionABC
-# from psfpy.helper import _correct_image
-from psfpy.speedy import correct_image as c_correct_image
+from psfpy.helper import _correct_image
+# from psfpy.speedy import c_correct_image
 
 Point: TypeAlias = tuple[int, int]
 
@@ -137,10 +138,11 @@ class ArrayCorrector(CorrectorABC):
         if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape, (self._size, self._size))):
             raise InvalidSizeError("The image must be at least as large as the PSFs in all dimensions")
 
-        x = np.array([x for x, _ in self._evaluations.keys()])
-        y = np.array([y for _, y in self._evaluations.keys()])
-        values = np.array([v for v in self._evaluations.values()])
-        return c_correct_image(image, x, y, values, self._target_evaluation, alpha=alpha, epsilon=epsilon)
+        x = np.array([x for x, _ in self._evaluations.keys()], dtype=int)
+        y = np.array([y for _, y in self._evaluations.keys()], dtype=int)
+        values = np.array([v for v in self._evaluations.values()], dtype=float)
+
+        return _correct_image(image, self._target_evaluation, x, y, values,  alpha, epsilon)
 
     def __getitem__(self, xy: Point) -> np.ndarray:
         if xy in self._evaluation_points:

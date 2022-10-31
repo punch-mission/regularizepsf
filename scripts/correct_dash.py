@@ -13,7 +13,7 @@ from psfpy.corrector import ArrayCorrector
 
 def main():
     SHOW_FIGURES = False
-    patch_size, psf_size = 700, 32
+    patch_size, psf_size = 100, 32
     out_dir = "/Users/jhughes/Desktop/projects/PUNCH/psf_paper"
     fn = "/Users/jhughes/Nextcloud/PSF/DASH_2014-07-22T22:37:51.040_LF_expTime_10_numInBurst_8_ccdTemp_-20.0046.fits"
 
@@ -115,11 +115,12 @@ def main():
     target_evaluation = dash_target(*np.meshgrid(np.arange(patch_size), np.arange(patch_size)))
     array_corrector = ArrayCorrector(evaluation_dictionary, target_evaluation)
 
-    print("Starting")
+    print(f"Starting with {len(evaluation_dictionary)}")
     start = time.time()
     corrected = array_corrector.correct_image(d, alpha=0.5, epsilon=0.05)
     end = time.time()
     print(end - start)
+    print("Finished!")
 
     np.save(os.path.join(out_dir, "dash_uncorrected.npy"), d)
     np.save(os.path.join(out_dir, "dash_corrected.npy"), corrected)
