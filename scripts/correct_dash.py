@@ -11,7 +11,7 @@ from psfpy.psf import simple_psf
 from psfpy.corrector import ArrayCorrector
 
 
-if __name__ == "__main__":
+def main():
     SHOW_FIGURES = False
     patch_size, psf_size = 700, 32
     out_dir = "/Users/jhughes/Desktop/projects/PUNCH/psf_paper"
@@ -21,11 +21,10 @@ if __name__ == "__main__":
         header = hdul[0].header
         data = hdul[0].data.astype(float)
 
-
     if SHOW_FIGURES:
         m, s = np.mean(data), np.std(data)
         fig, ax = plt.subplots()
-        im = ax.imshow(data, interpolation='nearest', cmap='gray', vmin=m-s, vmax=m+s, origin='lower')
+        im = ax.imshow(data, interpolation='nearest', cmap='gray', vmin=m - s, vmax=m + s, origin='lower')
         fig.colorbar(im)
         fig.show()
 
@@ -47,7 +46,7 @@ if __name__ == "__main__":
         fig.show()
 
     data_sub = data - bkg
-    objects = sep.extract(data_sub,3, err=bkg.globalrms)
+    objects = sep.extract(data_sub, 3, err=bkg.globalrms)
     d = data_sub
 
     if SHOW_FIGURES:
@@ -68,7 +67,8 @@ if __name__ == "__main__":
             ax.add_artist(e)
         plt.show()
 
-    coordinates = [CoordinateIdentifier(0, int(x)-psf_size//2, int(y)-psf_size//2) for y, x in zip(objects['x'], objects['y'])]
+    coordinates = [CoordinateIdentifier(0, int(x) - psf_size // 2, int(y) - psf_size // 2) for y, x in
+                   zip(objects['x'], objects['y'])]
     patch_collection = CoordinatePatchCollection.extract([d], coordinates, psf_size)
 
     if SHOW_FIGURES:
@@ -93,14 +93,11 @@ if __name__ == "__main__":
         fig.colorbar(im)
         fig.show()
 
-
     @simple_psf
-    def dash_target(x, y, x0=patch_size/2, y0=patch_size/2, sigma_x=5/2.355, sigma_y=5/2.355):
-        return np.exp(-(np.square(x-x0)/(2*np.square(sigma_x)) + np.square(y-y0)/(2*np.square(sigma_y))))
-
+    def dash_target(x, y, x0=patch_size / 2, y0=patch_size / 2, sigma_x=5 / 2.355, sigma_y=5 / 2.355):
+        return np.exp(-(np.square(x - x0) / (2 * np.square(sigma_x)) + np.square(y - y0) / (2 * np.square(sigma_y))))
 
     pad_amount = (patch_size - psf_size) // 2
-
 
     evaluation_dictionary = dict()
     for identifier, patch in averaged.items():
@@ -111,7 +108,8 @@ if __name__ == "__main__":
         corrected_patch[corrected_patch < 0.05] = 0
         corrected_patch[corrected_patch > 0.95] = 1
         evaluation_dictionary[(identifier.x, identifier.y)] = np.pad(corrected_patch,
-                                                                     ((pad_amount, pad_amount), (pad_amount, pad_amount)),
+                                                                     ((pad_amount, pad_amount),
+                                                                      (pad_amount, pad_amount)),
                                                                      mode='constant')
 
     target_evaluation = dash_target(*np.meshgrid(np.arange(patch_size), np.arange(patch_size)))
@@ -125,3 +123,7 @@ if __name__ == "__main__":
 
     np.save(os.path.join(out_dir, "dash_uncorrected.npy"), d)
     np.save(os.path.join(out_dir, "dash_corrected.npy"), corrected)
+
+
+if __name__ == "__main__":
+    main()
