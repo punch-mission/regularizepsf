@@ -1,25 +1,16 @@
 from __future__ import annotations
 
-import os
-from typing import TypeAlias
 import abc
 from pathlib import Path
-import time
-import warnings
-from multiprocessing import Process, Semaphore, Lock, Pool
+from typing import Any
 
 import dill
 import numpy as np
-from spectrum import create_window
 import deepdish as dd
-from numpy.fft import fft2, ifft2
 
 from psfpy.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
 from psfpy.psf import VariedPSF, SimplePSF, PointSpreadFunctionABC
 from psfpy.helper import _correct_image
-# from psfpy.speedy import c_correct_image
-
-Point: TypeAlias = tuple[int, int]
 
 
 class CorrectorABC(metaclass=abc.ABCMeta):
@@ -111,8 +102,8 @@ class FunctionalCorrector(CorrectorABC):
 
 
 class ArrayCorrector(CorrectorABC):
-    def __init__(self, evaluations: dict[Point, np.ndarray], target_evaluation: np.ndarray):
-        self._evaluation_points: list[Point] = list(evaluations.keys())
+    def __init__(self, evaluations: dict[Any, np.ndarray], target_evaluation: np.ndarray):
+        self._evaluation_points: list[Any] = list(evaluations.keys())
 
         if len(evaluations[self._evaluation_points[0]].shape) != 2:
             raise InvalidSizeError(f"PSF evaluations must be 2-D numpy arrays.")
@@ -122,7 +113,7 @@ class ArrayCorrector(CorrectorABC):
         if self._size % 2 != 0:
             raise InvalidSizeError(f"Size must be even. Found {self._size}")
 
-        self._evaluations: dict[Point, np.ndarray] = evaluations
+        self._evaluations: dict[Any, np.ndarray] = evaluations
         for (x, y), evaluation in self._evaluations.items():
             if evaluation.shape != (self._size, self._size):
                 raise EvaluatedModelInconsistentSizeError(f"Expected evaluated model to have shapes of "
@@ -144,7 +135,7 @@ class ArrayCorrector(CorrectorABC):
 
         return _correct_image(image, self._target_evaluation, x, y, values,  alpha, epsilon)
 
-    def __getitem__(self, xy: Point) -> np.ndarray:
+    def __getitem__(self, xy) -> np.ndarray:
         if xy in self._evaluation_points:
             return self._evaluations[xy]
         else:
