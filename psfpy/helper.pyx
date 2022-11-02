@@ -1,5 +1,3 @@
-# cython: linetrace = True
-
 import numpy as np
 cimport numpy as np
 from numpy.fft import fft2, ifft2
@@ -10,8 +8,7 @@ ctypedef np.float_t DTYPE_t
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-@cython.profile(True)
-cpdef _correct_image(np.ndarray[DTYPE_t, ndim=2] image,
+cpdef _correct_image(np.ndarray[np.float_t, ndim=2] image,
                      np.ndarray[DTYPE_t, ndim=2] target_evaluation,
                      np.ndarray[np.int_t, ndim=1] x,
                      np.ndarray[np.int_t, ndim=1] y,
@@ -27,20 +24,19 @@ cpdef _correct_image(np.ndarray[DTYPE_t, ndim=2] image,
     cdef np.ndarray[DTYPE_t, ndim=2] corrected_i = np.empty((size, size), dtype=np.float)
     cdef np.ndarray[DTYPE_t, ndim=2] padded_img = np.pad(image, ((2 * size, 2* size), (2*size, 2*size)),
                                                          mode="constant")
-    cdef np.ndarray[DTYPE_t, ndim=2] result_img = np.zeros_like(padded_img)
+    cdef np.ndarray[DTYPE_t, ndim=2] result_img = np.zeros_like(padded_img, dtype=np.float)
     cdef np.ndarray[np.complex128_t, ndim=2] psf_target_hat = fft2(target_evaluation)
     cdef np.ndarray[np.complex128_t, ndim=2] psf_i_hat = np.empty((size, size), dtype=np.complex)
-    cdef complex psf_i_hat_abs
+    cdef float psf_i_hat_abs
     cdef np.ndarray[np.complex128_t, ndim=2] psf_i_hat_norm = np.empty((size, size), dtype=np.complex)
     cdef np.ndarray[np.complex128_t, ndim=2] img_i_hat = np.empty((size, size), dtype=np.complex)
     cdef np.ndarray[np.complex128_t, ndim=2] temp = np.empty((size, size), dtype=np.complex)
     cdef np.ndarray[np.float_t, ndim=2] apodization_window
-    # cdef fftwnd_plan plan = fftw2d_create_plan(size, size, FFTW_FORWARD, FFTW_ESTIMATE)
+
 
     xarr, yarr = np.meshgrid(np.arange(size), np.arange(size))
-    apodization_window = np.square(np.sin((xarr + 0.5) * np.pi / size)) * np.square(
-        np.sin((yarr + 0.5) * np.pi / size))
-
+    apodization_window = np.square(np.sin((xarr + 0.5) * (np.pi / size))) * np.square(np.sin((yarr + 0.5) * (np.pi / size)))
+    apodization_window = np.sin((xarr + 0.5) * (np.pi / size)) * np.sin((yarr + 0.5) * (np.pi / size))
 
     for i in range(num_evaluations):
         # get the x and the y
@@ -65,11 +61,11 @@ cpdef _correct_image(np.ndarray[DTYPE_t, ndim=2] image,
                 psf_i_hat_abs = abs(psf_i_hat[xx, yy])
                 psf_i_hat_norm[xx, yy] = (psf_i_hat[xx, yy].conjugate() / psf_i_hat_abs) * ((psf_i_hat_abs**alpha) / ((psf_i_hat_abs**(alpha+1.0)) + (epsilon * abs(psf_target_hat[xx, yy]))**(alpha+1.0)))
                 temp[xx, yy] = img_i_hat[xx, yy] * psf_i_hat_norm[xx, yy] * psf_target_hat[xx, yy]
-        temp = ifft2(temp)
+        corrected_i = np.real(ifft2(temp))
 
         # add the corrected_i to the array
         for xx in range(size):
             for yy in range(size):
-                result_img[this_x_prime+xx, this_y_prime+yy] = result_img[this_x_prime+xx, this_y_prime+yy] + (temp[xx, yy].real * apodization_window[xx,yy])
+                result_img[this_x_prime+xx, this_y_prime+yy] = result_img[this_x_prime+xx, this_y_prime+yy] + (corrected_i[xx, yy] * apodization_window[xx, yy])
 
     return result_img[2 * size:image.shape[0] + 2 * size, 2 * size:image.shape[1] + 2 * size]

@@ -3,22 +3,8 @@ from Cython.Build import cythonize
 import numpy
 
 ext_modules = [Extension('psfpy.helper',
-                         sources=['psfpy/helper.pyx', 'psfpy/fftw_helper.c'],
-                         include_dirs=['include', numpy.get_include()],
-                         libraries=['m', 'fftw3'],
-                         library_dirs=['lib'],
-                         extra_compile_args=['-std=c99', '-O3'],
-                         extra_link_args=['-Wl,-rpath,lib'])
-               #           ),
-               # Extension('psfpy.speedy',
-               #           sources=['psfpy/fft_speed.c', 'psfpy/speedy.pyx'],
-               #           include_dirs=['include', numpy.get_include()],
-               #           libraries=['m', 'fftw3'],
-               #           library_dirs=['lib'],
-               #           extra_compile_args=['-std=c99', '-O3'],
-               #           extra_link_args=['-Wl,-rpath,lib']
-               #           )
-                ]
+                         sources=['psfpy/helper.pyx'],
+                         include_dirs=[numpy.get_include()])]
 
 setup(
     name='psfpy',
