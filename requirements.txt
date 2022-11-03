@@ -5,3 +5,4 @@ astropy
 lmfit
 sep
 cython
+pytest-runner
