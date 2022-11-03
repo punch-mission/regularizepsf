@@ -4,3 +4,4 @@ deepdish
 astropy
 lmfit
 sep
+cython
