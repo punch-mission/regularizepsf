@@ -1,6 +1,6 @@
 numpy
-spectrum
 dill
 deepdish
 astropy
 lmfit
+sep

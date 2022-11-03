@@ -10,6 +10,7 @@ import numpy as np
 import deepdish as dd
 from lmfit import Parameters, minimize, report_fit
 from lmfit.minimizer import MinimizerResult
+import sep
 
 from psfpy.psf import SimplePSF, VariedPSF, PointSpreadFunctionABC
 from psfpy.exceptions import InvalidSizeError
@@ -179,6 +180,17 @@ class CoordinatePatchCollection(PatchCollectionABC):
                                                           coordinate.y+size:coordinate.y+2*size]
             out.add(coordinate, patch)
         return out
+
+    @classmethod
+    def find_stars_and_create(cls, images: list[np.ndarray], patch_size: int, star_threshold: int = 3):
+        coordinates = []
+        for i, image in enumerate(images):
+            background = sep.Background(image)
+            image_background_removed = image - background
+            image_star_coords = sep.extract(image_background_removed, star_threshold, err=background.globalrms)
+            coordinates += [CoordinateIdentifier(i, int(y-patch_size/2), int(x-patch_size/2))
+                            for x, y in zip(image_star_coords['x'], image_star_coords['y'])]
+        return cls.extract(images, coordinates, patch_size)
 
     def average(self, corners: np.ndarray, step: int, size: int,
                 mode: str = "median") -> PatchCollectionABC:
