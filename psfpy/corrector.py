@@ -35,7 +35,8 @@ class CorrectorABC(metaclass=abc.ABCMeta):
 
         Parameters
         ----------
-        path
+        path : str or `pathlib.Path`
+            where to load the model from, suggested extension is ".corr"
 
         Returns
         -------
@@ -45,34 +46,79 @@ class CorrectorABC(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def correct_image(self, image: np.ndarray, size: int = None,
                       alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
-        """
+        """PSF correct an image according to the model
 
         Parameters
         ----------
-        image
-        size
-        alpha
-        epsilon
-        use_gpu
+        image : 2D float np.ndarray
+            image to be corrected
+        size : int
+            how big to make the patches when correcting an image, only used for FunctionalCorrector
+        alpha : float
+            controls the “hardness” of the transition from amplification to attenuation, see notes
+        epsilon : float
+            controls the maximum of the amplification, see notes
+        use_gpu : bool
+            True uses GPU acceleration, False does not.
 
         Returns
         -------
+        np.ndarray
+            a image that has been PSF corrected
 
+        Notes
+        -----
+        # TODO: add notes
         """
 
 
 class FunctionalCorrector(CorrectorABC):
+    """
+    A version of the PSF corrector that stores the model as a set of functions.
+    For the actual correction, the functions must first be evaluated to an ArrayCorrector.
+    """
     def __init__(self, psf: PointSpreadFunctionABC,
                  target_model: SimplePSF | None):
+        """Initialize a FunctionalCorrector
+
+        Parameters
+        ----------
+        psf : SimplePSF or VariedPSF
+            the model describing the psf for each patch of the image
+        target_model : SimplePSF or None
+            the target PSF to use to establish uniformity across the image
+        """
         self._psf: PointSpreadFunctionABC = psf
         self._variable: bool = isinstance(self._psf, VariedPSF)
         self._target_model: SimplePSF = target_model
 
     @property
-    def variable(self) -> bool:
+    def is_variable(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if the PSF model is varied (changes across the field-of-view) and False otherwise
+        """
         return self._variable
 
     def evaluate_to_array_form(self, x: np.ndarray, y: np.ndarray, size: int) -> ArrayCorrector:
+        """Evaluates a FunctionalCorrector to an ArrayCorrector
+
+        Parameters
+        ----------
+        x : np.ndarray
+            the first dimension coordinates to evaluate over
+        y : np.ndarray
+            the second dimension coordinates to evaluate over
+        size : int
+            how large the patches in the PSF correction model shouuld be
+
+        Returns
+        -------
+        ArrayCorrector
+            an array evaluated form of this PSF corrector
+        """
         if size % 2 != 0:
             raise InvalidSizeError(f"size must be even. Found size={size}.")
 
@@ -102,7 +148,19 @@ class FunctionalCorrector(CorrectorABC):
 
 
 class ArrayCorrector(CorrectorABC):
+    """ A PSF corrector that is evaluated as array patches
+    """
     def __init__(self, evaluations: dict[Any, np.ndarray], target_evaluation: np.ndarray):
+        """Initialize an ArrayCorrector
+
+        Parameters
+        ----------
+        evaluations : dict
+            evaluated version of the PSF as they vary over the image, keys should be (x, y) of the lower left
+                pixel of each patch. values should be the `np.ndarray` that corresponds to that patch
+        target_evaluation : np.ndarray
+            evaluated version of the target PSF
+        """
         self._evaluation_points: list[Any] = list(evaluations.keys())
 
         if len(evaluations[self._evaluation_points[0]].shape) != 2:
@@ -151,6 +209,21 @@ class ArrayCorrector(CorrectorABC):
 
 
 def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
+    """Determines the grid of patches to sum over.
+
+    Parameters
+    ----------
+    image_shape : tuple of 2 ints
+        shape of the image we plan to correct
+    size : int
+        size of the square patches we want to create
+
+    Returns
+    -------
+    np.ndarray
+        an array of shape Nx2 where return[:, 0] are the x coordinate and return[:, 1] are the y coordinates
+
+    """
     half_size = np.ceil(size / 2).astype(int)
 
     x1 = np.arange(0, image_shape[0], size)

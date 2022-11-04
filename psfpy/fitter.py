@@ -32,59 +32,70 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
     @classmethod
     @abc.abstractmethod
     def extract(cls, images: list[np.ndarray], coordinates: list, size: int) -> PatchCollectionABC:
-        """
+        """Construct a PatchCollection from a set of images using the specified coordinates and patch size
 
         Parameters
         ----------
-        images
-        coordinates
-        size
+        images : list of np.ndarrays
+            the images loaded
+        coordinates : list
+            A list of coordinates for the lower left pixel of each patch, specified in each type of PatchCollection
+        size : int
+            size of one side of the square patches extracted
 
         Returns
         -------
-
+        np.ndarray
+            the square patches extracted into a PatchCollection
         """
 
-    def __getitem__(self, identifier) -> np.ndarray:
-        """
+    def __getitem__(self, identifier: Any) -> np.ndarray:
+        """Access a patch with square brackets
 
         Parameters
         ----------
-        identifier
+        identifier : Any
+            identifier for a given patch, specifically implemented for each PatchCollection
 
         Returns
         -------
-
+        np.ndarray
+            a patch's data
         """
         if identifier in self._patches:
             return self._patches[identifier]
         else:
             raise IndexError(f"{identifier} is not used to identify a patch in this collection.")
 
-    def __contains__(self, identifier):
-        """
+    def __contains__(self, identifier: Any) -> bool:
+        """Determines if a patch is in the collection
 
         Parameters
         ----------
-        identifier
+        identifier : Any
+            identifier for a given patch, specifically implemented for each PatchCollection
 
         Returns
         -------
-
+        bool
+            True if patch with specified identifier is in the collection, False otherwise
         """
         return identifier in self._patches
 
-    def add(self, identifier, patch: np.ndarray) -> None:
-        """
+    def add(self, identifier: Any, patch: np.ndarray) -> None:
+        """Add a new patch to the collection
 
         Parameters
         ----------
-        identifier
-        patch
+        identifier : Any
+            identifier for a given patch, specifically implemented for each PatchCollection
+
+        patch : np.ndarray
+            the data for a specific patch
 
         Returns
         -------
-
+        None
         """
         if identifier in self._patches:
             # TODO: improve warning
@@ -97,17 +108,23 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def average(self, corners: np.ndarray, step: int, size: int, mode: str) -> PatchCollectionABC:
-        """
+        """Construct a new PatchCollection where patches lying inside a new grid are averaged together
 
         Parameters
         ----------
-        corners
-        step
-        size
+        corners : np.ndarray
+            an Nx2 `np.ndarray` of the lower left corners of the new patch grid
+        step : int
+            how far apart each corner patch is
+        size : int
+            dimension of the new (size, size) shaped square patches
+        mode: str
+            either average using "mean" or "median"
 
         Returns
         -------
-
+        PatchCollectionABC
+            a PatchCollection where data is sampled at the new grid
         """
 
     @abc.abstractmethod
@@ -124,20 +141,46 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
 
         """
 
-    def save(self, path):
+    def save(self, path: str) -> None:
+        """Save the PatchCollection to a file
+
+        Parameters
+        ----------
+        path : str
+            where to save the patch collection
+
+        Returns
+        -------
+        None
+        """
         dd.io.save(path, self._patches)
 
     @classmethod
-    def load(cls, path):
+    def load(cls, path) -> PatchCollectionABC:
+        """Load a PatchCollection from a file
+
+        Parameters
+        ----------
+        path : str
+            file path to load from
+
+        Returns
+        -------
+        PatchCollectionABC
+            the new patch collection
+        """
         return cls(dd.io.load(path))
 
     def keys(self):
+        """Gets identifiers for all patches"""
         return self._patches.keys()
 
     def values(self):
+        """Gets values of all patches"""
         return self._patches.values()
 
     def items(self):
+        """A dictionary like iterator over the patches"""
         return self._patches.items()
 
     def __next__(self):
@@ -145,6 +188,20 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         pass
 
     def _fit_lmfit(self, base_psf: SimplePSF, initial_guesses: dict[str, Real]) -> dict[Any, MinimizerResult]:
+        """Fit a patch using lmfit
+
+        Parameters
+        ----------
+        base_psf : SimplePSF
+            the PSF model to use in fitting
+        initial_guesses : dict[str, Real]
+            the initial guesses for all the PSF parameters
+
+        Returns
+        -------
+        dict
+            keys are the identifiers, values are the `MinimizerResults` from lmfit
+        """
         initial = Parameters()
         for parameter in base_psf.parameters:
             initial.add(parameter, value=initial_guesses[parameter])
@@ -164,6 +221,9 @@ CoordinateIdentifier = namedtuple("CoordinateIdentifier", "image_index, x, y")
 
 
 class CoordinatePatchCollection(PatchCollectionABC):
+    """A representation of a PatchCollection that operates on pixel coordinates from a set of images
+
+    """
     @classmethod
     def extract(cls, images: list[np.ndarray],
                 coordinates: list[CoordinateIdentifier],
@@ -190,7 +250,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
             image_star_coords = sep.extract(image_background_removed, star_threshold, err=background.globalrms)
             coordinates += [CoordinateIdentifier(i, int(y-patch_size/2), int(x-patch_size/2))
                             for x, y in zip(image_star_coords['x'], image_star_coords['y'])]
-        return cls.extract(images, coordinates, patch_size)
+        return CoordinatePatchCollection.extract(images, coordinates, patch_size)
 
     def average(self, corners: np.ndarray, step: int, size: int,
                 mode: str = "median") -> PatchCollectionABC:

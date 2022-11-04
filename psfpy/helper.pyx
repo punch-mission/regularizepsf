@@ -15,6 +15,7 @@ cpdef _correct_image(np.ndarray[np.float_t, ndim=2] image,
                      np.ndarray[DTYPE_t, ndim=3] values,
                      float alpha,
                      float epsilon):
+    """Core Cython code to actually correct an image"""
     cdef int num_evaluations = x.shape[0]
     cdef int size = values.shape[1]
     cdef int i = 0, j=0, xx = 0, yy = 0
