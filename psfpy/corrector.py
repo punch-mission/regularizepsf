@@ -10,7 +10,7 @@ import deepdish as dd
 
 from psfpy.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
 from psfpy.psf import VariedPSF, SimplePSF, PointSpreadFunctionABC
-from psfpy.helper import _correct_image
+from psfpy.helper import _correct_image, _precalculate_ffts
 
 
 class CorrectorABC(metaclass=abc.ABCMeta):
@@ -182,6 +182,9 @@ class ArrayCorrector(CorrectorABC):
         if self._target_evaluation.shape != (self._size, self._size):
             raise EvaluatedModelInconsistentSizeError("The target and evaluations must have the same shape.")
 
+        values = np.array([v for v in self._evaluations.values()], dtype=float)
+        self.target_fft, self.psf_i_fft = _precalculate_ffts(self._target_evaluation, values)
+
     def correct_image(self, image: np.ndarray, size: int = None,
                       alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
         if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape, (self._size, self._size))):
@@ -189,9 +192,8 @@ class ArrayCorrector(CorrectorABC):
 
         x = np.array([x for x, _ in self._evaluations.keys()], dtype=int)
         y = np.array([y for _, y in self._evaluations.keys()], dtype=int)
-        values = np.array([v for v in self._evaluations.values()], dtype=float)
 
-        return _correct_image(image, self._target_evaluation, x, y, values,  alpha, epsilon)
+        return _correct_image(image, self.target_fft, x, y, self.psf_i_fft,  alpha, epsilon)
 
     def __getitem__(self, xy) -> np.ndarray:
         if xy in self._evaluation_points:
