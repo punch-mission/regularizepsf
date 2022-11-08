@@ -1,8 +1,6 @@
-numpy
-dill
-deepdish
-astropy
-lmfit
-sep
-cython
-pytest-runner
+numpy==1.23.4
+dill==0.3.6
+deepdish==0.3.7
+lmfit==1.0.3
+sep==1.2.1
+cython==0.29.32
