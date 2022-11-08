@@ -231,14 +231,14 @@ def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
     x1 = np.arange(0, image_shape[0], size)
     y1 = np.arange(0, image_shape[1], size)
 
-    x2 = np.arange(-half_size, image_shape[0]+half_size, size)
-    y2 = np.arange(-half_size, image_shape[1]+half_size, size)
+    x2 = np.arange(-half_size, image_shape[0], size)
+    y2 = np.arange(-half_size, image_shape[1], size)
 
-    x3 = np.arange(-half_size, image_shape[0]+half_size, size)
+    x3 = np.arange(-half_size, image_shape[0], size)
     y3 = np.arange(0, image_shape[1], size)
 
     x4 = np.arange(0, image_shape[0], size)
-    y4 = np.arange(-half_size, image_shape[1]+half_size, size)
+    y4 = np.arange(-half_size, image_shape[1], size)
 
     x1, y1 = np.meshgrid(x1, y1)
     x2, y2 = np.meshgrid(x2, y2)
