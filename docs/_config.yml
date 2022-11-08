@@ -2,7 +2,7 @@
 # Learn more at https://jupyterbook.org/customize/config.html
 
 title: PSFPy
-author: J. Marcus Hughes
+author: PUNCH Science Operations Center
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html

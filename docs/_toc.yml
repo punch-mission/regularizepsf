@@ -5,6 +5,7 @@ format: jb-book
 root: intro
 chapters:
 - file: quickstart
-- file: simple_psf
-- file: varied_psf
+- file: array
+- file: functional
 - file: theory
+- file: cite
