@@ -16,6 +16,6 @@ setup(
     author_email='hughes.jmb@gmail.com',
     description='Point spread function modeling and correction',
     ext_modules=cythonize(ext_modules, annotate=True, compiler_directives={'language_level': 3}),
-    install_requires=["numpy", "dill", "deepdish", "lmfit", "sep", "cython"],
+    install_requires=["numpy", "dill", "deepdish", "lmfit", "sep", "cython", "astropy", "scipy"],
     extras_require={"test": ['pytest', 'coverage', 'pytest-runner']}
 )
