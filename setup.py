@@ -1,6 +1,9 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 import numpy
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 ext_modules = [Extension('psfpy.helper',
                          sources=['psfpy/helper.pyx'],
@@ -14,6 +17,8 @@ setup(
     license='MIT',
     author='J. Marcus Hughes',
     author_email='hughes.jmb@gmail.com',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     description='Point spread function modeling and correction',
     ext_modules=cythonize(ext_modules, annotate=True, compiler_directives={'language_level': 3}),
     install_requires=["numpy", "dill", "deepdish", "lmfit", "sep", "cython", "astropy", "scipy",
