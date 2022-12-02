@@ -3,6 +3,7 @@ import os
 from astropy.io import fits
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
+from scipy.interpolate import RectBivariateSpline
 import time
 import sep
 from psfpy.fitter import CoordinatePatchCollection, CoordinateIdentifier
@@ -10,10 +11,9 @@ from psfpy.corrector import calculate_covering
 from psfpy.psf import simple_psf
 from psfpy.corrector import ArrayCorrector
 
-
 def main():
     SHOW_FIGURES = False
-    patch_size, psf_size = 100, 32
+    patch_size, psf_size = 256, 32
     out_dir = "/Users/jhughes/Desktop/projects/PUNCH/psf_paper"
     fn = "/Users/jhughes/Nextcloud/PSF/DASH_2014-07-22T22:37:51.040_LF_expTime_10_numInBurst_8_ccdTemp_-20.0046.fits"
 
@@ -80,7 +80,7 @@ def main():
         fig.show()
 
     corners = calculate_covering(d.shape, patch_size)
-    averaged = patch_collection.average(corners, patch_size, psf_size)
+    averaged = patch_collection.average(corners, patch_size, psf_size, mode='median')
 
     if SHOW_FIGURES:
         i = 62
@@ -94,7 +94,7 @@ def main():
         fig.show()
 
     @simple_psf
-    def dash_target(x, y, x0=patch_size / 2, y0=patch_size / 2, sigma_x=5 / 2.355, sigma_y=5 / 2.355):
+    def dash_target(x, y, x0=patch_size / 2, y0=patch_size / 2, sigma_x=3.75 / 2.355, sigma_y=3.75 / 2.355):
         return np.exp(-(np.square(x - x0) / (2 * np.square(sigma_x)) + np.square(y - y0) / (2 * np.square(sigma_y))))
 
     pad_amount = (patch_size - psf_size) // 2
@@ -117,7 +117,7 @@ def main():
 
     print(f"Starting with {len(evaluation_dictionary)}")
     start = time.time()
-    corrected = array_corrector.correct_image(d, alpha=0.5, epsilon=0.05)
+    corrected = array_corrector.correct_image(d, alpha=2.0, epsilon=0.3)
     end = time.time()
     print(end - start)
     print("Finished!")

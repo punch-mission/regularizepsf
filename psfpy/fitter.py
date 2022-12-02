@@ -11,9 +11,14 @@ import deepdish as dd
 from lmfit import Parameters, minimize, report_fit
 from lmfit.minimizer import MinimizerResult
 import sep
+from photutils.detection import DAOStarFinder
+from astropy.io import fits
+from scipy.interpolate import RectBivariateSpline
+from skimage.transform import resize, downscale_local_mean
 
 from psfpy.psf import SimplePSF, VariedPSF, PointSpreadFunctionABC
 from psfpy.exceptions import InvalidSizeError
+from psfpy.corrector import calculate_covering
 
 
 class PatchCollectionABC(metaclass=abc.ABCMeta):
@@ -242,15 +247,59 @@ class CoordinatePatchCollection(PatchCollectionABC):
         return out
 
     @classmethod
-    def find_stars_and_create(cls, images: list[np.ndarray], patch_size: int, star_threshold: int = 3):
-        coordinates = []
-        for i, image in enumerate(images):
+    def find_stars_and_average(cls, image_paths: list[str],
+                               psf_size: int,
+                               patch_size: int,
+                               scale: int = 1,
+                               average_mode: str = "median",
+                               star_threshold: int = 3, hdu_choice=0):
+        with fits.open(image_paths[0]) as hdul:
+            image_shape = hdul[hdu_choice].data.shape
+
+        this_collection = cls(dict())
+
+        for i, image_path in enumerate(image_paths):
+            with fits.open(image_path) as hdul:
+                image = hdul[hdu_choice].data.astype(float)
+            if image.shape != image_shape:
+                raise ValueError(f"Images must all be the same shape. Found both {image_shape} and {image.shape}.")
+
+            # if the image should be scaled then, do the scaling before anything else
+            if scale != 1:
+                interpolator = RectBivariateSpline(np.arange(image.shape[0]), np.arange(image.shape[1]), image)
+                image = interpolator(np.linspace(0, image.shape[0], image.shape[0]*scale),
+                                     np.linspace(0, image.shape[1], image.shape[1]*scale))
+
             background = sep.Background(image)
             image_background_removed = image - background
             image_star_coords = sep.extract(image_background_removed, star_threshold, err=background.globalrms)
-            coordinates += [CoordinateIdentifier(i, int(y-patch_size/2), int(x-patch_size/2))
-                            for x, y in zip(image_star_coords['x'], image_star_coords['y'])]
-        return CoordinatePatchCollection.extract(images, coordinates, patch_size)
+
+            coordinates = [CoordinateIdentifier(i, int(y - psf_size * scale / 2), int(x - psf_size * scale / 2))
+                           for x, y in zip(image_star_coords['x'], image_star_coords['y'])]
+
+            # pad in case someone selects a region on the edge of the image
+            padding_shape = ((psf_size * scale, psf_size * scale), (psf_size * scale, psf_size * scale))
+            padded_image = np.pad(image, padding_shape, mode='constant', constant_values=np.median(image))
+
+            for coordinate in coordinates:
+                patch = padded_image[coordinate.x + scale * psf_size:coordinate.x + 2 * scale * psf_size,
+                                     coordinate.y + scale * psf_size:coordinate.y + 2 * scale * psf_size]
+                this_collection.add(coordinate, patch)
+
+        corners = calculate_covering((image_shape[0]*scale, image_shape[1]*scale), patch_size*scale)
+        averaged = this_collection.average(corners, patch_size*scale, psf_size*scale, mode=average_mode)
+
+        if scale != 1:
+            for coordinate, patch in averaged.items():
+                averaged._patches[coordinate] = downscale_local_mean(averaged._patches[coordinate], (scale, scale))
+
+            averaged._size = psf_size
+
+        output = CoordinatePatchCollection(dict())
+        for key, patch in averaged.items():
+            output._patches[CoordinateIdentifier(key.image_index, key.x//scale, key.y//scale)] = patch
+
+        return output
 
     def average(self, corners: np.ndarray, step: int, size: int,
                 mode: str = "median") -> PatchCollectionABC:
