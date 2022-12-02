@@ -1,6 +1,6 @@
 import numpy as np
 
-from psfpy import simple_psf
+from regularizepsf import simple_psf
 
 
 @simple_psf

@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from hypothesis import given, strategies as st, settings, HealthCheck
 
-from psfpy.fitter import CoordinatePatchCollection, CoordinateIdentifier
+from regularizepsf.fitter import CoordinatePatchCollection, CoordinateIdentifier
 
 
 @pytest.fixture

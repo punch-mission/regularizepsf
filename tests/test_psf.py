@@ -1,7 +1,7 @@
 import pytest
 
-from psfpy.psf import simple_psf, varied_psf, SimplePSF, VariedPSF
-from psfpy.exceptions import PSFParameterValidationError
+from regularizepsf.psf import simple_psf, varied_psf, SimplePSF, VariedPSF
+from regularizepsf.exceptions import PSFParameterValidationError
 
 
 def test_simple_psf_valid():

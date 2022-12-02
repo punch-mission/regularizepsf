@@ -1,6 +1,6 @@
 import numpy as np
-from psfpy import simple_psf, varied_psf, FunctionalCorrector
-from psfpy.corrector import calculate_covering
+from regularizepsf import simple_psf, varied_psf, FunctionalCorrector
+from regularizepsf.corrector import calculate_covering
 
 
 def elliptical_gaussian2d(x, y, height, cen_x, cen_y, sigma_x, sigma_y, rotation):
@@ -53,4 +53,4 @@ if __name__ == "__main__":
     # save an evaluated array form of the model for faster computation in the future
     corners = calculate_covering(uncorrected_image.shape, 250)
     array_corrector = my_model.evaluate_to_array_form(corners[:, 0], corners[:, 1], 250)
-    array_corrector.save("my_array_corrector.psfpy")
+    array_corrector.save("my_array_corrector.regularizepsf")

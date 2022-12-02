@@ -8,9 +8,9 @@ import dill
 import numpy as np
 import deepdish as dd
 
-from psfpy.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
-from psfpy.psf import VariedPSF, SimplePSF, PointSpreadFunctionABC
-from psfpy.helper import _correct_image, _precalculate_ffts
+from regularizepsf.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
+from regularizepsf.psf import VariedPSF, SimplePSF, PointSpreadFunctionABC
+from regularizepsf.helper import _correct_image, _precalculate_ffts
 
 
 class CorrectorABC(metaclass=abc.ABCMeta):

@@ -12,7 +12,7 @@ execute:
 # Define the name of the latex output file for PDF builds
 latex:
   latex_documents:
-    targetname: psfpy.tex
+    targetname: regularizepsf.tex
 
 # Add a bibtex file so that we can create citations
 bibtex_bibfiles:

@@ -3,7 +3,7 @@ from pytest import fixture
 import numpy as np
 from hypothesis import given, strategies as st, settings
 
-from psfpy.corrector import calculate_covering
+from regularizepsf.corrector import calculate_covering
 
 
 def confirm_full_four_covering(corners, img_shape, patch_size):

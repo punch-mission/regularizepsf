@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 import time
 import sep
-from psfpy.fitter import CoordinatePatchCollection, CoordinateIdentifier
-from psfpy.corrector import calculate_covering
-from psfpy.psf import simple_psf
-from psfpy.corrector import ArrayCorrector
-from psfpy.fitter import CoordinatePatchCollection, CoordinateIdentifier
+from regularizepsf.fitter import CoordinatePatchCollection, CoordinateIdentifier
+from regularizepsf.corrector import calculate_covering
+from regularizepsf.psf import simple_psf
+from regularizepsf.corrector import ArrayCorrector
+from regularizepsf.fitter import CoordinatePatchCollection, CoordinateIdentifier
 
 
 def main():

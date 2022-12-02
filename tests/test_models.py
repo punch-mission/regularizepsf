@@ -1,5 +1,5 @@
-from psfpy.models import constrained_gaussian, elliptical_gaussian
-from psfpy.psf import SimplePSF
+from regularizepsf.models import constrained_gaussian, elliptical_gaussian
+from regularizepsf.psf import SimplePSF
 
 
 def test_constrained_gaussian():

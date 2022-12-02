@@ -3,7 +3,7 @@ from glob import glob
 import numpy as np
 from astropy.io import fits
 
-from psfpy.fitter import CoordinateIdentifier, CoordinatePatchCollection
+from regularizepsf.fitter import CoordinateIdentifier, CoordinatePatchCollection
 
 
 if __name__ == "__main__":
@@ -27,4 +27,4 @@ if __name__ == "__main__":
             out.add(CoordinateIdentifier(image_index, i, j), patch)
 
     print("saving")
-    out.save("patches.psfpy")
+    out.save("patches.regularizepsf")

@@ -8,8 +8,8 @@ import abc
 
 import numpy as np
 
-from psfpy.exceptions import (PSFParameterValidationError,
-                              VariedPSFParameterMismatchError)
+from regularizepsf.exceptions import (PSFParameterValidationError,
+                                      VariedPSFParameterMismatchError)
 
 
 class PointSpreadFunctionABC(metaclass=abc.ABCMeta):

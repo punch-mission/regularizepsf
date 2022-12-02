@@ -4,7 +4,7 @@ import numpy as np
 from astropy.io import fits
 import matplotlib.pyplot as plt
 
-from psfpy.fitter import CoordinateIdentifier, CoordinatePatchCollection
+from regularizepsf.fitter import CoordinateIdentifier, CoordinatePatchCollection
 
 
 def get_dash():

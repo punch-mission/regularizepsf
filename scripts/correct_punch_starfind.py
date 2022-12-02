@@ -6,9 +6,9 @@ from astropy.io import fits
 import matplotlib.pyplot as plt
 import sep
 
-from psfpy.fitter import CoordinateIdentifier, CoordinatePatchCollection
-from psfpy.corrector import ArrayCorrector, calculate_covering
-from psfpy.psf import simple_psf
+from regularizepsf.fitter import CoordinateIdentifier, CoordinatePatchCollection
+from regularizepsf.corrector import ArrayCorrector, calculate_covering
+from regularizepsf.psf import simple_psf
 
 
 def get_punch_patch_collection(count=540,  psf_size=32, star_threshold: int = 3):
@@ -32,7 +32,7 @@ def get_punch_patch_collection(count=540,  psf_size=32, star_threshold: int = 3)
                 patch = img[y - half_size:y + half_size, x - half_size:x + half_size]
                 if patch.shape == (psf_size, psf_size):
                     patch_collection.add(CoordinateIdentifier(i, y, x), patch)
-    patch_collection.save("punch_patch_collection_starfind_all.psfpy")
+    patch_collection.save("punch_patch_collection_starfind_all.regularizepsf")
 
 
 def average_patch_collection(psf_size=32, patch_size=400):
@@ -40,7 +40,7 @@ def average_patch_collection(psf_size=32, patch_size=400):
     print(len(all_stars))
     corners = calculate_covering((2048, 2048), patch_size)
     averaged = all_stars.average(corners, patch_size, psf_size, mode='mean')
-    averaged.save("punch_patch_collection_starfind_averaged.psfpy")
+    averaged.save("punch_patch_collection_starfind_averaged.regularizepsf")
 
 
 def convert_array_patch_collection_to_array_corrector(patch_size=400, psf_size=32):
@@ -58,7 +58,7 @@ def convert_array_patch_collection_to_array_corrector(patch_size=400, psf_size=3
 
     target_evaluation = punch_target(*np.meshgrid(np.arange(patch_size), np.arange(patch_size)))
     array_corrector = ArrayCorrector(evaluation_dictionary, target_evaluation)
-    array_corrector.save("punch_array_corrector_starfind.psfpy")
+    array_corrector.save("punch_array_corrector_starfind.regularizepsf")
 
 
 if __name__ == "__main__":

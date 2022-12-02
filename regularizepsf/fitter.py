@@ -16,9 +16,9 @@ from astropy.io import fits
 from scipy.interpolate import RectBivariateSpline
 from skimage.transform import resize, downscale_local_mean
 
-from psfpy.psf import SimplePSF, VariedPSF, PointSpreadFunctionABC
-from psfpy.exceptions import InvalidSizeError
-from psfpy.corrector import calculate_covering
+from regularizepsf.psf import SimplePSF, VariedPSF, PointSpreadFunctionABC
+from regularizepsf.exceptions import InvalidSizeError
+from regularizepsf.corrector import calculate_covering
 
 
 class PatchCollectionABC(metaclass=abc.ABCMeta):

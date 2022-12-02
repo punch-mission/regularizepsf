@@ -8,9 +8,9 @@ import pandas as pd
 import numpy as np
 
 
-from psfpy.fitter import CoordinateIdentifier, CoordinatePatchCollection
-from psfpy.corrector import calculate_covering, ArrayCorrector
-from psfpy.psf import simple_psf
+from regularizepsf.fitter import CoordinateIdentifier, CoordinatePatchCollection
+from regularizepsf.corrector import calculate_covering, ArrayCorrector
+from regularizepsf.psf import simple_psf
 
 
 def create_array_psf(patch_size=400, psf_size=32):
@@ -50,10 +50,10 @@ def create_array_psf(patch_size=400, psf_size=32):
             patch = this_image[y - half_size:y + half_size, x - half_size:x + half_size]
             out.add(CoordinateIdentifier(t, y, x), patch)
 
-    out.save("punch_all_stars.psfpy")
+    out.save("punch_all_stars.regularizepsf")
     corners = calculate_covering((2048, 2048), patch_size)
     averaged = out.average(corners, patch_size, psf_size, mode='mean')
-    averaged.save("punch_patch_collection.psfpy")
+    averaged.save("punch_patch_collection.regularizepsf")
 
 
 @simple_psf
@@ -72,7 +72,7 @@ def convert_array_patch_collection_to_array_corrector():
 
     target_evaluation = punch_target(*np.meshgrid(np.arange(400), np.arange(400)))
     array_corrector = ArrayCorrector(evaluation_dictionary, target_evaluation)
-    array_corrector.save("punch_array_corrector.psfpy")
+    array_corrector.save("punch_array_corrector.regularizepsf")
 
 
 def correct_image(image_filename: str, ac):
