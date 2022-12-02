@@ -6,11 +6,10 @@ import time
 from astropy.io import fits
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+
 
 from psfpy.fitter import CoordinateIdentifier, CoordinatePatchCollection
 from psfpy.corrector import calculate_covering, ArrayCorrector
-from psfpy.models import constrained_gaussian
 from psfpy.psf import simple_psf
 
 
@@ -51,13 +50,14 @@ def create_array_psf(patch_size=400, psf_size=32):
             patch = this_image[y - half_size:y + half_size, x - half_size:x + half_size]
             out.add(CoordinateIdentifier(t, y, x), patch)
 
+    out.save("punch_all_stars.psfpy")
     corners = calculate_covering((2048, 2048), patch_size)
-    averaged = out.average(corners, patch_size, psf_size)
+    averaged = out.average(corners, patch_size, psf_size, mode='mean')
     averaged.save("punch_patch_collection.psfpy")
 
 
 @simple_psf
-def punch_target(x, y, x0=200, y0=200, sigma_x=3/2.355, sigma_y=3/2.355):
+def punch_target(x, y, x0=200, y0=200, sigma_x=2.25/2.355, sigma_y=2.25/2.355):
     return np.exp(-(np.square(x-x0)/(2*np.square(sigma_x)) + np.square(y-y0)/(2*np.square(sigma_y))))
 
 
@@ -75,30 +75,36 @@ def convert_array_patch_collection_to_array_corrector():
     array_corrector.save("punch_array_corrector.psfpy")
 
 
-def correct_image(image_filename: str):
-    array_corrector = ArrayCorrector.load("punch_array_corrector.psfpy")
+def correct_image(image_filename: str, ac):
     with fits.open(image_filename) as hdul:
-        image = hdul[0].data[26:-26, 50:-50]
+        image = hdul[0].data[26:-26, 50:-50].copy()
 
+    # image = np.asfarray(image.newbyteorder("S"), dtype='float')
+    image = np.asfarray(image.byteswap().newbyteorder('='), 'float')
     start = time.time()
-    corrected = array_corrector.correct_image(image, alpha=0.0, epsilon=0.0)
+    c = ac.correct_image(image, alpha=3.0, epsilon=0.3)
     end = time.time()
     print(f"took {end-start} seconds")
 
-    return corrected
+    return c
 
 
 if __name__ == "__main__":
     # create_array_psf()
-    #
-    # convert_array_patch_collection_to_array_corrector()
+
+    convert_array_patch_collection_to_array_corrector()
 
     image_directory = ("/Users/jhughes/Nextcloud/23103_PUNCH_Data/"
                        "SOC_Data/PUNCH_WFI_EM_Starfield_campaign2_night2_phase3/calibrated/")
     image_filenames = sorted(glob(image_directory + "*.fits.gz"))
+
+    array_corrector = ArrayCorrector.load("punch_array_corrector.psfpy")
+    print("num patches", len(array_corrector._evaluations))
     for i in range(540):
         path = image_filenames[i]
-        print(i)
-        corrected = correct_image(path)
-        np.save(f"/Users/jhughes/Desktop/projects/PUNCH/psf_paper/punch_corrections/"
-                f"{os.path.basename(path).replace('.fits.gz', '.npy')}", corrected)
+        print(i, path)
+        corrected = correct_image(path, array_corrector)
+        # np.save(f"/Users/jhughes/Desktop/projects/PUNCH/psf_paper/punch_corrections/"
+        #         f"{os.path.basename(path).replace('.fits.gz', '.npy')}", corrected)
+        # np.save(f"/Users/jhughes/Desktop/"
+        #         f"{os.path.basename(path).replace('.fits.gz', '.npy')}", corrected)
