@@ -1,9 +1,9 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 import numpy
-from pathlib import Path
-this_directory = Path(__file__).parent
-long_description = (this_directory / "README.md").read_text()
+
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 ext_modules = [Extension('psfpy.helper',
                          sources=['psfpy/helper.pyx'],
