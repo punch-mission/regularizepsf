@@ -1,4 +1,4 @@
-# PSFPy
+# regularizepsf
 [![codecov](https://codecov.io/gh/punch-mission/psfpy/branch/main/graph/badge.svg?token=pn4NTO70I9)](https://codecov.io/gh/punch-mission/psfpy)
 [![DOI](https://zenodo.org/badge/555583385.svg)](https://zenodo.org/badge/latestdoi/555583385)
 
