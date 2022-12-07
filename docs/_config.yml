@@ -1,7 +1,7 @@
 # Book settings
 # Learn more at https://jupyterbook.org/customize/config.html
 
-title: PSFPy
+title: regularizepsf
 author: PUNCH Science Operations Center
 
 # Force re-execution of notebooks on each build.
