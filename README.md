@@ -5,7 +5,7 @@
 
 **UNDER DEVELOPMENT**
 
-A package for manipulating and correcting various point spread functions.
+A package for manipulating and correcting variable point spread functions.
 
 Below is an example of correcting model data using the package. An initial image of a simplified starfield (a) is synthetically observed with a slowly
 varying PSF (b), then regularized with this technique (c). The final image visually matches a direct convolution of
