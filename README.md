@@ -9,10 +9,13 @@ A package for manipulating and correcting various point spread functions.
 
 ## Getting started
 
-## Usage
+`pip install regularizepsf` and then follow along with the [Quickstart section](https://punch-mission.github.io/regularizepsf/quickstart.html). 
 
 ## Contributing
+We encourage all contributions. If you have a problem with the code or would like to see a new feature, please open an issue. Or you can submit a pull request. 
 
 ## License
+See LICENSE for the MIT license
 
 ## Contact
+Please contact Marcus Hughes at [marcus.hughes@swri.org](mailto:marcus.hughes@swri.org).
