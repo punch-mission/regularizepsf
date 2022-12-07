@@ -30,5 +30,8 @@ evaluation_dictionary = {(identifier.x, identifer.y): patch for identifier, patc
 target_evaluation = target(*np.meshgrid(np.arange(patch_size), np.arange(patch_size)))
 array_corrector = ArrayCorrector(evaluation_dictionary, target_evaluation)
 
-corrected = array_corrector.correct_image(d, alpha=2.0, epsilon=0.3)
+with fits.open(image_fn) as hdul:
+    data = hdul[0].data
+    
+corrected = array_corrector.correct_image(data, alpha=2.0, epsilon=0.3)
 ```
