@@ -1,5 +1,5 @@
 # regularizepsf
-[![codecov](https://codecov.io/gh/punch-mission/psfpy/branch/main/graph/badge.svg?token=pn4NTO70I9)](https://codecov.io/gh/punch-mission/psfpy)
+[![codecov](https://codecov.io/gh/punch-mission/regularizepsf/branch/main/graph/badge.svg?token=pn4NTO70I9)](https://codecov.io/gh/punch-mission/regularizepsf)
 [![DOI](https://zenodo.org/badge/555583385.svg)](https://zenodo.org/badge/latestdoi/555583385)
 [![PyPI version](https://badge.fury.io/py/regularizepsf.svg)](https://badge.fury.io/py/regularizepsf)
 
