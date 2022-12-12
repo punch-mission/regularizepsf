@@ -11,7 +11,7 @@ ext_modules = [Extension('regularizepsf.helper',
 
 setup(
     name='regularizepsf',
-    version='0.0.2',
+    version='0.0.3',
     description='Point spread function modeling and regularization',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -21,8 +21,7 @@ setup(
     author='J. Marcus Hughes',
     author_email='hughes.jmb@gmail.com',
     ext_modules=cythonize(ext_modules, annotate=True, compiler_directives={'language_level': 3}),
-    install_requires=["numpy", "dill", "deepdish", "lmfit", "sep", "cython", "astropy", "scipy",
-                      "photutils", "scikit-image"],
+    install_requires=["numpy", "dill", "deepdish", "lmfit", "sep", "cython", "astropy", "scipy", "scikit-image"],
     package_data={"regularizepsf": ["helper.pyx"]},
     setup_requires=["cython"],
     extras_require={"test": ['pytest', 'coverage', 'pytest-runner']}
