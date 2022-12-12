@@ -17,7 +17,7 @@ from skimage.transform import downscale_local_mean
 
 from regularizepsf.psf import SimplePSF, PointSpreadFunctionABC
 from regularizepsf.exceptions import InvalidSizeError
-from regularizepsf.corrector import calculate_covering
+from regularizepsf.corrector import calculate_covering, ArrayCorrector
 
 
 class PatchCollectionABC(metaclass=abc.ABCMeta):
@@ -403,7 +403,25 @@ class CoordinatePatchCollection(PatchCollectionABC):
     def fit(self, base_psf: SimplePSF, is_varied: bool = False) -> PointSpreadFunctionABC:
         raise NotImplementedError("TODO")
 
-    def to_array_corrector(self, target_evaluation: np.array):
-        pass
+    def to_array_corrector(self, target_evaluation: np.array) -> ArrayCorrector:
+        """Converts a patch collection that has been averaged into an ArrayCorrector
 
+        Parameters
+        ----------
+        target_evaluation : np.ndarray
+            the evaluation of the Target PSF
+
+        Returns
+        -------
+        ArrayCorrector
+            An array corrector that can be used to correct PSFs
+        """
+        evaluation_dictionary = dict()
+        for identifier, patch in self._patches.items():
+            corrected_patch = patch.copy()
+            corrected_patch[np.isnan(corrected_patch)] = 0
+            evaluation_dictionary[(identifier.x, identifier.y)] = corrected_patch
+
+        array_corrector = ArrayCorrector(evaluation_dictionary, target_evaluation)
+        return array_corrector
 
