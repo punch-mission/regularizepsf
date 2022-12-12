@@ -8,15 +8,14 @@ from numbers import Real
 
 import numpy as np
 import deepdish as dd
-from lmfit import Parameters, minimize, report_fit
+from lmfit import Parameters, minimize
 from lmfit.minimizer import MinimizerResult
 import sep
-from photutils.detection import DAOStarFinder
 from astropy.io import fits
 from scipy.interpolate import RectBivariateSpline
-from skimage.transform import resize, downscale_local_mean
+from skimage.transform import downscale_local_mean
 
-from regularizepsf.psf import SimplePSF, VariedPSF, PointSpreadFunctionABC
+from regularizepsf.psf import SimplePSF, PointSpreadFunctionABC
 from regularizepsf.exceptions import InvalidSizeError
 from regularizepsf.corrector import calculate_covering
 
