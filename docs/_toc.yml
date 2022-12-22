@@ -9,3 +9,5 @@ chapters:
 - file: functional
 - file: theory
 - file: cite
+- file: api/regularizepsf/index
+  title: API

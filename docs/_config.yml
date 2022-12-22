@@ -24,6 +24,22 @@ repository:
   path_to_book: docs  # Optional path to your book, relative to the repository root
   branch: main  # Which branch of the repository should be used when creating links (optional)
 
+parse:
+    # default extensions to enable in the myst parser.
+    # See https://myst-parser.readthedocs.io/en/latest/using/syntax-optional.html
+    myst_enable_extensions:
+        # - amsmath
+        - colon_fence
+        # - deflist
+        - dollarmath
+        - html_admonition
+        # - html_image
+        - linkify
+        # - replacements
+        # - smartquotes
+        - substitution
+    myst_url_schemes: [mailto, http, https] # URI schemes that will be recognised as external URLs in Markdown links
+
 # Add GitHub buttons to your book
 # See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
 html:
@@ -36,7 +52,24 @@ sphinx:
   - 'sphinx.ext.napoleon'
   - 'sphinx.ext.viewcode'
   - 'sphinx.ext.autosummary'
+  - 'sphinx.ext.inheritance_diagram'
+  - 'autoapi.extension'
+  - "myst_nb"
+  - 'sphinx_codeautolink'
   config:
+    html_show_copyright: false
     add_module_names: False
-    autosummary_generate: True
-
+    html_js_files:
+      - https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js
+    autoapi_dirs:
+      - "../regularizepsf"
+    autoapi_root: "api"
+    autoapi_add_toctree_entry: false
+    autoapi_keep_files: false
+    autoapi_options:
+      - "members"
+      - "undoc-members"
+      - "show-inheritance"
+      - "special-members"
+      - "imported-members"
+    autoapi_python_class_content: "both"
