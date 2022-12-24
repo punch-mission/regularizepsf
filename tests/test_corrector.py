@@ -1,10 +1,13 @@
+import os.path
+
 import pytest
 from pytest import fixture
 import numpy as np
 from hypothesis import given, strategies as st, settings
 
-from regularizepsf.corrector import calculate_covering
-
+from regularizepsf.psf import simple_psf, varied_psf
+from regularizepsf.corrector import calculate_covering, ArrayCorrector, FunctionalCorrector
+from regularizepsf.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError
 
 def confirm_full_four_covering(corners, img_shape, patch_size):
     counts = np.zeros(img_shape)
@@ -58,3 +61,49 @@ def padded_100by100_image_psf_10_with_pattern():
 #         set_padded_img_section(test_img, coord[0], coord[1], 10, np.zeros((10, 10))+value)
 #     assert np.all(test_img == padded_100by100_image_psf_10_with_pattern)
 
+
+def test_create_array_corrector():
+    example = ArrayCorrector({(0, 0): np.zeros((10, 10))},
+                             np.zeros((10, 10)))
+    assert isinstance(example, ArrayCorrector)
+    assert example._evaluation_points == [(0, 0)]
+
+
+def test_nonimage_array_corrector_errors():
+    with pytest.raises(InvalidSizeError):
+        example = ArrayCorrector({(0, 0): np.zeros(10)}, np.zeros(10))
+
+
+def test_noneven_array_corrector_errors():
+    with pytest.raises(InvalidSizeError):
+        example = ArrayCorrector({(0, 0): np.zeros((11, 11))}, np.zeros((11, 11)))
+
+
+def test_array_corrector_with_different_size_evaluations_errors():
+    with pytest.raises(EvaluatedModelInconsistentSizeError):
+        example = ArrayCorrector({(0, 0): np.zeros((10, 10)), (1, 1): np.zeros((20, 20))},
+                                 np.zeros((20, 20)))
+
+
+def test_array_corrector_with_different_size_than_target_errors():
+    with pytest.raises(EvaluatedModelInconsistentSizeError):
+        example = ArrayCorrector({(0, 0): np.zeros((10, 10)), (1, 1): np.zeros((10, 10))},
+                                 np.zeros((20, 20)))
+
+
+@simple_psf
+def example_psf(x, y):
+    return 0
+
+
+def test_create_functional_corrector():
+    example = FunctionalCorrector(example_psf, example_psf)
+    assert example._psf == example_psf
+    assert example.is_variable is False
+    assert example._target_model == example_psf
+
+    example.save("test.psf")
+    assert os.path.isfile("test.psf")
+    loaded = example.load("test.psf")
+    assert isinstance(loaded, FunctionalCorrector)
+    os.remove("test.psf")

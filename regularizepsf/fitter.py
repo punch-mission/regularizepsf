@@ -340,7 +340,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
     def average(self, corners: np.ndarray, step: int, size: int,
                 mode: str = "median") -> PatchCollectionABC:
-        self._validate_average_mode(mode)
+        CoordinatePatchCollection._validate_average_mode(mode)
         pad_shape = self._calculate_pad_shape(size)
 
         if mode == "mean":
@@ -383,7 +383,8 @@ class CoordinatePatchCollection(PatchCollectionABC):
                         for corner in median_stack}
         return CoordinatePatchCollection(averages)
 
-    def _validate_average_mode(self, mode: str):
+    @staticmethod
+    def _validate_average_mode(mode: str):
         """Determine if the average_mode is a valid kind"""
         valid_modes = ['median', 'mean']
         if mode not in valid_modes:

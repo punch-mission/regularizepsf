@@ -166,8 +166,6 @@ class ArrayCorrector(CorrectorABC):
         if len(evaluations[self._evaluation_points[0]].shape) != 2:
             raise InvalidSizeError(f"PSF evaluations must be 2-D numpy arrays.")
         self._size = evaluations[self._evaluation_points[0]].shape[0]
-        if self._size <= 0:
-            raise InvalidSizeError(f"Found size of {self._size}. Must be >= 1")
         if self._size % 2 != 0:
             raise InvalidSizeError(f"Size must be even. Found {self._size}")
 
@@ -211,7 +209,7 @@ class ArrayCorrector(CorrectorABC):
 
 
 def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
-    """Determines the grid of patches to sum over.
+    """Determines the grid of overlapping neighborhood patches.
 
     Parameters
     ----------

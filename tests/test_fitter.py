@@ -1,9 +1,11 @@
+import os.path
+
 import pytest
 import numpy as np
 from hypothesis import given, strategies as st, settings, HealthCheck
 
 from regularizepsf.fitter import CoordinatePatchCollection, CoordinateIdentifier
-
+from regularizepsf.exceptions import InvalidSizeError
 
 @pytest.fixture
 def incrementing_5_image_set_100x100():
@@ -46,3 +48,49 @@ def test_coordinate_patch_collection_extraction_many_coordinates(coords, increme
     assert len(list(cpc.values())) == num_distinct_coords
     assert len(list(cpc.keys())) == num_distinct_coords
     assert len(list(cpc.items())) == num_distinct_coords
+
+
+def test_missing_item_retrieval():
+    collection = CoordinatePatchCollection({CoordinateIdentifier(0, 0, 0): np.zeros((10, 10))})
+    with pytest.raises(IndexError):
+        item = collection[CoordinateIdentifier(1, 1, 1)]
+
+
+def test_saving_and_loading():
+    collection = CoordinatePatchCollection({CoordinateIdentifier(0, 0, 0): np.zeros((10, 10))})
+    collection.save("test.psf")
+    assert os.path.isfile("test.psf")
+    loaded = CoordinatePatchCollection.load("test.psf")
+    assert isinstance(loaded, CoordinatePatchCollection)
+    os.remove("test.psf")
+
+
+# TODO: make this work!
+# def test_coordinate_patch_average():
+#     collection = CoordinatePatchCollection({CoordinateIdentifier(0, 0, 0): np.zeros((10, 10)),
+#                                             CoordinateIdentifier(0, 0, 0): np.ones((10, 10))*2})
+#     averaged_collection = collection.average(np.array([[0, 0]]), 1, 10, mode='median')
+#     assert averaged_collection[CoordinateIdentifier(None, 0, 0)][1, 1] == 1
+
+
+def test_calculate_pad_shape():
+    collection = CoordinatePatchCollection({CoordinateIdentifier(0, 0, 0): np.zeros((10, 10))})
+    assert collection._size == 10
+    assert collection._calculate_pad_shape(20) == ((5, 5), (5, 5))
+
+
+def test_negative_pad_shape_errors():
+    collection = CoordinatePatchCollection({CoordinateIdentifier(0, 0, 0): np.zeros((10, 10))})
+    with pytest.raises(InvalidSizeError):
+        collection._calculate_pad_shape(1)
+
+
+def test_odd_pad_shape_errors():
+    collection = CoordinatePatchCollection({CoordinateIdentifier(0, 0, 0): np.zeros((10, 10))})
+    with pytest.raises(InvalidSizeError):
+        collection._calculate_pad_shape(11)
+
+
+def test_validate_average_mode():
+    with pytest.raises(ValueError):
+        CoordinatePatchCollection._validate_average_mode("nonexistent_method")
