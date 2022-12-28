@@ -1,4 +1,5 @@
 import os.path
+import pathlib
 
 import pytest
 import numpy as np
@@ -6,6 +7,10 @@ from hypothesis import given, strategies as st, settings, HealthCheck
 
 from regularizepsf.fitter import CoordinatePatchCollection, CoordinateIdentifier
 from regularizepsf.exceptions import InvalidSizeError
+
+
+TEST_DIR = pathlib.Path(__file__).parent.resolve()
+
 
 @pytest.fixture
 def incrementing_5_image_set_100x100():
@@ -94,3 +99,10 @@ def test_odd_pad_shape_errors():
 def test_validate_average_mode():
     with pytest.raises(ValueError):
         CoordinatePatchCollection._validate_average_mode("nonexistent_method")
+
+
+def test_find_stars_and_average():
+    img_path = str(TEST_DIR / "data/DASH.fits")
+    example = CoordinatePatchCollection.find_stars_and_average([img_path], 32, 100)
+    assert isinstance(example, CoordinatePatchCollection)
+

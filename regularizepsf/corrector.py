@@ -44,7 +44,7 @@ class CorrectorABC(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def correct_image(self, image: np.ndarray, size: int = None,
+    def correct_image(self, image: np.ndarray, size: int,
                       alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
         """PSF correct an image according to the model
 
@@ -128,10 +128,13 @@ class FunctionalCorrector(CorrectorABC):
             for yy in y:
                 evaluations[(xx, yy)] = self._psf(image_x, image_y)
 
-        target_evaluation = self._target_model(image_x, image_y)
+        if self._target_model:
+            target_evaluation = self._target_model(image_x, image_y)
+        else:
+            target_evaluation = np.ones((size, size))
         return ArrayCorrector(evaluations, target_evaluation)
 
-    def correct_image(self, image: np.ndarray, size: int = None,
+    def correct_image(self, image: np.ndarray, size: int,
                       alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
         corners = calculate_covering(image.shape, size)
         array_corrector = self.evaluate_to_array_form(corners[:, 0], corners[:, 1], size)
@@ -163,6 +166,9 @@ class ArrayCorrector(CorrectorABC):
         """
         self._evaluation_points: list[Any] = list(evaluations.keys())
 
+        if not isinstance(evaluations[self._evaluation_points[0]], np.ndarray):
+            raise ValueError(f"Individual evaluations must be numpy arrays. "
+                             f"Found {type(evaluations[self._evaluation_points[0]])}.")
         if len(evaluations[self._evaluation_points[0]].shape) != 2:
             raise InvalidSizeError(f"PSF evaluations must be 2-D numpy arrays.")
         self._size = evaluations[self._evaluation_points[0]].shape[0]
