@@ -2,8 +2,6 @@
 [![codecov](https://codecov.io/gh/punch-mission/regularizepsf/branch/main/graph/badge.svg?token=pn4NTO70I9)](https://codecov.io/gh/punch-mission/regularizepsf)
 [![DOI](https://zenodo.org/badge/555583385.svg)](https://zenodo.org/badge/latestdoi/555583385)
 
-**UNDER DEVELOPMENT**
-
 A package for manipulating and correcting various point spread functions. 
 
 
@@ -17,5 +15,5 @@ We encourage all contributions. If you have a problem with the code or would lik
 ## License
 See LICENSE for the MIT license
 
-## Contact
+## Need help?
 Please contact Marcus Hughes at [marcus.hughes@swri.org](mailto:marcus.hughes@swri.org).

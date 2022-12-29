@@ -70,12 +70,11 @@ def test_saving_and_loading():
     os.remove("test.psf")
 
 
-# TODO: make this work!
-# def test_coordinate_patch_average():
-#     collection = CoordinatePatchCollection({CoordinateIdentifier(0, 0, 0): np.zeros((10, 10)),
-#                                             CoordinateIdentifier(0, 0, 0): np.ones((10, 10))*2})
-#     averaged_collection = collection.average(np.array([[0, 0]]), 1, 10, mode='median')
-#     assert averaged_collection[CoordinateIdentifier(None, 0, 0)][1, 1] == 1
+def test_coordinate_patch_average():
+    collection = CoordinatePatchCollection({CoordinateIdentifier(0, 0, 0): np.zeros((10, 10)),
+                                            CoordinateIdentifier(0, 0, 0): np.ones((10, 10))*2})
+    averaged_collection = collection.average(np.array([[0, 0]]), 10, 10, mode='median')
+    assert averaged_collection[CoordinateIdentifier(None, 0, 0)][1, 1] == 1
 
 
 def test_calculate_pad_shape():

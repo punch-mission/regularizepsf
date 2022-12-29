@@ -4,3 +4,4 @@ numpy
 regularizepsf
 sphinx-autoapi
 sphinx-codeautolink
+jupyter

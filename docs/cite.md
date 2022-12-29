@@ -21,16 +21,14 @@ archivePrefix = {arXiv},
 
 
 To cite the software:
-
-TODO: update to 0.0.3
 ```
 @software{marcus_hughes_2022_7392394,
   author       = {Marcus Hughes},
-  title        = {punch-mission/regularizepsf: v0.0.2},
+  title        = {punch-mission/regularizepsf: v0.0.3},
   month        = dec,
   year         = 2022,
   publisher    = {Zenodo},
-  version      = {0.0.2},
+  version      = {0.0.3},
   doi          = {10.5281/zenodo.7392394},
   url          = {https://doi.org/10.5281/zenodo.7392394}
 }

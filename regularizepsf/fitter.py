@@ -341,7 +341,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
     def average(self, corners: np.ndarray, step: int, size: int,
                 mode: str = "median") -> PatchCollectionABC:
         CoordinatePatchCollection._validate_average_mode(mode)
-        pad_shape = self._calculate_pad_shape(size)
+        pad_shape = self._calculate_pad_shape(step)
 
         if mode == "mean":
             mean_stack = {tuple(corner): np.zeros((size, size)) for corner in corners}

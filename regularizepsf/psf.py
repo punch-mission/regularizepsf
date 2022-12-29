@@ -71,7 +71,6 @@ class SimplePSF(PointSpreadFunctionABC):
 
 
 def simple_psf(arg=None) -> SimplePSF:
-    """ TODO: add comment"""
     if callable(arg):
         return SimplePSF(arg)
     else:
@@ -136,7 +135,6 @@ def _varied_psf(base_psf: SimplePSF):
 
 
 def varied_psf(base_psf: SimplePSF = None):
-    """ TODO: add comment"""
     if isinstance(base_psf, SimplePSF):
         return cast(VariedPSF, _varied_psf(base_psf))
     else:

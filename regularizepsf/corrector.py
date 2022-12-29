@@ -21,7 +21,7 @@ class CorrectorABC(metaclass=abc.ABCMeta):
         Parameters
         ----------
         path : str or `pathlib.Path`
-            where to save the model, suggested extension is ".corr"
+            where to save the model, suggested extension is ".psf"
 
         Returns
         -------
@@ -36,7 +36,7 @@ class CorrectorABC(metaclass=abc.ABCMeta):
         Parameters
         ----------
         path : str or `pathlib.Path`
-            where to load the model from, suggested extension is ".corr"
+            where to load the model from, suggested extension is ".psf"
 
         Returns
         -------
@@ -65,10 +65,6 @@ class CorrectorABC(metaclass=abc.ABCMeta):
         -------
         np.ndarray
             a image that has been PSF corrected
-
-        Notes
-        -----
-        # TODO: add notes
         """
 
 
