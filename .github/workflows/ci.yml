@@ -34,6 +34,9 @@ jobs:
     - name: Test with pytest
       run: |
         pip install .
-        python setup.py pytest --addopts "--cov psfpy"
+        python setup.py pytest --addopts "--cov ."
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
+      with: 
+        fail_ci_if_error: true
+        verbose: true
