@@ -38,6 +38,7 @@ class PointSpreadFunctionABC(metaclass=abc.ABCMeta):
 
 class SimplePSF(PointSpreadFunctionABC):
     """Model for a simple PSF"""
+
     def __init__(self, function: Callable):
         """Creates a PSF object
 
@@ -78,6 +79,7 @@ def simple_psf(arg=None) -> SimplePSF:
 
 class VariedPSF(PointSpreadFunctionABC):
     """Model for a PSF that varies over the field of view"""
+
     def __init__(self, vary_function: Callable, base_psf: SimplePSF, validate_at_call: bool = True):
         self._vary_function = vary_function
         self._base_psf = base_psf
@@ -128,6 +130,7 @@ def _varied_psf(base_psf: SimplePSF):
             return VariedPSF(__fn, base_psf, validate_at_call=check_at_call)
         else:
             return partial(inner, check_at_call=check_at_call)
+
     return inner
 
 

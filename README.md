@@ -3,16 +3,12 @@
 [![DOI](https://zenodo.org/badge/555583385.svg)](https://zenodo.org/badge/latestdoi/555583385)
 [![PyPI version](https://badge.fury.io/py/regularizepsf.svg)](https://badge.fury.io/py/regularizepsf)
 
-**UNDER DEVELOPMENT**
-
 A package for manipulating and correcting variable point spread functions.
 
 Below is an example of correcting model data using the package. An initial image of a simplified starfield (a) is synthetically observed with a slowly
 varying PSF (b), then regularized with this technique (c). The final image visually matches a direct convolution of
 the initial image with the target PSF (d). The panels are gamma-corrected to highlight the periphery of the model PSFs.
 ![Example result image](model_example.png)
-
-
 
 ## Getting started
 
@@ -23,6 +19,9 @@ We encourage all contributions. If you have a problem with the code or would lik
 
 ## License
 See LICENSE for the MIT license
+
+## Need help?
+Please contact Marcus Hughes at [marcus.hughes@swri.org](mailto:marcus.hughes@swri.org).
 
 ## Citation
 Please cite the associated paper if you use this technique: 
@@ -47,6 +46,3 @@ Please cite the associated paper if you use this technique:
 }
 
 ```
-
-## Contact
-Please contact Marcus Hughes at [marcus.hughes@swri.org](mailto:marcus.hughes@swri.org) for any questions.

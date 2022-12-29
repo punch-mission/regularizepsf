@@ -1,9 +1,13 @@
+import os.path
+
 import pytest
 from pytest import fixture
 import numpy as np
 from hypothesis import given, strategies as st, settings
 
-from regularizepsf.corrector import calculate_covering
+from regularizepsf.psf import simple_psf, varied_psf
+from regularizepsf.corrector import calculate_covering, ArrayCorrector, FunctionalCorrector
+from regularizepsf.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
 
 
 def confirm_full_four_covering(corners, img_shape, patch_size):
@@ -58,3 +62,142 @@ def padded_100by100_image_psf_10_with_pattern():
 #         set_padded_img_section(test_img, coord[0], coord[1], 10, np.zeros((10, 10))+value)
 #     assert np.all(test_img == padded_100by100_image_psf_10_with_pattern)
 
+
+def test_create_array_corrector():
+    example = ArrayCorrector({(0, 0): np.zeros((10, 10))},
+                             np.zeros((10, 10)))
+    assert isinstance(example, ArrayCorrector)
+    assert example._evaluation_points == [(0, 0)]
+
+
+def test_nonimage_array_corrector_errors():
+    with pytest.raises(InvalidSizeError):
+        example = ArrayCorrector({(0, 0): np.zeros(10)}, np.zeros(10))
+
+
+def test_noneven_array_corrector_errors():
+    with pytest.raises(InvalidSizeError):
+        example = ArrayCorrector({(0, 0): np.zeros((11, 11))}, np.zeros((11, 11)))
+
+
+def test_array_corrector_with_different_size_evaluations_errors():
+    with pytest.raises(EvaluatedModelInconsistentSizeError):
+        example = ArrayCorrector({(0, 0): np.zeros((10, 10)), (1, 1): np.zeros((20, 20))},
+                                 np.zeros((20, 20)))
+
+
+def test_array_corrector_with_different_size_than_target_errors():
+    with pytest.raises(EvaluatedModelInconsistentSizeError):
+        example = ArrayCorrector({(0, 0): np.zeros((10, 10)), (1, 1): np.zeros((10, 10))},
+                                 np.zeros((20, 20)))
+
+
+@simple_psf
+def example_psf(x, y):
+    return 0
+
+
+def test_create_functional_corrector():
+    example = FunctionalCorrector(example_psf, example_psf)
+    assert example._psf == example_psf
+    assert example.is_variable is False
+    assert example._target_model == example_psf
+
+    example.save("test.psf")
+    assert os.path.isfile("test.psf")
+    loaded = example.load("test.psf")
+    assert isinstance(loaded, FunctionalCorrector)
+    os.remove("test.psf")
+
+
+def test_evaluate_to_array_form_with_invalid_size_errors():
+    @simple_psf
+    def base(x, y):
+        return np.ones_like(x)
+
+    func_corrector = FunctionalCorrector(base, None)
+    with pytest.raises(InvalidSizeError):
+        arr_corrector = func_corrector.evaluate_to_array_form(np.arange(10), np.arange(10), 11)
+
+
+def test_evaluate_to_array_form_with_ones_and_no_target():
+    @simple_psf
+    def base(x, y):
+        return np.ones_like(x)
+
+    func_corrector = FunctionalCorrector(base, None)
+    arr_corrector = func_corrector.evaluate_to_array_form(np.arange(10), np.arange(10), 10)
+    assert isinstance(arr_corrector, ArrayCorrector)
+    assert len(arr_corrector._evaluations) == 100
+    assert len(arr_corrector._evaluation_points) == 100
+    assert np.all(arr_corrector[0, 0] == 1)
+
+
+def test_evaluate_to_array_form_with_ones_and_target():
+    @simple_psf
+    def base(x, y):
+        return np.ones_like(x)
+
+    @simple_psf
+    def target(x, y):
+        return np.ones_like(x).astype(float)
+
+
+    func_corrector = FunctionalCorrector(base, target)
+    arr_corrector = func_corrector.evaluate_to_array_form(np.arange(10), np.arange(10), 10)
+    assert isinstance(arr_corrector, ArrayCorrector)
+    assert len(arr_corrector._evaluations) == 100
+    assert len(arr_corrector._evaluation_points) == 100
+    assert np.all(arr_corrector[0, 0] == 1)
+
+
+def test_functional_corrector_correct_image():
+    @simple_psf
+    def base(x, y):
+        return np.ones_like(x)
+
+    @simple_psf
+    def target(x, y):
+        return np.ones_like(x).astype(float)
+
+    func_corrector = FunctionalCorrector(base, target)
+    raw_image = np.ones((100, 100))
+    corrected_image = func_corrector.correct_image(raw_image, 10)
+    assert raw_image.shape == corrected_image.shape
+
+
+def test_array_corrector_without_numpy_arrays():
+    evaluations = {(1, 1): 1}
+    target = np.ones((100, 100))
+    with pytest.raises(ValueError):
+        corr = ArrayCorrector(evaluations, target)
+
+
+def test_array_corrector_correct_image_with_image_smaller_than_psf():
+    image = np.ones((10, 10))
+    evaluations = {(0, 0): np.ones((100, 100))}
+    target = np.ones((100, 100))
+    with pytest.raises(InvalidSizeError):
+        corr = ArrayCorrector(evaluations, target)
+        corr.correct_image(image, 10)
+
+
+def test_array_corrector_get_nonexistent_point():
+    evaluations = {(0, 0): np.ones((100, 100))}
+    target = np.ones((100, 100))
+    with pytest.raises(UnevaluatedPointError):
+        corr = ArrayCorrector(evaluations, target)
+        patch = corr[(1, 1)]
+
+
+def test_create_array_corrector():
+    evaluations = {(0, 0): np.ones((100, 100))}
+    target = np.ones((100, 100))
+    example = ArrayCorrector(evaluations, target)
+    assert len(example._evaluations) == 1
+
+    example.save("test.psf")
+    assert os.path.isfile("test.psf")
+    loaded = example.load("test.psf")
+    assert isinstance(loaded, ArrayCorrector)
+    os.remove("test.psf")

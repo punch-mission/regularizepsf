@@ -1,7 +1,7 @@
 import pytest
 
 from regularizepsf.psf import simple_psf, varied_psf, SimplePSF, VariedPSF
-from regularizepsf.exceptions import PSFParameterValidationError
+from regularizepsf.exceptions import PSFParameterValidationError, VariedPSFParameterMismatchError
 
 
 def test_simple_psf_valid():
@@ -95,3 +95,28 @@ def test_varied_psf_called_naked():
         def func(x, y):
             return {"sigma": 0.1}
 
+
+def test_varied_psf_parameters_not_match_base_errors():
+    @simple_psf
+    def base(x, y, m):
+        return x + y
+
+    with pytest.raises(VariedPSFParameterMismatchError):
+        @varied_psf(base)
+        def varied(x, y):
+            return {"n": 0, "m": 30}
+
+
+def test_varied_psf_parameters_match_except_at_call_errors():
+    @simple_psf
+    def base(x, y, m):
+        return x + y
+
+    with pytest.raises(VariedPSFParameterMismatchError):
+        @varied_psf(base)
+        def varied(x, y):
+            if x == 0 and y == 0:
+                return {"m": 30}
+            else:
+                return {"n": 100, "m": 30}
+        varied(10, 10)
