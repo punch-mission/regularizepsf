@@ -6,6 +6,7 @@ from typing import Any
 
 import dill
 import numpy as np
+from numpy.fft import fft2, ifft2, ifftshift
 import deepdish as dd
 
 from regularizepsf.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
@@ -45,7 +46,7 @@ class CorrectorABC(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def correct_image(self, image: np.ndarray, size: int,
-                      alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
+                      alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
         """PSF correct an image according to the model
 
         Parameters
@@ -58,13 +59,26 @@ class CorrectorABC(metaclass=abc.ABCMeta):
             controls the “hardness” of the transition from amplification to attenuation, see notes
         epsilon : float
             controls the maximum of the amplification, see notes
-        use_gpu : bool
-            True uses GPU acceleration, False does not.
 
         Returns
         -------
         np.ndarray
             a image that has been PSF corrected
+        """
+
+    @abc.abstractmethod
+    def simulate_observation(self, image: np.ndarray) -> np.ndarray:
+        """Simulates on a star field what an observation using this PSF looks like
+
+        Parameters
+        ----------
+        image : 2D float np.ndarray
+            image of point source stars to simluate PSF for
+
+        Returns
+        -------
+        np.ndarray
+            an image with the PSF applied
         """
 
 
@@ -131,10 +145,10 @@ class FunctionalCorrector(CorrectorABC):
         return ArrayCorrector(evaluations, target_evaluation)
 
     def correct_image(self, image: np.ndarray, size: int,
-                      alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
+                      alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
         corners = calculate_covering(image.shape, size)
         array_corrector = self.evaluate_to_array_form(corners[:, 0], corners[:, 1], size)
-        return array_corrector.correct_image(image, size=size, alpha=alpha, epsilon=epsilon, use_gpu=use_gpu)
+        return array_corrector.correct_image(image, size=size, alpha=alpha, epsilon=epsilon)
 
     def save(self, path):
         with open(path, 'wb') as f:
@@ -144,6 +158,26 @@ class FunctionalCorrector(CorrectorABC):
     def load(cls, path):
         with open(path, 'rb') as f:
             return dill.load(f)
+
+
+    def simulate_observation(self, image: np.ndarray, size: int) -> np.ndarray:
+        """Simulates on a star field what an observation using this PSF looks like
+
+        Parameters
+        ----------
+        image : 2D float np.ndarray
+            image of point source stars to simluate PSF for
+        size : int
+            the PSF will be evaluated to size x size pixels box
+
+        Returns
+        -------
+        np.ndarray
+            an image with the PSF applied
+        """
+        corners = calculate_covering(image.shape, size)
+        array_corrector = self.evaluate_to_array_form(corners[:, 0], corners[:, 1], size)
+        return array_corrector.simulate_observation(image)
 
 
 class ArrayCorrector(CorrectorABC):
@@ -186,7 +220,7 @@ class ArrayCorrector(CorrectorABC):
         self.target_fft, self.psf_i_fft = _precalculate_ffts(self._target_evaluation, values)
 
     def correct_image(self, image: np.ndarray, size: int = None,
-                      alpha: float = 0.5, epsilon: float = 0.05, use_gpu: bool = False) -> np.ndarray:
+                      alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
         if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape, (self._size, self._size))):
             raise InvalidSizeError("The image must be at least as large as the PSFs in all dimensions")
 
@@ -208,6 +242,37 @@ class ArrayCorrector(CorrectorABC):
     def load(cls, path):
         evaluations, target_evaluation = dd.io.load(path)
         return cls(evaluations, target_evaluation)
+
+    def simulate_observation(self, image: np.ndarray) -> np.ndarray:
+        psf_shape = (self._size, self._size)
+        pad_shape = psf_shape
+        img_shape = image.shape
+
+        xarr, yarr = np.meshgrid(np.arange(psf_shape[0]), np.arange(psf_shape[1]))
+        apodization_window = np.sin((xarr + 0.5) * (np.pi / psf_shape[0])) * np.sin(
+            (yarr + 0.5) * (np.pi / psf_shape[1]))
+
+        img_p = np.pad(image, psf_shape, mode='constant')
+
+        observation_synthetic = np.zeros(img_shape)
+        observation_synthetic_p = np.pad(observation_synthetic, pad_shape)
+
+        def get_img_i(x, y):
+            xs, xe, ys, ye = x + psf_shape[0], x + 2 * psf_shape[0], y + psf_shape[1], y + 2 * psf_shape[1]
+            return img_p[xs:xe, ys:ye]
+
+        def set_synthetic_p(x, y, image):
+            xs, xe, ys, ye = x + psf_shape[0], x + 2 * psf_shape[0], y + psf_shape[1], y + 2 * psf_shape[1]
+            observation_synthetic_p[xs:xe, ys:ye] = np.nansum([image, observation_synthetic_p[xs:xe, ys:ye]], axis=0)
+
+        for (x, y), psf_i in self._evaluations.items():
+            img_i = get_img_i(x, y)
+            out_i = np.real(ifftshift(ifft2(fft2(img_i * apodization_window) * fft2(psf_i)))) * apodization_window
+            set_synthetic_p(x, y, out_i)
+
+        observation = observation_synthetic_p[psf_shape[0]:img_shape[0] + psf_shape[0],
+                      psf_shape[1]:img_shape[1] + psf_shape[1]]
+        return observation
 
 
 def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
