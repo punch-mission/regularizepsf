@@ -201,3 +201,35 @@ def test_create_array_corrector():
     loaded = example.load("test.psf")
     assert isinstance(loaded, ArrayCorrector)
     os.remove("test.psf")
+
+
+def test_array_corrector_simulate_observation_with_zero_stars():
+    evaluations = {(0, 0): np.ones((100, 100))}
+    target = np.ones((100, 100))
+    corrector = ArrayCorrector(evaluations, target)
+
+    fake_stars = np.zeros((100, 100))
+    fake_observation = corrector.simulate_observation(fake_stars)
+
+    assert isinstance(fake_observation, np.ndarray)
+    assert fake_observation.shape == (100, 100)
+    assert np.all(fake_observation == 0)
+
+
+def test_functional_corrector_simulate_observation():
+    @simple_psf
+    def base(x, y):
+        return np.ones_like(x)
+
+    @simple_psf
+    def target(x, y):
+        return np.ones_like(x).astype(float)
+
+    func_corrector = FunctionalCorrector(base, target)
+
+    fake_stars = np.zeros((100, 100))
+    fake_observation = func_corrector.simulate_observation(fake_stars, 100)
+
+    assert isinstance(fake_observation, np.ndarray)
+    assert fake_observation.shape == (100, 100)
+    assert np.all(fake_observation == 0)
