@@ -104,4 +104,22 @@ def test_find_stars_and_average():
     img_path = str(TEST_DIR / "data/DASH.fits")
     example = CoordinatePatchCollection.find_stars_and_average([img_path], 32, 100)
     assert isinstance(example, CoordinatePatchCollection)
+    for loc, patch in example._patches.items():
+        assert patch.shape == (100, 100)
+
+
+def test_find_stars_and_average_powers_of_2():
+    img_path = str(TEST_DIR / "data/DASH.fits")
+    example = CoordinatePatchCollection.find_stars_and_average([img_path], 32, 128)
+    assert isinstance(example, CoordinatePatchCollection)
+    for loc, patch in example._patches.items():
+        assert patch.shape == (128, 128)
+
+
+def test_find_stars_and_average_powers_of_2_mean():
+    img_path = str(TEST_DIR / "data/DASH.fits")
+    example = CoordinatePatchCollection.find_stars_and_average([img_path], 32, 128, average_mode='mean')
+    assert isinstance(example, CoordinatePatchCollection)
+    for loc, patch in example._patches.items():
+        assert patch.shape == (128, 128)
 

@@ -338,20 +338,20 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
         return output
 
-    def average(self, corners: np.ndarray, step: int, size: int,
+    def average(self, corners: np.ndarray, patch_size: int, psf_size: int,
                 mode: str = "median") -> PatchCollectionABC:
         CoordinatePatchCollection._validate_average_mode(mode)
-        pad_shape = self._calculate_pad_shape(step)
+        pad_shape = self._calculate_pad_shape(patch_size)
 
         if mode == "mean":
-            mean_stack = {tuple(corner): np.zeros((size, size)) for corner in corners}
+            mean_stack = {tuple(corner): np.zeros((patch_size, patch_size)) for corner in corners}
             counts = {tuple(corner): 0 for corner in corners}
         elif mode == "median":
             median_stack = {tuple(corner): [] for corner in corners}
 
         corners_x, corners_y = corners[:, 0], corners[:, 1]
-        x_bounds = np.stack([corners_x, corners_x + step], axis=-1)
-        y_bounds = np.stack([corners_y, corners_y + step], axis=-1)
+        x_bounds = np.stack([corners_x, corners_x + patch_size], axis=-1)
+        y_bounds = np.stack([corners_y, corners_y + patch_size], axis=-1)
 
         for identifier, patch in self._patches.items():
             # pad patch with zeros
@@ -379,7 +379,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
         elif mode == "median":
             averages = {CoordinateIdentifier(None, corner[0], corner[1]):
                             np.nanmedian(median_stack[corner], axis=0)
-                                if len(median_stack[corner]) > 0 else np.zeros((size, size))
+                                if len(median_stack[corner]) > 0 else np.zeros((patch_size, patch_size))
                         for corner in median_stack}
         return CoordinatePatchCollection(averages)
 
