@@ -10,3 +10,4 @@ sep==1.2.1
 pytest
 pytest-runner
 hypothesis
+ruff
