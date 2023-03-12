@@ -2,26 +2,26 @@ from __future__ import annotations
 
 import abc
 import warnings
-from typing import Any
 from collections import namedtuple
 from numbers import Real
+from typing import Any, Dict, List, Tuple
 
-import numpy as np
 import deepdish as dd
-from lmfit import Parameters, minimize
-from lmfit.minimizer import MinimizerResult
+import numpy as np
 import sep
 from astropy.io import fits
+from lmfit import Parameters, minimize
+from lmfit.minimizer import MinimizerResult
 from scipy.interpolate import RectBivariateSpline
 from skimage.transform import downscale_local_mean
 
-from regularizepsf.psf import SimplePSF, PointSpreadFunctionABC
+from regularizepsf.corrector import ArrayCorrector, calculate_covering
 from regularizepsf.exceptions import InvalidSizeError
-from regularizepsf.corrector import calculate_covering, ArrayCorrector
+from regularizepsf.psf import PointSpreadFunctionABC, SimplePSF
 
 
 class PatchCollectionABC(metaclass=abc.ABCMeta):
-    def __init__(self, patches: dict[Any, np.ndarray]):
+    def __init__(self, patches: dict[Any, np.ndarray]) -> None:
         self._patches = patches
         if patches:
             shape = next(iter(patches.values())).shape
@@ -30,20 +30,25 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         else:
             self._size = None
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._patches)
 
     @classmethod
     @abc.abstractmethod
-    def extract(cls, images: list[np.ndarray], coordinates: list, size: int) -> PatchCollectionABC:
-        """Construct a PatchCollection from a set of images using the specified coordinates and patch size
+    def extract(cls, 
+                images: list[np.ndarray], 
+                coordinates: list, 
+                size: int) -> PatchCollectionABC:
+        """Construct a PatchCollection from a set of images 
+        using the specified coordinates and patch size
 
         Parameters
         ----------
         images : list of np.ndarrays
             the images loaded
         coordinates : list
-            A list of coordinates for the lower left pixel of each patch, specified in each type of PatchCollection
+            A list of coordinates for the lower left pixel of each patch, 
+                specified in each type of PatchCollection
         size : int
             size of one side of the square patches extracted
 
@@ -59,7 +64,8 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         Parameters
         ----------
         identifier : Any
-            identifier for a given patch, specifically implemented for each PatchCollection
+            identifier for a given patch, specifically implemented 
+            for each PatchCollection
 
         Returns
         -------
@@ -69,7 +75,8 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         if identifier in self._patches:
             return self._patches[identifier]
         else:
-            raise IndexError(f"{identifier} is not used to identify a patch in this collection.")
+            msg = f"{identifier} is not used to identify a patch in this collection."
+            raise IndexError(msg)
 
     def __contains__(self, identifier: Any) -> bool:
         """Determines if a patch is in the collection
@@ -77,12 +84,14 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         Parameters
         ----------
         identifier : Any
-            identifier for a given patch, specifically implemented for each PatchCollection
+            identifier for a given patch, 
+                specifically implemented for each PatchCollection
 
         Returns
         -------
         bool
-            True if patch with specified identifier is in the collection, False otherwise
+            True if patch with specified identifier is in the collection, 
+                False otherwise
         """
         return identifier in self._patches
 
@@ -92,7 +101,8 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         Parameters
         ----------
         identifier : Any
-            identifier for a given patch, specifically implemented for each PatchCollection
+            identifier for a given patch, 
+                specifically implemented for each PatchCollection
 
         patch : np.ndarray
             the data for a specific patch
@@ -103,7 +113,8 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         """
         if identifier in self._patches:
             # TODO: improve warning
-            warnings.warn(f"{identifier} is being overwritten in this collection.", Warning)
+            warnings.warn(f"{identifier} is being overwritten in this collection.",
+                           Warning)
         self._patches[identifier] = patch
 
         if self._size is None:
@@ -111,8 +122,13 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
             # TODO : enforce square constraint
 
     @abc.abstractmethod
-    def average(self, corners: np.ndarray, step: int, size: int, mode: str) -> PatchCollectionABC:
-        """Construct a new PatchCollection where patches lying inside a new grid are averaged together
+    def average(self, 
+                corners: np.ndarray, 
+                step: int, 
+                size: int,
+                mode: str) -> PatchCollectionABC:
+        """Construct a new PatchCollection where patches 
+        lying inside a new grid are averaged together
 
         Parameters
         ----------
@@ -132,7 +148,9 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def fit(self, base_psf: SimplePSF, is_varied: bool = False) -> PointSpreadFunctionABC:
+    def fit(self, 
+            base_psf: SimplePSF, 
+            is_varied: bool = False) -> PointSpreadFunctionABC:
         """
 
         Parameters
@@ -160,7 +178,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         dd.io.save(path, self._patches)
 
     @classmethod
-    def load(cls, path) -> PatchCollectionABC:
+    def load(cls, path: str) -> PatchCollectionABC:
         """Load a PatchCollection from a file
 
         Parameters
@@ -175,23 +193,21 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         """
         return cls(dd.io.load(path))
 
-    def keys(self):
+    def keys(self) -> List:
         """Gets identifiers for all patches"""
         return self._patches.keys()
 
-    def values(self):
+    def values(self) -> List:
         """Gets values of all patches"""
         return self._patches.values()
 
-    def items(self):
+    def items(self) -> Dict:
         """A dictionary like iterator over the patches"""
         return self._patches.items()
 
-    def __next__(self):
-        # TODO: implement
-        pass
-
-    def _fit_lmfit(self, base_psf: SimplePSF, initial_guesses: dict[str, Real]) -> dict[Any, MinimizerResult]:
+    def _fit_lmfit(self, 
+                   base_psf: SimplePSF, 
+                   initial_guesses: dict[str, Real]) -> dict[Any, MinimizerResult]:
         """Fit a patch using lmfit
 
         Parameters
@@ -212,10 +228,11 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
 
         xx, yy = np.meshgrid(np.arange(self._size), np.arange(self._size))
 
-        results = dict()
+        results = {}
         for identifier, patch in self._patches.items():
             results[identifier] = minimize(
-                lambda current_parameters, x, y, data: data - base_psf(x, y, **current_parameters.valuesdict()),
+                lambda current_parameters, x, y, data:
+                    data - base_psf(x, y, **current_parameters.valuesdict()),
                 initial,
                 args=(xx, yy, patch))
         return results
@@ -225,16 +242,18 @@ CoordinateIdentifier = namedtuple("CoordinateIdentifier", "image_index, x, y")
 
 
 class CoordinatePatchCollection(PatchCollectionABC):
-    """A representation of a PatchCollection that operates on pixel coordinates from a set of images"""
+    """A representation of a PatchCollection that operates 
+    on pixel coordinates from a set of images"""
     @classmethod
     def extract(cls, images: list[np.ndarray],
                 coordinates: list[CoordinateIdentifier],
                 size: int) -> PatchCollectionABC:
-        out = cls(dict())
+        out = cls({})
 
         # pad in case someone selects a region on the edge of the image
         padding_shape = ((size, size), (size, size))
-        padded_images = [np.pad(image, padding_shape, mode='constant') for image in images]
+        padded_images = [np.pad(image, padding_shape, mode="constant") 
+                         for image in images]
 
         # TODO: prevent someone from selecting a region completing outside of the image
         for coordinate in coordinates:
@@ -244,13 +263,15 @@ class CoordinatePatchCollection(PatchCollectionABC):
         return out
 
     @classmethod
-    def find_stars_and_average(cls, image_paths: list[str],
+    def find_stars_and_average(cls, 
+                               image_paths: list[str],
                                psf_size: int,
                                patch_size: int,
                                interpolation_scale: int = 1,
                                average_mode: str = "median",
-                               star_threshold: int = 3, hdu_choice=0):
-        """Loads a series of images, finds stars in each, and builds a CoordinatePatchCollection with averaged stars
+                               star_threshold: int = 3, hdu_choice: int=0) -> CoordinatePatchCollection:
+        """Loads a series of images, finds stars in each, 
+            and builds a CoordinatePatchCollection with averaged stars
 
         Parameters
         ----------
@@ -261,13 +282,16 @@ class CoordinatePatchCollection(PatchCollectionABC):
         patch_size : int
             square size that each PSF model applies to
         interpolation_scale : int
-            if >1, the image are first scaled by this factor. This results in stars being aligned at a subpixel scale
+            if >1, the image are first scaled by this factor. 
+                This results in stars being aligned at a subpixel scale
         average_mode : str
             "median" or "mean" determines how patches are combined
         star_threshold : int
-            SEP's threshold for finding stars. See `threshold` in https://sep.readthedocs.io/en/v1.1.x/api/sep.extract.html#sep-extract
+            SEP's threshold for finding stars. See `threshold`
+                in https://sep.readthedocs.io/en/v1.1.x/api/sep.extract.html#sep-extract
         hdu_choice : int
-            Which HDU from each image will be used, default of 0 is most common but could be 1 for compressed images
+            Which HDU from each image will be used, 
+                default of 0 is most common but could be 1 for compressed images
 
         Returns
         -------
@@ -276,42 +300,57 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
         Notes
         ------
-        Using an `interpolation_scale` other than 1 for large images can dramatically slow down the execution.
+        Using an `interpolation_scale` other than 1 
+            for large images can dramatically slow down the execution.
         """
-        # Load the first image to determine the image shape, assumed to be the same for all images
+        # Load the first image to determine the image shape, 
+        # assumed to be the same for all images
         with fits.open(image_paths[0]) as hdul:
             image_shape = hdul[hdu_choice].data.shape
 
         # the output collection to return
-        this_collection = cls(dict())
+        this_collection = cls({})
 
         # for each image do the magic
         for i, image_path in enumerate(image_paths):
             with fits.open(image_path) as hdul:
                 image = hdul[hdu_choice].data.astype(float)
             if image.shape != image_shape:
-                raise ValueError(f"Images must all be the same shape. Found both {image_shape} and {image.shape}.")
+                msg = ("Images must all be the same shape."
+                      f"Found both {image_shape} and {image.shape}.")
+                raise ValueError(msg)
 
             # if the image should be scaled then, do the scaling before anything else
             if interpolation_scale != 1:
-                interpolator = RectBivariateSpline(np.arange(image.shape[0]), np.arange(image.shape[1]), image)
-                image = interpolator(np.linspace(0, image.shape[0], image.shape[0] * interpolation_scale),
-                                     np.linspace(0, image.shape[1], image.shape[1] * interpolation_scale))
+                interpolator = RectBivariateSpline(np.arange(image.shape[0]), 
+                                                   np.arange(image.shape[1]), 
+                                                   image)
+                image = interpolator(np.linspace(0, 
+                                                 image.shape[0], 
+                                                 image.shape[0] * interpolation_scale),
+                                     np.linspace(0, 
+                                                 image.shape[1], 
+                                                 image.shape[1] * interpolation_scale))
 
             # find stars using SEP
             background = sep.Background(image)
             image_background_removed = image - background
-            image_star_coords = sep.extract(image_background_removed, star_threshold, err=background.globalrms)
+            image_star_coords = sep.extract(image_background_removed, 
+                                            star_threshold, 
+                                            err=background.globalrms)
 
             coordinates = [CoordinateIdentifier(i,
                                                 int(y - psf_size * interpolation_scale / 2),
                                                 int(x - psf_size * interpolation_scale / 2))
-                           for x, y in zip(image_star_coords['x'], image_star_coords['y'])]
+                           for x, y in zip(image_star_coords["x"], image_star_coords["y"])]
 
             # pad in case someone selects a region on the edge of the image
             padding_shape = ((psf_size * interpolation_scale, psf_size * interpolation_scale),
                              (psf_size * interpolation_scale, psf_size * interpolation_scale))
-            padded_image = np.pad(image, padding_shape, mode='constant', constant_values=np.median(image))
+            padded_image = np.pad(image, 
+                                  padding_shape, 
+                                  mode="constant", 
+                                  constant_values=np.median(image))
 
             for coordinate in coordinates:
                 patch = padded_image[coordinate.x+interpolation_scale*psf_size:
@@ -320,21 +359,25 @@ class CoordinatePatchCollection(PatchCollectionABC):
                                      coordinate.y + 2 * interpolation_scale * psf_size]
                 this_collection.add(coordinate, patch)
 
-        corners = calculate_covering((image_shape[0] * interpolation_scale, image_shape[1] * interpolation_scale),
-                                     patch_size * interpolation_scale)
-        averaged = this_collection.average(corners, patch_size * interpolation_scale, psf_size * interpolation_scale,
+        corners = calculate_covering((image_shape[0] * interpolation_scale, 
+                                      image_shape[1] * interpolation_scale),
+                                      patch_size * interpolation_scale)
+        averaged = this_collection.average(corners, 
+                                           patch_size * interpolation_scale, psf_size * interpolation_scale,
                                            mode=average_mode)
 
         if interpolation_scale != 1:
-            for coordinate, patch in averaged.items():
+            for coordinate, _ in averaged.items():
                 averaged._patches[coordinate] = downscale_local_mean(averaged._patches[coordinate],
                                                                      (interpolation_scale, interpolation_scale))
 
             averaged._size = psf_size
 
-        output = CoordinatePatchCollection(dict())
+        output = CoordinatePatchCollection({})
         for key, patch in averaged.items():
-            output._patches[CoordinateIdentifier(key.image_index, key.x // interpolation_scale, key.y // interpolation_scale)] = patch
+            output._patches[CoordinateIdentifier(key.image_index, 
+                                                 key.x // interpolation_scale, 
+                                                 key.y // interpolation_scale)] = patch
 
         return output
 
@@ -344,7 +387,8 @@ class CoordinatePatchCollection(PatchCollectionABC):
         pad_shape = self._calculate_pad_shape(patch_size)
 
         if mode == "mean":
-            mean_stack = {tuple(corner): np.zeros((patch_size, patch_size)) for corner in corners}
+            mean_stack = {tuple(corner): np.zeros((patch_size, patch_size)) 
+                          for corner in corners}
             counts = {tuple(corner): 0 for corner in corners}
         elif mode == "median":
             median_stack = {tuple(corner): [] for corner in corners}
@@ -355,7 +399,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
         for identifier, patch in self._patches.items():
             # pad patch with zeros
-            padded_patch = np.pad(patch / np.max(patch), pad_shape, mode='constant')
+            padded_patch = np.pad(patch / np.max(patch), pad_shape, mode="constant")
 
             # Determine which average region it belongs to
             center_x = identifier.x + self._size // 2
@@ -368,40 +412,46 @@ class CoordinatePatchCollection(PatchCollectionABC):
             for match_index in match_indices:
                 match_corner = tuple(corners[match_index])
                 if mode == "mean":
-                    mean_stack[match_corner] = np.nansum([mean_stack[match_corner], padded_patch], axis=0)
+                    mean_stack[match_corner] = np.nansum([mean_stack[match_corner], 
+                                                          padded_patch], axis=0)
                     counts[match_corner] += 1
                 elif mode == "median":
                     median_stack[match_corner].append(padded_patch)
 
         if mode == "mean":
-            averages = {CoordinateIdentifier(None, corner[0], corner[1]): mean_stack[corner]/counts[corner]
+            averages = {CoordinateIdentifier(None, corner[0], corner[1]): 
+                        mean_stack[corner]/counts[corner]
                         for corner in mean_stack}
         elif mode == "median":
             averages = {CoordinateIdentifier(None, corner[0], corner[1]):
                             np.nanmedian(median_stack[corner], axis=0)
-                                if len(median_stack[corner]) > 0 else np.zeros((patch_size, patch_size))
+                                if len(median_stack[corner]) > 0 else 
+                                np.zeros((patch_size, patch_size))
                         for corner in median_stack}
         return CoordinatePatchCollection(averages)
 
     @staticmethod
-    def _validate_average_mode(mode: str):
+    def _validate_average_mode(mode: str) -> None:
         """Determine if the average_mode is a valid kind"""
-        valid_modes = ['median', 'mean']
+        valid_modes = ["median", "mean"]
         if mode not in valid_modes:
-            raise ValueError(f"Found a mode of {mode} but it must be in the list {valid_modes}.")
+            msg = f"Found a mode of {mode} but it must be in the list {valid_modes}."
+            raise ValueError(msg)
 
-    def _calculate_pad_shape(self, size):
+    def _calculate_pad_shape(self, size: int) -> Tuple[int, int]:
         pad_amount = size - self._size
         if pad_amount < 0:
             raise InvalidSizeError(f"The average window size (found {size})" 
-                                   f"must be larger than the existing patch size (found {self._size}).")
+                                   "must be larger than the existing patch size"
+                                   f"(found {self._size}).")
         if pad_amount % 2 != 0:
             raise InvalidSizeError(f"The average window size (found {size})" 
-                                   f"must be the same parity as the existing patch size (found {self._size}).")
-        pad_shape = ((pad_amount//2, pad_amount//2), (pad_amount//2, pad_amount//2))
-        return pad_shape
+                                   "must be the same parity as the existing patch size"
+                                   f"(found {self._size}).")
+        return ((pad_amount//2, pad_amount//2), (pad_amount//2, pad_amount//2))
 
-    def fit(self, base_psf: SimplePSF, is_varied: bool = False) -> PointSpreadFunctionABC:
+    def fit(self, base_psf: SimplePSF, 
+            is_varied: bool = False) -> PointSpreadFunctionABC:
         raise NotImplementedError("TODO")
 
     def to_array_corrector(self, target_evaluation: np.array) -> ArrayCorrector:
@@ -417,12 +467,11 @@ class CoordinatePatchCollection(PatchCollectionABC):
         ArrayCorrector
             An array corrector that can be used to correct PSFs
         """
-        evaluation_dictionary = dict()
+        evaluation_dictionary = {}
         for identifier, patch in self._patches.items():
             corrected_patch = patch.copy()
             corrected_patch[np.isnan(corrected_patch)] = 0
             evaluation_dictionary[(identifier.x, identifier.y)] = corrected_patch
 
-        array_corrector = ArrayCorrector(evaluation_dictionary, target_evaluation)
-        return array_corrector
+        return ArrayCorrector(evaluation_dictionary, target_evaluation)
 

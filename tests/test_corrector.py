@@ -1,13 +1,22 @@
 import os.path
 
-import pytest
-from pytest import fixture
 import numpy as np
-from hypothesis import given, strategies as st, settings
+import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
+from pytest import fixture
 
+from regularizepsf.corrector import (
+    ArrayCorrector,
+    FunctionalCorrector,
+    calculate_covering,
+)
+from regularizepsf.exceptions import (
+    EvaluatedModelInconsistentSizeError,
+    InvalidSizeError,
+    UnevaluatedPointError,
+)
 from regularizepsf.psf import simple_psf, varied_psf
-from regularizepsf.corrector import calculate_covering, ArrayCorrector, FunctionalCorrector
-from regularizepsf.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
 
 
 def confirm_full_four_covering(corners, img_shape, patch_size):
@@ -169,7 +178,7 @@ def test_functional_corrector_correct_image():
 def test_array_corrector_without_numpy_arrays():
     evaluations = {(1, 1): 1}
     target = np.ones((100, 100))
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         corr = ArrayCorrector(evaluations, target)
 
 

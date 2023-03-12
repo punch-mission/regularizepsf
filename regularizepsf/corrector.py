@@ -2,16 +2,20 @@ from __future__ import annotations
 
 import abc
 from pathlib import Path
-from typing import Any
+from typing import Any, Tuple
 
+import deepdish as dd
 import dill
 import numpy as np
 from numpy.fft import fft2, ifft2, ifftshift
-import deepdish as dd
 
-from regularizepsf.exceptions import InvalidSizeError, EvaluatedModelInconsistentSizeError, UnevaluatedPointError
-from regularizepsf.psf import VariedPSF, SimplePSF, PointSpreadFunctionABC
+from regularizepsf.exceptions import (
+    EvaluatedModelInconsistentSizeError,
+    InvalidSizeError,
+    UnevaluatedPointError,
+)
 from regularizepsf.helper import _correct_image, _precalculate_ffts
+from regularizepsf.psf import PointSpreadFunctionABC, SimplePSF, VariedPSF
 
 
 class CorrectorABC(metaclass=abc.ABCMeta):
@@ -54,9 +58,11 @@ class CorrectorABC(metaclass=abc.ABCMeta):
         image : 2D float np.ndarray
             image to be corrected
         size : int
-            how big to make the patches when correcting an image, only used for FunctionalCorrector
+            how big to make the patches when correcting an image, 
+            only used for FunctionalCorrector
         alpha : float
-            controls the “hardness” of the transition from amplification to attenuation, see notes
+            controls the “hardness” of the transition from amplification 
+            to attenuation, see notes
         epsilon : float
             controls the maximum of the amplification, see notes
 
@@ -85,10 +91,11 @@ class CorrectorABC(metaclass=abc.ABCMeta):
 class FunctionalCorrector(CorrectorABC):
     """
     A version of the PSF corrector that stores the model as a set of functions.
-    For the actual correction, the functions must first be evaluated to an ArrayCorrector.
+    For the actual correction, the functions must first 
+    be evaluated to an ArrayCorrector.
     """
     def __init__(self, psf: PointSpreadFunctionABC,
-                 target_model: SimplePSF | None):
+                 target_model: SimplePSF | None) -> None:
         """Initialize a FunctionalCorrector
 
         Parameters
@@ -108,11 +115,15 @@ class FunctionalCorrector(CorrectorABC):
         Returns
         -------
         bool
-            True if the PSF model is varied (changes across the field-of-view) and False otherwise
+            True if the PSF model is varied (changes across the field-of-view) 
+            and False otherwise
         """
         return self._variable
 
-    def evaluate_to_array_form(self, x: np.ndarray, y: np.ndarray, size: int) -> ArrayCorrector:
+    def evaluate_to_array_form(self, 
+                               x: np.ndarray,
+                               y: np.ndarray, 
+                               size: int) -> ArrayCorrector:
         """Evaluates a FunctionalCorrector to an ArrayCorrector
 
         Parameters
@@ -133,7 +144,7 @@ class FunctionalCorrector(CorrectorABC):
             raise InvalidSizeError(f"size must be even. Found size={size}.")
 
         image_x, image_y = np.meshgrid(np.arange(size), np.arange(size))
-        evaluations = dict()
+        evaluations = {}
         for xx in x:
             for yy in y:
                 evaluations[(xx, yy)] = self._psf(image_x, image_y)
@@ -147,16 +158,20 @@ class FunctionalCorrector(CorrectorABC):
     def correct_image(self, image: np.ndarray, size: int,
                       alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
         corners = calculate_covering(image.shape, size)
-        array_corrector = self.evaluate_to_array_form(corners[:, 0], corners[:, 1], size)
-        return array_corrector.correct_image(image, size=size, alpha=alpha, epsilon=epsilon)
+        array_corrector = self.evaluate_to_array_form(corners[:, 0], 
+                                                      corners[:, 1], size)
+        return array_corrector.correct_image(image, 
+                                             size=size, 
+                                             alpha=alpha, 
+                                             epsilon=epsilon)
 
-    def save(self, path):
-        with open(path, 'wb') as f:
+    def save(self, path: str) -> None:
+        with open(path, "wb") as f:
             dill.dump(self, f)
 
     @classmethod
-    def load(cls, path):
-        with open(path, 'rb') as f:
+    def load(cls, path: str) -> FunctionalCorrector:
+        with open(path, "rb") as f:
             return dill.load(f)
 
 
@@ -176,31 +191,36 @@ class FunctionalCorrector(CorrectorABC):
             an image with the PSF applied
         """
         corners = calculate_covering(image.shape, size)
-        array_corrector = self.evaluate_to_array_form(corners[:, 0], corners[:, 1], size)
+        array_corrector = self.evaluate_to_array_form(corners[:, 0], 
+                                                      corners[:, 1], 
+                                                      size)
         return array_corrector.simulate_observation(image)
 
 
 class ArrayCorrector(CorrectorABC):
     """ A PSF corrector that is evaluated as array patches
     """
-    def __init__(self, evaluations: dict[Any, np.ndarray], target_evaluation: np.ndarray):
+    def __init__(self, evaluations: dict[Any, np.ndarray], 
+                 target_evaluation: np.ndarray) -> None:
         """Initialize an ArrayCorrector
 
         Parameters
         ----------
         evaluations : dict
-            evaluated version of the PSF as they vary over the image, keys should be (x, y) of the lower left
-                pixel of each patch. values should be the `np.ndarray` that corresponds to that patch
+            evaluated version of the PSF as they vary over the image, 
+                keys should be (x, y) of the lower left
+                pixel of each patch. values should be the `np.ndarray` 
+                that corresponds to that patch
         target_evaluation : np.ndarray
             evaluated version of the target PSF
         """
         self._evaluation_points: list[Any] = list(evaluations.keys())
 
         if not isinstance(evaluations[self._evaluation_points[0]], np.ndarray):
-            raise ValueError(f"Individual evaluations must be numpy arrays. "
+            raise TypeError(f"Individual evaluations must be numpy arrays. "
                              f"Found {type(evaluations[self._evaluation_points[0]])}.")
         if len(evaluations[self._evaluation_points[0]].shape) != 2:
-            raise InvalidSizeError(f"PSF evaluations must be 2-D numpy arrays.")
+            raise InvalidSizeError("PSF evaluations must be 2-D numpy arrays.")
         self._size = evaluations[self._evaluation_points[0]].shape[0]
         if self._size % 2 != 0:
             raise InvalidSizeError(f"Size must be even. Found {self._size}")
@@ -208,38 +228,47 @@ class ArrayCorrector(CorrectorABC):
         self._evaluations: dict[Any, np.ndarray] = evaluations
         for (x, y), evaluation in self._evaluations.items():
             if evaluation.shape != (self._size, self._size):
-                raise EvaluatedModelInconsistentSizeError(f"Expected evaluated model to have shapes of "
-                                                          f"{(self._size, self._size)}. Found {evaluation.shape} "
-                                                          f"at {(x, y)}.")
+                msg = ("Expected evaluated model to have shapes of "
+                       f"{(self._size, self._size)}."
+                       f"Found {evaluation.shape} at {(x, y)}.")
+                raise EvaluatedModelInconsistentSizeError(msg)
 
         self._target_evaluation = target_evaluation
         if self._target_evaluation.shape != (self._size, self._size):
-            raise EvaluatedModelInconsistentSizeError("The target and evaluations must have the same shape.")
+            msg = "The target and evaluations must have the same shape."
+            raise EvaluatedModelInconsistentSizeError(msg)
 
-        values = np.array([v for v in self._evaluations.values()], dtype=float)
-        self.target_fft, self.psf_i_fft = _precalculate_ffts(self._target_evaluation, values)
+        values = np.array(list(self._evaluations.values()), dtype=float)
+        self.target_fft, self.psf_i_fft = _precalculate_ffts(self._target_evaluation, 
+                                                             values)
 
     def correct_image(self, image: np.ndarray, size: int = None,
                       alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
-        if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape, (self._size, self._size))):
-            raise InvalidSizeError("The image must be at least as large as the PSFs in all dimensions")
+        if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape, 
+                                                                          (self._size, 
+                                                                           self._size))):
+            msg = "The image must be at least as large as the PSFs in all dimensions"
+            raise InvalidSizeError(msg)
 
         x = np.array([x for x, _ in self._evaluations.keys()], dtype=int)
         y = np.array([y for _, y in self._evaluations.keys()], dtype=int)
 
-        return _correct_image(image, self.target_fft, x, y, self.psf_i_fft,  alpha, epsilon)
+        return _correct_image(image, 
+                              self.target_fft, 
+                              x, y, 
+                              self.psf_i_fft,  alpha, epsilon)
 
-    def __getitem__(self, xy) -> np.ndarray:
+    def __getitem__(self, xy: Tuple[int, int]) -> np.ndarray:
         if xy in self._evaluation_points:
             return self._evaluations[xy]
         else:
             raise UnevaluatedPointError(f"Model not evaluated at {xy}.")
 
-    def save(self, path):
+    def save(self, path: str) -> None:
         dd.io.save(path, (self._evaluations, self._target_evaluation))
 
     @classmethod
-    def load(cls, path):
+    def load(cls, path: str) -> ArrayCorrector:
         evaluations, target_evaluation = dd.io.load(path)
         return cls(evaluations, target_evaluation)
 
@@ -252,27 +281,30 @@ class ArrayCorrector(CorrectorABC):
         apodization_window = np.sin((xarr + 0.5) * (np.pi / psf_shape[0])) * np.sin(
             (yarr + 0.5) * (np.pi / psf_shape[1]))
 
-        img_p = np.pad(image, psf_shape, mode='constant')
+        img_p = np.pad(image, psf_shape, mode="constant")
 
         observation_synthetic = np.zeros(img_shape)
         observation_synthetic_p = np.pad(observation_synthetic, pad_shape)
 
-        def get_img_i(x, y):
-            xs, xe, ys, ye = x + psf_shape[0], x + 2 * psf_shape[0], y + psf_shape[1], y + 2 * psf_shape[1]
+        def get_img_i(x: int, y: int) -> np.ndarray:
+            xs, xe = x + psf_shape[0], x + 2 * psf_shape[0]
+            ys, ye = y + psf_shape[1], y + 2 * psf_shape[1]
             return img_p[xs:xe, ys:ye]
 
-        def set_synthetic_p(x, y, image):
-            xs, xe, ys, ye = x + psf_shape[0], x + 2 * psf_shape[0], y + psf_shape[1], y + 2 * psf_shape[1]
-            observation_synthetic_p[xs:xe, ys:ye] = np.nansum([image, observation_synthetic_p[xs:xe, ys:ye]], axis=0)
+        def set_synthetic_p(x: int, y: int, image: np.ndarray) -> None:
+            xs, xe = x + psf_shape[0], x + 2 * psf_shape[0]
+            ys, ye = y + psf_shape[1], y + 2 * psf_shape[1]
+            observation_synthetic_p[xs:xe, ys:ye] = np.nansum(
+                [image, observation_synthetic_p[xs:xe, ys:ye]], axis=0)
 
         for (x, y), psf_i in self._evaluations.items():
             img_i = get_img_i(x, y)
-            out_i = np.real(ifftshift(ifft2(fft2(img_i * apodization_window) * fft2(psf_i)))) * apodization_window
+            out_i = np.real(ifftshift(ifft2(fft2(img_i * apodization_window) 
+                                            * fft2(psf_i)))) * apodization_window
             set_synthetic_p(x, y, out_i)
 
-        observation = observation_synthetic_p[psf_shape[0]:img_shape[0] + psf_shape[0],
+        return observation_synthetic_p[psf_shape[0]:img_shape[0] + psf_shape[0],
                       psf_shape[1]:img_shape[1] + psf_shape[1]]
-        return observation
 
 
 def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
@@ -288,7 +320,8 @@ def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
     Returns
     -------
     np.ndarray
-        an array of shape Nx2 where return[:, 0] are the x coordinate and return[:, 1] are the y coordinates
+        an array of shape Nx2 where return[:, 0] 
+        are the x coordinate and return[:, 1] are the y coordinates
 
     """
     half_size = np.ceil(size / 2).astype(int)

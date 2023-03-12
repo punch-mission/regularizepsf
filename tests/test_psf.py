@@ -78,19 +78,19 @@ def test_varied_psf_missing_y_fails():
 
 
 def test_varied_psf_called_without_arguments():
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         varied_psf()(lambda x, y: {"sigma": 0.2})
 
 
 def test_varied_psf_called_with_none_base_psf():
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         @varied_psf(None)
         def func(x, y):
             return {"sigma": 0.2}
 
 
 def test_varied_psf_called_naked():
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         @varied_psf
         def func(x, y):
             return {"sigma": 0.1}
