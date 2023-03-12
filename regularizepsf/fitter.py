@@ -368,20 +368,20 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
         if interpolation_scale != 1:
             for coordinate, _ in averaged.items():
-                averaged._patches[coordinate] = downscale_local_mean(averaged._patches[coordinate],
+                averaged._patches[coordinate] = downscale_local_mean(averaged._patches[coordinate],  # noqa: SLF001
                                                                      (interpolation_scale, interpolation_scale))
 
-            averaged._size = psf_size
+            averaged._size = psf_size  # noqa: SLF001
 
         output = CoordinatePatchCollection({})
         for key, patch in averaged.items():
-            output._patches[CoordinateIdentifier(key.image_index, 
+            output._patches[CoordinateIdentifier(key.image_index,  # noqa: SLF001
                                                  key.x // interpolation_scale, 
                                                  key.y // interpolation_scale)] = patch
 
         return output
 
-    def average(self, corners: np.ndarray, patch_size: int, psf_size: int,
+    def average(self, corners: np.ndarray, patch_size: int, psf_size: int,  # noqa: ARG002
                 mode: str = "median") -> PatchCollectionABC:
         CoordinatePatchCollection._validate_average_mode(mode)
         pad_shape = self._calculate_pad_shape(patch_size)

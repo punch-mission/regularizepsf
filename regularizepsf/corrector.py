@@ -149,7 +149,7 @@ class FunctionalCorrector(CorrectorABC):
             for yy in y:
                 evaluations[(xx, yy)] = self._psf(image_x, image_y)
 
-        if self._target_model:
+        if self._target_model:  # noqa: SIM108
             target_evaluation = self._target_model(image_x, image_y)
         else:
             target_evaluation = np.ones((size, size))
@@ -242,7 +242,7 @@ class ArrayCorrector(CorrectorABC):
         self.target_fft, self.psf_i_fft = _precalculate_ffts(self._target_evaluation, 
                                                              values)
 
-    def correct_image(self, image: np.ndarray, size: int = None,
+    def correct_image(self, image: np.ndarray, size: int = None,  # noqa: ARG002
                       alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
         if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape, 
                                                                           (self._size, 
@@ -250,8 +250,8 @@ class ArrayCorrector(CorrectorABC):
             msg = "The image must be at least as large as the PSFs in all dimensions"
             raise InvalidSizeError(msg)
 
-        x = np.array([x for x, _ in self._evaluations.keys()], dtype=int)
-        y = np.array([y for _, y in self._evaluations.keys()], dtype=int)
+        x = np.array([x for x, _ in self._evaluations.keys()], dtype=int)  # noqa: SIM118
+        y = np.array([y for _, y in self._evaluations.keys()], dtype=int)  # noqa: SIM118
 
         return _correct_image(image, 
                               self.target_fft, 
