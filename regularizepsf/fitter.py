@@ -114,7 +114,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         if identifier in self.patches:
             # TODO: improve warning
             warnings.warn(f"{identifier} is being overwritten in this collection.",
-                           Warning)
+                           Warning, stacklevel=2)
         self.patches[identifier] = patch
 
         if self.size is None:
