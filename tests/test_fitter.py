@@ -21,13 +21,13 @@ def incrementing_5_image_set_100x100():
 def test_coordinate_patch_collection_extraction_empty_coordinates(incrementing_5_image_set_100x100):
     cpc = CoordinatePatchCollection.extract(incrementing_5_image_set_100x100, [], 10)
     assert len(cpc) == 0
-    assert cpc._size is None
+    assert cpc.size is None
 
 
 def test_coordinate_patch_collection_extraction_one_coordinate(incrementing_5_image_set_100x100):
     cpc = CoordinatePatchCollection.extract(incrementing_5_image_set_100x100, [CoordinateIdentifier(0, 0, 0)], 10)
     assert len(cpc) == 1
-    assert cpc._size == 10
+    assert cpc.size == 10
     assert CoordinateIdentifier(0, 0, 0) in cpc
     assert np.all(cpc[CoordinateIdentifier(0, 0, 0)] == np.zeros((10, 10)))
 
@@ -49,7 +49,7 @@ def test_coordinate_patch_collection_extraction_many_coordinates(coords, increme
 
     num_distinct_coords = len(set(coords))
     assert len(cpc) == num_distinct_coords
-    assert cpc._size == 10
+    assert cpc.size == 10
     assert len(list(cpc.values())) == num_distinct_coords
     assert len(list(cpc.keys())) == num_distinct_coords
     assert len(list(cpc.items())) == num_distinct_coords
@@ -79,7 +79,7 @@ def test_coordinate_patch_average():
 
 def test_calculate_pad_shape():
     collection = CoordinatePatchCollection({CoordinateIdentifier(0, 0, 0): np.zeros((10, 10))})
-    assert collection._size == 10
+    assert collection.size == 10
     assert collection._calculate_pad_shape(20) == ((5, 5), (5, 5))
 
 
@@ -104,7 +104,7 @@ def test_find_stars_and_average():
     img_path = str(TEST_DIR / "data/DASH.fits")
     example = CoordinatePatchCollection.find_stars_and_average([img_path], 32, 100)
     assert isinstance(example, CoordinatePatchCollection)
-    for loc, patch in example._patches.items():
+    for loc, patch in example.patches.items():
         assert patch.shape == (100, 100)
 
 
@@ -112,7 +112,7 @@ def test_find_stars_and_average_powers_of_2():
     img_path = str(TEST_DIR / "data/DASH.fits")
     example = CoordinatePatchCollection.find_stars_and_average([img_path], 32, 128)
     assert isinstance(example, CoordinatePatchCollection)
-    for loc, patch in example._patches.items():
+    for loc, patch in example.patches.items():
         assert patch.shape == (128, 128)
 
 
@@ -120,6 +120,6 @@ def test_find_stars_and_average_powers_of_2_mean():
     img_path = str(TEST_DIR / "data/DASH.fits")
     example = CoordinatePatchCollection.find_stars_and_average([img_path], 32, 128, average_mode='mean')
     assert isinstance(example, CoordinatePatchCollection)
-    for loc, patch in example._patches.items():
+    for loc, patch in example.patches.items():
         assert patch.shape == (128, 128)
 

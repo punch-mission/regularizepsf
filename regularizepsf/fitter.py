@@ -22,16 +22,16 @@ from regularizepsf.psf import PointSpreadFunctionABC, SimplePSF
 
 class PatchCollectionABC(metaclass=abc.ABCMeta):
     def __init__(self, patches: dict[Any, np.ndarray]) -> None:
-        self._patches = patches
+        self.patches = patches
         if patches:
             shape = next(iter(patches.values())).shape
             # TODO: check that the patches are square
-            self._size = shape[0]
+            self.size = shape[0]
         else:
-            self._size = None
+            self.size = None
 
     def __len__(self) -> int:
-        return len(self._patches)
+        return len(self.patches)
 
     @classmethod
     @abc.abstractmethod
@@ -72,8 +72,8 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         np.ndarray
             a patch's data
         """
-        if identifier in self._patches:
-            return self._patches[identifier]
+        if identifier in self.patches:
+            return self.patches[identifier]
         else:
             msg = f"{identifier} is not used to identify a patch in this collection."
             raise IndexError(msg)
@@ -93,7 +93,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
             True if patch with specified identifier is in the collection, 
                 False otherwise
         """
-        return identifier in self._patches
+        return identifier in self.patches
 
     def add(self, identifier: Any, patch: np.ndarray) -> None:
         """Add a new patch to the collection
@@ -111,14 +111,14 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         -------
         None
         """
-        if identifier in self._patches:
+        if identifier in self.patches:
             # TODO: improve warning
             warnings.warn(f"{identifier} is being overwritten in this collection.",
                            Warning)
-        self._patches[identifier] = patch
+        self.patches[identifier] = patch
 
-        if self._size is None:
-            self._size = patch.shape[0]
+        if self.size is None:
+            self.size = patch.shape[0]
             # TODO : enforce square constraint
 
     @abc.abstractmethod
@@ -175,7 +175,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         -------
         None
         """
-        dd.io.save(path, self._patches)
+        dd.io.save(path, self.patches)
 
     @classmethod
     def load(cls, path: str) -> PatchCollectionABC:
@@ -195,15 +195,15 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
 
     def keys(self) -> List:
         """Gets identifiers for all patches"""
-        return self._patches.keys()
+        return self.patches.keys()
 
     def values(self) -> List:
         """Gets values of all patches"""
-        return self._patches.values()
+        return self.patches.values()
 
     def items(self) -> Dict:
         """A dictionary like iterator over the patches"""
-        return self._patches.items()
+        return self.patches.items()
 
     def _fit_lmfit(self, 
                    base_psf: SimplePSF, 
@@ -226,10 +226,10 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         for parameter in base_psf.parameters:
             initial.add(parameter, value=initial_guesses[parameter])
 
-        xx, yy = np.meshgrid(np.arange(self._size), np.arange(self._size))
+        xx, yy = np.meshgrid(np.arange(self.size), np.arange(self.size))
 
         results = {}
-        for identifier, patch in self._patches.items():
+        for identifier, patch in self.patches.items():
             results[identifier] = minimize(
                 lambda current_parameters, x, y, data:
                     data - base_psf(x, y, **current_parameters.valuesdict()),
@@ -368,20 +368,20 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
         if interpolation_scale != 1:
             for coordinate, _ in averaged.items():
-                averaged._patches[coordinate] = downscale_local_mean(averaged._patches[coordinate],  # noqa: SLF001
-                                                                     (interpolation_scale, interpolation_scale))
+                averaged.patches[coordinate] = downscale_local_mean(averaged.patches[coordinate],
+                                                                    (interpolation_scale, interpolation_scale))
 
-            averaged._size = psf_size  # noqa: SLF001
+            averaged.size = psf_size
 
         output = CoordinatePatchCollection({})
         for key, patch in averaged.items():
-            output._patches[CoordinateIdentifier(key.image_index,  # noqa: SLF001
-                                                 key.x // interpolation_scale, 
-                                                 key.y // interpolation_scale)] = patch
+            output.patches[CoordinateIdentifier(key.image_index,
+                                                key.x // interpolation_scale,
+                                                key.y // interpolation_scale)] = patch
 
         return output
 
-    def average(self, corners: np.ndarray, patch_size: int, psf_size: int,  # noqa: ARG002
+    def average(self, corners: np.ndarray, patch_size: int, psf_size: int,  # noqa: ARG002, kept for consistency
                 mode: str = "median") -> PatchCollectionABC:
         CoordinatePatchCollection._validate_average_mode(mode)
         pad_shape = self._calculate_pad_shape(patch_size)
@@ -397,13 +397,13 @@ class CoordinatePatchCollection(PatchCollectionABC):
         x_bounds = np.stack([corners_x, corners_x + patch_size], axis=-1)
         y_bounds = np.stack([corners_y, corners_y + patch_size], axis=-1)
 
-        for identifier, patch in self._patches.items():
+        for identifier, patch in self.patches.items():
             # pad patch with zeros
             padded_patch = np.pad(patch / np.max(patch), pad_shape, mode="constant")
 
             # Determine which average region it belongs to
-            center_x = identifier.x + self._size // 2
-            center_y = identifier.y + self._size // 2
+            center_x = identifier.x + self.size // 2
+            center_y = identifier.y + self.size // 2
             x_matches = (x_bounds[:, 0] <= center_x) * (center_x < x_bounds[:, 1])
             y_matches = (y_bounds[:, 0] <= center_y) * (center_y < y_bounds[:, 1])
             match_indices = np.where(x_matches * y_matches)[0]
@@ -439,15 +439,15 @@ class CoordinatePatchCollection(PatchCollectionABC):
             raise ValueError(msg)
 
     def _calculate_pad_shape(self, size: int) -> Tuple[int, int]:
-        pad_amount = size - self._size
+        pad_amount = size - self.size
         if pad_amount < 0:
             raise InvalidSizeError(f"The average window size (found {size})" 
                                    "must be larger than the existing patch size"
-                                   f"(found {self._size}).")
+                                   f"(found {self.size}).")
         if pad_amount % 2 != 0:
             raise InvalidSizeError(f"The average window size (found {size})" 
                                    "must be the same parity as the existing patch size"
-                                   f"(found {self._size}).")
+                                   f"(found {self.size}).")
         return ((pad_amount//2, pad_amount//2), (pad_amount//2, pad_amount//2))
 
     def fit(self, base_psf: SimplePSF, 
@@ -468,7 +468,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
             An array corrector that can be used to correct PSFs
         """
         evaluation_dictionary = {}
-        for identifier, patch in self._patches.items():
+        for identifier, patch in self.patches.items():
             corrected_patch = patch.copy()
             corrected_patch[np.isnan(corrected_patch)] = 0
             evaluation_dictionary[(identifier.x, identifier.y)] = corrected_patch
