@@ -1,6 +1,7 @@
 import os.path
 import pathlib
 
+from astropy.io import fits
 import pytest
 import numpy as np
 from hypothesis import given, strategies as st, settings, HealthCheck
@@ -122,4 +123,31 @@ def test_find_stars_and_average_powers_of_2_mean():
     assert isinstance(example, CoordinatePatchCollection)
     for loc, patch in example.patches.items():
         assert patch.shape == (128, 128)
+
+
+def test_find_stars_and_average_image_formats():
+    # Run find_stars_and_average with the three possible input-data formats
+    img_paths = [str(TEST_DIR / "data/DASH.fits")]
+    example_list = CoordinatePatchCollection.find_stars_and_average(img_paths, 32, 100)
+
+    def generator():
+        yield fits.getdata(img_paths[0]).astype(float)
+    example_generator = CoordinatePatchCollection.find_stars_and_average(generator(), 32, 100)
+
+    imgs_array = fits.getdata(img_paths[0]).astype(float)
+    imgs_array = imgs_array.reshape((1, *imgs_array.shape))
+    example_ndarray = CoordinatePatchCollection.find_stars_and_average(imgs_array, 32, 100)
+
+    # Check that we got the correct output type for each one
+    for example in (example_list, example_generator, example_ndarray):
+        assert isinstance(example, CoordinatePatchCollection)
+
+    # Check that the keys of the patch dictionaries are the same for all three
+    assert set(example_list.patches.keys()) == set(example_generator.patches.keys())
+    assert set(example_list.patches.keys()) == set(example_ndarray.patches.keys())
+
+    # Check that the patches themselves are the same for all three
+    for loc in example_list.patches.keys():
+        assert np.all(example_list.patches[loc] == example_generator.patches[loc])
+        assert np.all(example_list.patches[loc] == example_ndarray.patches[loc])
 
