@@ -133,3 +133,4 @@ dmypy.json
 .vscode
 .idea
 regularizepsf/helper.html
+*.c
