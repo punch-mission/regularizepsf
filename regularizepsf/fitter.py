@@ -3,8 +3,9 @@ from __future__ import annotations
 import abc
 import warnings
 from collections import namedtuple
+from collections.abc import Callable
 from numbers import Real
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Generator, List, Tuple
 
 import deepdish as dd
 import numpy as np
@@ -264,7 +265,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
     @classmethod
     def find_stars_and_average(cls, 
-                               image_paths: list[str],
+                               images: list[str] | np.ndarray | Generator,
                                psf_size: int,
                                patch_size: int,
                                interpolation_scale: int = 1,
@@ -275,8 +276,10 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
         Parameters
         ----------
-        image_paths : List[str]
-            location of FITS files to load
+        images : List[str] or np.ndarray or Generator
+            The images to be processed. Can be a list of FITS filenames, a
+            numpy array of shape (n_images, ny, nx), or a Generator that yields
+            each data array in turn.
         psf_size : int
             size of the PSF model to use
         patch_size : int
@@ -303,19 +306,37 @@ class CoordinatePatchCollection(PatchCollectionABC):
         Using an `interpolation_scale` other than 1 
             for large images can dramatically slow down the execution.
         """
-        # Load the first image to determine the image shape, 
-        # assumed to be the same for all images
-        with fits.open(image_paths[0]) as hdul:
-            image_shape = hdul[hdu_choice].data.shape
+        if isinstance(images, Generator):
+            iterator = images
+        elif isinstance(images, np.ndarray):
+            if len(images.shape) == 3:
+                def generator():
+                    for image in images:
+                        yield image
+                iterator = generator()
+            else:
+                raise ValueError("Image data array must be 3D")
+        elif isinstance(images, List) and isinstance(images[0], str):
+            def generator():
+                for image_path in images:
+                    with fits.open(image_path) as hdul:
+                        yield hdul[hdu_choice].data.astype(float)
+            iterator = generator()
+        else:
+            raise ValueError("Unsupported type for `images`")
 
         # the output collection to return
         this_collection = cls({})
 
+        # We'll store the first image's shape, and then make sure the others
+        # match.
+        image_shape = None
+
         # for each image do the magic
-        for i, image_path in enumerate(image_paths):
-            with fits.open(image_path) as hdul:
-                image = hdul[hdu_choice].data.astype(float)
-            if image.shape != image_shape:
+        for i, image in enumerate(iterator):
+            if image_shape is None:
+                image_shape = image.shape
+            elif image.shape != image_shape:
                 msg = ("Images must all be the same shape."
                       f"Found both {image_shape} and {image.shape}.")
                 raise ValueError(msg)
