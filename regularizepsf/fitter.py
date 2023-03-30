@@ -405,10 +405,9 @@ class CoordinatePatchCollection(PatchCollectionABC):
     def average(self, corners: np.ndarray, patch_size: int, psf_size: int,  # noqa: ARG002, kept for consistency
                 mode: str = "median") -> PatchCollectionABC:
         CoordinatePatchCollection._validate_average_mode(mode)
-        pad_shape = self._calculate_pad_shape(patch_size)
 
         if mode == "mean":
-            mean_stack = {tuple(corner): np.zeros((patch_size, patch_size)) 
+            mean_stack = {tuple(corner): np.zeros((psf_size, psf_size))
                           for corner in corners}
             counts = {tuple(corner): 0 for corner in corners}
         elif mode == "median":
@@ -419,8 +418,8 @@ class CoordinatePatchCollection(PatchCollectionABC):
         y_bounds = np.stack([corners_y, corners_y + patch_size], axis=-1)
 
         for identifier, patch in self.patches.items():
-            # pad patch with zeros
-            padded_patch = np.pad(patch / np.max(patch), pad_shape, mode="constant")
+            # Normalize the patch
+            patch = patch / np.max(patch)
 
             # Determine which average region it belongs to
             center_x = identifier.x + self.size // 2
@@ -434,10 +433,10 @@ class CoordinatePatchCollection(PatchCollectionABC):
                 match_corner = tuple(corners[match_index])
                 if mode == "mean":
                     mean_stack[match_corner] = np.nansum([mean_stack[match_corner], 
-                                                          padded_patch], axis=0)
+                                                          patch], axis=0)
                     counts[match_corner] += 1
                 elif mode == "median":
-                    median_stack[match_corner].append(padded_patch)
+                    median_stack[match_corner].append(patch)
 
         if mode == "mean":
             averages = {CoordinateIdentifier(None, corner[0], corner[1]): 
@@ -447,8 +446,12 @@ class CoordinatePatchCollection(PatchCollectionABC):
             averages = {CoordinateIdentifier(None, corner[0], corner[1]):
                             np.nanmedian(median_stack[corner], axis=0)
                                 if len(median_stack[corner]) > 0 else 
-                                np.zeros((patch_size, patch_size))
+                                np.zeros((psf_size, psf_size))
                         for corner in median_stack}
+        # Now that we have our combined patches, pad them as appropriate
+        pad_shape = self._calculate_pad_shape(patch_size)
+        for key, patch in averages.items():
+            averages[key] = np.pad(patch, pad_shape, mode="constant")
         return CoordinatePatchCollection(averages)
 
     @staticmethod
