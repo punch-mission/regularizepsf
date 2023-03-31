@@ -5,3 +5,4 @@ from regularizepsf.corrector import (
 )
 from regularizepsf.fitter import CoordinatePatchCollection  # noqa: F401
 from regularizepsf.psf import simple_psf, varied_psf  # noqa: F401
+from regularizepsf import visualize
