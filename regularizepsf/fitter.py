@@ -368,7 +368,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
             # pad in case someone selects a region on the edge of the image
             padding_shape = ((psf_size * interpolation_scale, psf_size * interpolation_scale),
                              (psf_size * interpolation_scale, psf_size * interpolation_scale))
-            padded_image = np.pad(image, 
+            padded_image = np.pad(image_background_removed,
                                   padding_shape, 
                                   mode="constant", 
                                   constant_values=np.median(image))
