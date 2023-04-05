@@ -361,8 +361,8 @@ class CoordinatePatchCollection(PatchCollectionABC):
                                             err=background.globalrms)
 
             coordinates = [CoordinateIdentifier(i,
-                                                int(y - psf_size * interpolation_scale / 2),
-                                                int(x - psf_size * interpolation_scale / 2))
+                                                int(round(y - psf_size * interpolation_scale / 2)),
+                                                int(round(x - psf_size * interpolation_scale / 2)))
                            for x, y in zip(image_star_coords["x"], image_star_coords["y"])]
 
             # pad in case someone selects a region on the edge of the image
