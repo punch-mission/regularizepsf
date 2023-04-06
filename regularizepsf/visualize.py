@@ -1,8 +1,11 @@
+import itertools
+
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-from regularizepsf.fitter import PatchCollectionABC
+from regularizepsf.corrector import ArrayCorrector
+from regularizepsf.fitter import CoordinateIdentifier, PatchCollectionABC
 
 
 def visualize_patch_counts(patch_collection: PatchCollectionABC,
@@ -44,82 +47,141 @@ def visualize_patch_counts(patch_collection: PatchCollectionABC,
     return ax
 
 
-def visualize_patches(patch_collection: PatchCollectionABC,
-                      ax: matplotlib.axes.Axes = None,
-                      psf_size: int = None,
-                      figsize: tuple[float, float] = None,
-                      uniform_scaling: bool = False,
-                      imshow_args: dict = {}) -> matplotlib.axes.Axes:
+def _generate_colormap():
+    a = np.linspace(0, 1, 1000)
+    r = np.sqrt(a)
+    g = a
+    b = np.square(a)
+    colors = np.stack([r, g, b], axis=-1)
+    return matplotlib.colors.ListedColormap(colors)
+
+
+_colormap = _generate_colormap()
+
+
+def visualize_PSFs(psfs: ArrayCorrector,
+                   corrected: PatchCollectionABC = None,
+                   all_patches: bool = False,
+                   region_size: int = 0,
+                   fig_scale: float = 1,
+                   imshow_args: dict = {}) -> matplotlib.figure.Figure:
     """
-    Utility to visualize the patches in a PatchCollection
+    Utility to visualize computed PSFs.
+
+    Accepts an `ArrayCorrector`, which contains the computed PSFs across the image.
+
+    This utility can also produce a "before and after" visualization. To do
+    this, apply your `ArrayCorrector` to your image set, and then run
+    `CoordinatePatchCollection.find_stars_and_average` on your corrected
+    images. This will compute the PSF of your corrected images. Pass the
+    computed `CoordinatePatchCollection` as the `corrected` argument to this
+    function.
 
     Parameters
     ----------
-    patch_collection : PatchCollectionABC
-        A patch collection, such as that returned by
-        `CoordinatePatchCollection.find_stars_and_average`.
-    ax : matplotlib.axes.Axes
-        An Axes object on which to plot. If not provided, a new Figure will be
-        generated.
-    psf_size : int
-        If the PatchCollection was generated using a PSF size smaller than the
-        patch size, provide the psf_size here to trim the padding from each
-        patch.
-    figsize : tuple
-        If `ax` is not provided, the size of the generated Figure can be set.
-    uniform_scaling : boolean
-        If True, use the scame colormap scaling for all patches. If False,
-        normalize each one separately.
+    psfs : ArrayCorrector
+        An `ArrayCorrector` containing the computed PSFs
+    corrected : PatchCollectionABC
+        A `CoordinatePatchCollection` computed on the corrected set of images
+    all_patches : boolean
+        PSFs are computed for a grid of overlapping patches, with each image
+        pixel being covered by four patches. If `True`, all of these patches
+        are plotted, which can be useful for diagnosing the computed PSFs. If
+        `False`, only a fourth of all patches are plotted (every other patch in
+        both x and y), which can produce simpler illustrations.
+    region_size : int
+        The width of the central region of each patch to plot, or 0 to plot
+        each entire patch. If the PSFs were computed with a `psf_size` less
+        than `patch_size`, it may be convenient to set `region_size=psf_size`,
+        to omit the empty edges of each patch.
+    fig_scale : float
+        Scale the image size up or down by this factor
     imshow_args : dict
         Additional arguments to pass to each `plt.imshow()` call
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The generated figure
     """
-    if not patch_collection.patches:
-        raise ValueError("This PatchCollection does not have any patches")
+    # Special-case vmin/vmax, and pass them to our PowerNorm
+    vmin = imshow_args.pop('vmin', 0)
+    vmax = imshow_args.pop('vmax', 1)
+    imshow_args_default = dict(
+        origin='lower',
+        cmap=_colormap,
+        norm=matplotlib.colors.PowerNorm(gamma=1/2.2, vmin=vmin, vmax=vmax)
+    )
+    imshow_args = imshow_args_default | imshow_args
 
-    if ax is None:
-        fig = plt.figure(figsize=figsize)
-        ax = fig.subplots()
+    # Identify which patches we'll be plotting
+    rows = np.unique(sorted(r for r, c in psfs._evaluation_points))
+    columns = np.unique(sorted(c for r, c in psfs._evaluation_points))
+    if not all_patches:
+        rows = rows[1::2]
+        columns = columns[1::2]
 
-    patch_size = patch_collection.size
-    if psf_size is not None:
-        trim = int((patch_size - psf_size) / 2)
-
-    if uniform_scaling:
-        # Work out vmin/vmax values that work for all patches
-        vmin, vmax = np.inf, -np.inf
-        for patch in patch_collection.values():
-            if psf_size is not None and trim:
-                patch = patch[trim:-trim, trim:-trim]
-            vmin = min(vmin, patch.min())
-            vmax = max(vmax, patch.max())
+    if region_size:
+        patch_size = psfs[rows[0], columns[0]].shape[0]
+        trim = int((patch_size - region_size) / 2)
     else:
-        vmin, vmax = None, None
+        trim = None
 
-    kwargs = {'vmin': vmin, 'vmax': vmax}
-    kwargs.update(imshow_args)
+    # Work out the size of the image
+    # Each grid of patches will be 6 inches wide
+    patches_width = 6
+    # Determine an image height based on the number of rows of patches
+    patches_height = patches_width * len(rows) / len(columns)
+    # Add space for the colorbar
+    total_width = patches_width + .3
+    # To make sure we have a little padding between the patches and the
+    # colorbar, we'll add an extra, empty column
+    n_columns = len(columns) + 2
+    width_ratios = [patches_width/len(columns)]*len(columns) + [.1, .2]
 
-    # Track the coordinates we see, to later set the overall plot bounds
-    xs, ys = [], []
+    if corrected is not None:
+        # Add space for a second grid of patches (including a padding column)
+        total_width += patches_width + .2
+        n_columns += len(columns) + 1
+        width_ratios = (
+                [patches_width / len(columns)] * len(columns)
+                + [.2] + width_ratios)
 
-    for corner, patch in patch_collection.items():
-        if psf_size is not None and trim:
-            patch = patch[trim:-trim, trim:-trim]
-        # Since the patches overlap each other, we need to plot each one so it
-        # only reaches out to the point of overlap.
-        extent = (corner.y + patch_size/4,
-                  corner.y + 3*patch_size/4,
-                  corner.x + patch_size/4,
-                  corner.x + 3*patch_size/4)
-        im = ax.imshow(patch,
-                       origin='lower',
-                       extent=extent,
-                       **kwargs)
-        xs.extend(extent[0:2])
-        ys.extend(extent[2:])
-    if uniform_scaling:
-        # A colorbar only makes sense if every patch uses the same colormap
-        plt.colorbar(im)
-    ax.set_xlim(np.min(xs), np.max(xs))
-    ax.set_ylim(np.min(ys), np.max(ys))
-    return ax
+    fig = matplotlib.figure.Figure(
+            figsize=(total_width * fig_scale, patches_height * fig_scale))
+
+    gs = matplotlib.gridspec.GridSpec(
+            len(rows), n_columns, figure=fig,
+            wspace=0, hspace=0,
+            width_ratios=width_ratios)
+
+    for i, j in itertools.product(range(len(rows)), range(len(columns))):
+        ax = fig.add_subplot(gs[len(rows)-1-i, j])
+        image = psfs[rows[i], columns[j]]
+        if trim is not None:
+            image = image[trim:-trim, trim:-trim]
+        im = ax.imshow(image, **imshow_args)
+        # Ensure there's a thin white line between subplots
+        ax.spines[:].set_color('white')
+        ax.set_xticks([])
+        ax.set_yticks([])
+
+    cax = fig.add_subplot(gs[:, -1])
+    fig.colorbar(im, cax=cax, label='Normalized brightness')
+
+    if corrected is not None:
+        for i, j in itertools.product(range(len(rows)), range(len(columns))):
+            ax = fig.add_subplot(gs[len(rows)-1-i, j + len(columns) + 1])
+            image = corrected[CoordinateIdentifier(None, rows[i], columns[j])]
+            if trim is not None:
+                image = image[trim:-trim, trim:-trim]
+            im = ax.imshow(image, **imshow_args)
+            # Ensure there's a thin white line between subplots
+            ax.spines[:].set_color('white')
+            ax.set_xticks([])
+            ax.set_yticks([])
+
+        fig.text(0.31, 0.95, 'Uncorrected', ha='center', fontsize=15)
+        fig.text(0.7, 0.95, 'Corrected', ha='center', fontsize=15)
+    return fig
 

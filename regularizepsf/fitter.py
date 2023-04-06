@@ -22,7 +22,7 @@ from regularizepsf.psf import PointSpreadFunctionABC, SimplePSF
 
 
 class PatchCollectionABC(metaclass=abc.ABCMeta):
-    def __init__(self, patches: dict[Any, np.ndarray], counts: dict[Any, int] = None) -> None:
+    def __init__(self, patches: dict[Any, np.ndarray], counts: Optional[dict[Any, int]] = None) -> None:
         self.patches = patches
         self.counts = counts
         if patches:
