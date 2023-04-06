@@ -270,6 +270,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
                                patch_size: int,
                                interpolation_scale: int = 1,
                                average_mode: str = "median",
+                               percentile: float = 10,
                                star_threshold: int = 3, hdu_choice: int=0) -> CoordinatePatchCollection:
         """Loads a series of images, finds stars in each, 
             and builds a CoordinatePatchCollection with averaged stars
@@ -288,7 +289,11 @@ class CoordinatePatchCollection(PatchCollectionABC):
             if >1, the image are first scaled by this factor. 
                 This results in stars being aligned at a subpixel scale
         average_mode : str
-            "median" or "mean" determines how patches are combined
+            "median", "percentile", or "mean": determines how patches are
+            combined
+        percentile : float
+            If `average_mode` is `"percentile"`, use this percentile value
+            (from 0 to 100)
         star_threshold : int
             SEP's threshold for finding stars. See `threshold`
                 in https://sep.readthedocs.io/en/v1.1.x/api/sep.extract.html#sep-extract
@@ -385,7 +390,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
                                       patch_size * interpolation_scale)
         averaged = this_collection.average(corners, 
                                            patch_size * interpolation_scale, psf_size * interpolation_scale,
-                                           mode=average_mode)
+                                           mode=average_mode, percentile=percentile)
 
         if interpolation_scale != 1:
             for coordinate, _ in averaged.items():
@@ -403,15 +408,20 @@ class CoordinatePatchCollection(PatchCollectionABC):
         return output
 
     def average(self, corners: np.ndarray, patch_size: int, psf_size: int,  # noqa: ARG002, kept for consistency
-                mode: str = "median") -> PatchCollectionABC:
-        CoordinatePatchCollection._validate_average_mode(mode)
+                mode: str = "median", percentile: float = 10) -> PatchCollectionABC:
+        CoordinatePatchCollection._validate_average_mode(mode, percentile)
 
         if mode == "mean":
             mean_stack = {tuple(corner): np.zeros((psf_size, psf_size))
                           for corner in corners}
-            counts = {tuple(corner): 0 for corner in corners}
-        elif mode == "median":
-            median_stack = {tuple(corner): [] for corner in corners}
+            counts = {tuple(corner): np.zeros((psf_size, psf_size))
+                          for corner in corners}
+        else:
+            # n.b. If mode is 'median', we could set mode='percentile'
+            # and percentile=50 to simplify parts of this function, but
+            # np.nanpercentile(x, 50) seems to be about half as fast as
+            # np.nanmedian(x), so let's keep a speedy special case for medians.
+            stack = {tuple(corner): [] for corner in corners}
 
         corners_x, corners_y = corners[:, 0], corners[:, 1]
         x_bounds = np.stack([corners_x, corners_x + patch_size], axis=-1)
@@ -434,9 +444,9 @@ class CoordinatePatchCollection(PatchCollectionABC):
                 if mode == "mean":
                     mean_stack[match_corner] = np.nansum([mean_stack[match_corner], 
                                                           patch], axis=0)
-                    counts[match_corner] += 1
-                elif mode == "median":
-                    median_stack[match_corner].append(patch)
+                    counts[match_corner] += np.isfinite(patch)
+                else:
+                    stack[match_corner].append(patch)
 
         if mode == "mean":
             averages = {CoordinateIdentifier(None, corner[0], corner[1]): 
@@ -444,10 +454,18 @@ class CoordinatePatchCollection(PatchCollectionABC):
                         for corner in mean_stack}
         elif mode == "median":
             averages = {CoordinateIdentifier(None, corner[0], corner[1]):
-                            np.nanmedian(median_stack[corner], axis=0)
-                                if len(median_stack[corner]) > 0 else 
+                            np.nanmedian(stack[corner], axis=0)
+                                if len(stack[corner]) > 0 else
                                 np.zeros((psf_size, psf_size))
-                        for corner in median_stack}
+                        for corner in stack}
+        elif mode == "percentile":
+            averages = {CoordinateIdentifier(None, corner[0], corner[1]):
+                            np.nanpercentile(stack[corner],
+                                             percentile,
+                                             axis=0)
+                                if len(stack[corner]) > 0 else
+                                np.zeros((psf_size, psf_size))
+                        for corner in stack}
         # Now that we have our combined patches, pad them as appropriate
         pad_shape = self._calculate_pad_shape(patch_size)
         for key, patch in averages.items():
@@ -455,12 +473,14 @@ class CoordinatePatchCollection(PatchCollectionABC):
         return CoordinatePatchCollection(averages)
 
     @staticmethod
-    def _validate_average_mode(mode: str) -> None:
+    def _validate_average_mode(mode: str, percentile: float) -> None:
         """Determine if the average_mode is a valid kind"""
-        valid_modes = ["median", "mean"]
+        valid_modes = ["median", "mean", "percentile"]
         if mode not in valid_modes:
             msg = f"Found a mode of {mode} but it must be in the list {valid_modes}."
             raise ValueError(msg)
+        if mode == "percentile" and not (0 <= percentile <= 100):
+            raise ValueError("`percentile` must be between 0 and 100, inclusive")
 
     def _calculate_pad_shape(self, size: int) -> Tuple[int, int]:
         pad_amount = size - self.size

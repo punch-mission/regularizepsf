@@ -72,10 +72,31 @@ def test_saving_and_loading():
 
 
 def test_coordinate_patch_average():
-    collection = CoordinatePatchCollection({CoordinateIdentifier(0, 0, 0): np.zeros((10, 10)),
-                                            CoordinateIdentifier(0, 0, 0): np.ones((10, 10))*2})
-    averaged_collection = collection.average(np.array([[0, 0]]), 10, 10, mode='median')
-    assert averaged_collection[CoordinateIdentifier(None, 0, 0)][1, 1] == 1
+    collection = CoordinatePatchCollection(
+            {CoordinateIdentifier(0, 0, 0): np.full((10, 10), .3),
+             CoordinateIdentifier(1, 0, 0): np.full((10, 10), .5),
+             CoordinateIdentifier(2, 0, 0): np.full((10, 10), .9),
+             # Exercise the nan-rejection in CoordinatePatchCollection.average()
+             CoordinateIdentifier(3, 0, 0): np.full((10, 10), np.nan),
+             })
+    for patch in collection.values():
+        # Make the normalization of each patch a no-op
+        patch[-1, -1] = 1
+
+    averaged_collection = collection.average(
+            np.array([[0, 0]]), 10, 10, mode='median')
+    expected = np.nanmedian([.3, .5, .9])
+    assert averaged_collection[CoordinateIdentifier(None, 0, 0)][1, 1] == expected
+
+    averaged_collection = collection.average(
+            np.array([[0, 0]]), 10, 10, mode='mean')
+    expected = np.nanmean([.3, .5, .9])
+    assert averaged_collection[CoordinateIdentifier(None, 0, 0)][1, 1] == expected
+
+    averaged_collection = collection.average(
+            np.array([[0, 0]]), 10, 10, mode='percentile', percentile=20)
+    expected = np.nanpercentile([.3, .5, .9], 20)
+    assert averaged_collection[CoordinateIdentifier(None, 0, 0)][1, 1] == expected
 
 
 def test_calculate_pad_shape():
@@ -98,7 +119,20 @@ def test_odd_pad_shape_errors():
 
 def test_validate_average_mode():
     with pytest.raises(ValueError):
-        CoordinatePatchCollection._validate_average_mode("nonexistent_method")
+        CoordinatePatchCollection._validate_average_mode(
+                "nonexistent_method", 1)
+
+    # Ensure valid modes are accepted
+    for mode in ('mean', 'median', 'percentile'):
+        CoordinatePatchCollection._validate_average_mode(mode, 1)
+
+    # Check invalid percentile values
+    with pytest.raises(ValueError):
+        CoordinatePatchCollection._validate_average_mode(
+                "percentile", -1)
+    with pytest.raises(ValueError):
+        CoordinatePatchCollection._validate_average_mode(
+                "percentile", 101)
 
 
 def test_find_stars_and_average():
