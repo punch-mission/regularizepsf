@@ -20,16 +20,16 @@ cpdef _correct_image(np.ndarray[np.float_t, ndim=2] image,
     cdef int size = values_fft.shape[1]
     cdef int i = 0, j=0, xx = 0, yy = 0
     cdef int this_x, this_y, this_x_prime, this_y_prime
-    cdef np.ndarray[np.float_t, ndim=2] img_i = np.empty((size, size), dtype=np.float)
-    cdef np.ndarray[DTYPE_t, ndim=2] psf_i = np.empty((size, size), dtype=np.float)
-    cdef np.ndarray[DTYPE_t, ndim=2] corrected_i = np.empty((size, size), dtype=np.float)
+    cdef np.ndarray[np.float_t, ndim=2] img_i = np.empty((size, size), dtype=float)
+    cdef np.ndarray[DTYPE_t, ndim=2] psf_i = np.empty((size, size), dtype=float)
+    cdef np.ndarray[DTYPE_t, ndim=2] corrected_i = np.empty((size, size), dtype=float)
     cdef np.ndarray[DTYPE_t, ndim=2] padded_img = np.pad(image, ((2 * size, 2* size), (2*size, 2*size)),
                                                          mode="constant")
-    cdef np.ndarray[DTYPE_t, ndim=2] result_img = np.zeros_like(padded_img, dtype=np.float)
+    cdef np.ndarray[DTYPE_t, ndim=2] result_img = np.zeros_like(padded_img, dtype=float)
     cdef float psf_i_hat_abs
-    cdef np.ndarray[np.complex128_t, ndim=2] psf_i_hat_norm = np.empty((size, size), dtype=np.complex)
-    cdef np.ndarray[np.complex128_t, ndim=2] img_i_hat = np.empty((size, size), dtype=np.complex)
-    cdef np.ndarray[np.complex128_t, ndim=2] temp = np.empty((size, size), dtype=np.complex)
+    cdef np.ndarray[np.complex128_t, ndim=2] psf_i_hat_norm = np.empty((size, size), dtype=complex)
+    cdef np.ndarray[np.complex128_t, ndim=2] img_i_hat = np.empty((size, size), dtype=complex)
+    cdef np.ndarray[np.complex128_t, ndim=2] temp = np.empty((size, size), dtype=complex)
     cdef np.ndarray[np.float_t, ndim=2] apodization_window
 
 
@@ -71,8 +71,8 @@ cpdef _precalculate_ffts(np.ndarray[DTYPE_t, ndim=2] target_evaluation, np.ndarr
     cdef int size = values.shape[1]
     cdef int num_patches = values.shape[0]
     cdef np.ndarray[np.complex128_t, ndim=2] psf_target_hat = fft2(target_evaluation)
-    cdef np.ndarray[np.complex128_t, ndim=3] psf_i_hat = np.empty((num_patches, size, size), dtype=np.complex)
-    cdef np.ndarray[np.float_t, ndim=2] holder = np.empty((size, size), dtype=np.float)
+    cdef np.ndarray[np.complex128_t, ndim=3] psf_i_hat = np.empty((num_patches, size, size), dtype=complex)
+    cdef np.ndarray[np.float_t, ndim=2] holder = np.empty((size, size), dtype=float)
 
     for patch_i in range(num_patches):
         for xx in range(size):
