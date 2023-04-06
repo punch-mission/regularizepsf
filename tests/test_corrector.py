@@ -106,17 +106,17 @@ def example_psf(x, y):
     return 0
 
 
-def test_create_functional_corrector():
+def test_create_functional_corrector(tmp_path):
     example = FunctionalCorrector(example_psf, example_psf)
     assert example._psf == example_psf
     assert example.is_variable is False
     assert example._target_model == example_psf
 
-    example.save("test.psf")
-    assert os.path.isfile("test.psf")
-    loaded = example.load("test.psf")
+    fname = tmp_path / "test.psf"
+    example.save(fname)
+    assert os.path.isfile(fname)
+    loaded = example.load(fname)
     assert isinstance(loaded, FunctionalCorrector)
-    os.remove("test.psf")
 
 
 def test_evaluate_to_array_form_with_invalid_size_errors():
@@ -199,17 +199,17 @@ def test_array_corrector_get_nonexistent_point():
         patch = corr[(1, 1)]
 
 
-def test_create_array_corrector():
+def test_save_load_array_corrector(tmp_path):
     evaluations = {(0, 0): np.ones((100, 100))}
     target = np.ones((100, 100))
     example = ArrayCorrector(evaluations, target)
     assert len(example._evaluations) == 1
 
-    example.save("test.psf")
-    assert os.path.isfile("test.psf")
-    loaded = example.load("test.psf")
+    fname = tmp_path / "test.psf"
+    example.save(fname)
+    assert os.path.isfile(fname)
+    loaded = example.load(fname)
     assert isinstance(loaded, ArrayCorrector)
-    os.remove("test.psf")
 
 
 def test_array_corrector_simulate_observation_with_zero_stars():
