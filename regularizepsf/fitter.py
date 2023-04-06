@@ -97,7 +97,10 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         """
         return identifier in self.patches
 
-    def add(self, identifier: Any, patch: np.ndarray) -> None:
+    def add(self,
+            identifier: Any,
+            patch: np.ndarray,
+            count: Optional[int] = None) -> None:
         """Add a new patch to the collection
 
         Parameters
@@ -105,9 +108,10 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         identifier : Any
             identifier for a given patch, 
                 specifically implemented for each PatchCollection
-
         patch : np.ndarray
             the data for a specific patch
+        count : int
+            Optionally, a corresponding item to add to the `counts` dictionary
 
         Returns
         -------
@@ -118,6 +122,9 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
             warnings.warn(f"{identifier} is being overwritten in this collection.",
                            Warning, stacklevel=2)
         self.patches[identifier] = patch
+
+        if count is not None:
+            self.counts[identifier] = count
 
         if self.size is None:
             self.size = patch.shape[0]
@@ -435,12 +442,14 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
             averaged.size = psf_size
 
-        output = CoordinatePatchCollection({}, counts=averaged.counts)
+        output = CoordinatePatchCollection({}, counts={})
         for key, patch in averaged.items():
+            count = averaged.counts[key]
             output.add(CoordinateIdentifier(key.image_index,
                                             key.x // interpolation_scale,
                                             key.y // interpolation_scale),
-                       patch)
+                       patch,
+                       count=count)
 
         return output
 
@@ -505,6 +514,8 @@ class CoordinatePatchCollection(PatchCollectionABC):
                                 if len(stack[corner]) > 0 else
                                 np.zeros((psf_size, psf_size))
                         for corner in stack}
+        counts = {CoordinateIdentifier(None, corner[0], corner[1]): count
+                  for corner, count in counts.items()}
         # Now that we have our combined patches, pad them as appropriate
         pad_shape = self._calculate_pad_shape(patch_size)
         for key, patch in averages.items():

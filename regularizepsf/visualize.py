@@ -32,7 +32,7 @@ def visualize_patch_counts(patch_collection: PatchCollectionABC,
     corners = []
     counts = []
     for corner, count in patch_collection.counts.items():
-        corners.append(corner)
+        corners.append((corner.x, corner.y))
         counts.append(count)
     # corners has the lower-left corner of each patch
     corners = np.array(corners)
