@@ -346,12 +346,12 @@ class CoordinatePatchCollection(PatchCollectionABC):
                 interpolator = RectBivariateSpline(np.arange(image.shape[0]), 
                                                    np.arange(image.shape[1]), 
                                                    image)
-                image = interpolator(np.linspace(0, 
-                                                 image.shape[0], 
-                                                 image.shape[0] * interpolation_scale),
-                                     np.linspace(0, 
-                                                 image.shape[1], 
-                                                 image.shape[1] * interpolation_scale))
+                image = interpolator(np.linspace(0,
+                                                 image.shape[0] - 1,
+                                                 1 + (image.shape[0] - 1) * interpolation_scale),
+                                     np.linspace(0,
+                                                 image.shape[1] - 1,
+                                                 1 + (image.shape[1] - 1) * interpolation_scale))
 
             # find stars using SEP
             background = sep.Background(image)
