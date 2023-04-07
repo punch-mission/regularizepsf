@@ -24,5 +24,5 @@ setup(
     install_requires=["numpy", "dill", "deepdish", "lmfit", "sep", "cython", "astropy", "scipy", "scikit-image", "matplotlib"],
     package_data={"regularizepsf": ["helper.pyx"]},
     setup_requires=["cython"],
-    extras_require={"test": ['pytest', 'coverage', 'pytest-runner']}
+    extras_require={"test": ['pytest', 'coverage', 'pytest-runner', 'pytest-mpl']}
 )
