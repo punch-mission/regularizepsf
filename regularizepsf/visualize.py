@@ -29,20 +29,26 @@ def visualize_patch_counts(patch_collection: PatchCollectionABC,
         fig = plt.figure()
         ax = fig.subplots()
 
-    corners = []
-    counts = []
-    for corner, count in patch_collection.counts.items():
-        corners.append((corner.x, corner.y))
-        counts.append(count)
-    # corners has the lower-left corner of each patch
-    corners = np.array(corners)
-    corners += patch_collection.size // 2
-    # Now it has the center of each patch
+    rows = [k.x for k in patch_collection.counts.keys()]
+    columns = [k.y for k in patch_collection.counts.keys()]
+    rows = np.unique(sorted(rows))
+    columns = np.unique(sorted(columns))
+    dr = rows[1] - rows[0]
+    dc = columns[1] - columns[0]
 
-    ax.set_aspect('equal')
-    m = ax.scatter(corners[:, 1], corners[:, 0], c=counts, s=200)
+    # Build an array containing all the patch counts
+    counts = np.empty((len(rows), len(columns)))
+    for k, count in patch_collection.counts.items():
+        r, c = k.x, k.y
+        r = int((r - rows.min()) / dr)
+        c = int((c - columns.min()) / dc)
+        counts[r, c] = count
+
+    m = ax.imshow(counts, origin='lower')
     plt.colorbar(m).set_label(
-            "Number of stars found in patch centered on point")
+            "Number of stars found in patch")
+    ax.set_xlabel("Patch number")
+    ax.set_ylabel("Patch number")
 
     return ax
 
