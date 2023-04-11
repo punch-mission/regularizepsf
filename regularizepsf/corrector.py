@@ -235,9 +235,11 @@ class ArrayCorrector(CorrectorABC):
             msg = "The target and evaluations must have the same shape."
             raise EvaluatedModelInconsistentSizeError(msg)
 
-        values = np.array(list(self._evaluations.values()), dtype=float)
-        self.target_fft, self.psf_i_fft = _precalculate_ffts(self._target_evaluation, 
-                                                             values)
+        normalized_values = np.array(
+                [v / v.sum() for v in self._evaluations.values()], dtype=float)
+        normalized_target = target_evaluation / target_evaluation.sum()
+        self.target_fft, self.psf_i_fft = _precalculate_ffts(
+                normalized_target, normalized_values)
 
     def correct_image(self, image: np.ndarray, size: int = None,  # noqa: ARG002, size used in FunctionalCorrector
                       alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
