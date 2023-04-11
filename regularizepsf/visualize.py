@@ -1,3 +1,4 @@
+import copy
 import itertools
 
 import matplotlib
@@ -6,6 +7,7 @@ import numpy as np
 
 from regularizepsf.corrector import ArrayCorrector
 from regularizepsf.fitter import CoordinateIdentifier, PatchCollectionABC
+from regularizepsf.helper import _regularize_array
 
 
 def visualize_patch_counts(patch_collection: PatchCollectionABC,
@@ -69,12 +71,16 @@ def visualize_PSFs(psfs: ArrayCorrector,
                    corrected: PatchCollectionABC = None,
                    all_patches: bool = False,
                    region_size: int = 0,
+                   fig: matplotlib.figure.Figure = None,
                    fig_scale: float = 1,
+                   colorbar_label: str = 'Normalized brightness',
+                   axis_border_color: str = 'white',
                    imshow_args: dict = {}) -> matplotlib.figure.Figure:
     """
     Utility to visualize computed PSFs.
 
-    Accepts an `ArrayCorrector`, which contains the computed PSFs across the image.
+    Accepts an `ArrayCorrector`, which contains the computed PSFs across the
+    image.
 
     This utility can also produce a "before and after" visualization. To do
     this, apply your `ArrayCorrector` to your image set, and then run
@@ -100,8 +106,15 @@ def visualize_PSFs(psfs: ArrayCorrector,
         each entire patch. If the PSFs were computed with a `psf_size` less
         than `patch_size`, it may be convenient to set `region_size=psf_size`,
         to omit the empty edges of each patch.
+    fig : matplotlb.figure.Figure
+        A Figure on which to plot. If not provided, one will be created.
     fig_scale : float
-        Scale the image size up or down by this factor
+        If `fig` is not provided, scale the generated Figure up or down by this
+        factor.
+    colorbar_label : str
+        The label to show on the colorbar
+    axis_border_color : str
+        The color to use for the lines separating the patch plots.
     imshow_args : dict
         Additional arguments to pass to each `plt.imshow()` call
 
@@ -111,8 +124,12 @@ def visualize_PSFs(psfs: ArrayCorrector,
         The generated figure
     """
     # Special-case vmin/vmax, and pass them to our PowerNorm
-    vmin = imshow_args.pop('vmin', 0)
-    vmax = imshow_args.pop('vmax', 1)
+    if 'norm' not in imshow_args:
+        vmin = imshow_args.pop('vmin', 0)
+        vmax = imshow_args.pop('vmax', 1)
+    else:
+        # The default Norm will be overridden
+        vmin, vmax = None, None
     imshow_args_default = dict(
         origin='lower',
         cmap=_colormap,
@@ -153,8 +170,9 @@ def visualize_PSFs(psfs: ArrayCorrector,
                 [patches_width / len(columns)] * len(columns)
                 + [.2] + width_ratios)
 
-    fig = matplotlib.figure.Figure(
-            figsize=(total_width * fig_scale, patches_height * fig_scale))
+    if fig is None:
+        fig = plt.figure(
+                figsize=(total_width * fig_scale, patches_height * fig_scale))
 
     gs = matplotlib.gridspec.GridSpec(
             len(rows), n_columns, figure=fig,
@@ -167,13 +185,13 @@ def visualize_PSFs(psfs: ArrayCorrector,
         if trim is not None:
             image = image[trim:-trim, trim:-trim]
         im = ax.imshow(image, **imshow_args)
-        # Ensure there's a thin white line between subplots
-        ax.spines[:].set_color('white')
+        # Ensure there's a thin line between subplots
+        ax.spines[:].set_color(axis_border_color)
         ax.set_xticks([])
         ax.set_yticks([])
 
     cax = fig.add_subplot(gs[:, -1])
-    fig.colorbar(im, cax=cax, label='Normalized brightness')
+    fig.colorbar(im, cax=cax, label=colorbar_label)
 
     if corrected is not None:
         for i, j in itertools.product(range(len(rows)), range(len(columns))):
@@ -191,3 +209,85 @@ def visualize_PSFs(psfs: ArrayCorrector,
         fig.text(0.7, 0.95, 'Corrected', ha='center', fontsize=15)
     return fig
 
+
+def visualize_transfer_kernels(psfs: ArrayCorrector,
+                   alpha: float, epsilon: float,
+                   all_patches: bool = False,
+                   region_size: int = 0,
+                   fig: matplotlib.figure.Figure = None,
+                   fig_scale: float = 1,
+                   colorbar_label: str = 'Transfer kernel amplitude',
+                   axis_border_color: str = 'black',
+                   imshow_args: dict = {}) -> matplotlib.figure.Figure:
+    """
+    Utility to compute and visualize transfer kernels.
+
+    Accepts an `ArrayCorrector`, which contains the computed PSFs across the
+    image. These PSFs, and the target PSF, will be used to compute each
+    transfer kernel.
+
+    Parameters
+    ----------
+    psfs : ArrayCorrector
+        An `ArrayCorrector` containing the computed PSFs and target PSF
+    alpha, epsilon : float
+        Values used in computing the regularized reciprocal of the computed
+        PSFs. Provide the same values that you would pass to
+        `ArrayCorrector.correct_image`.
+    all_patches : boolean
+        PSFs are computed for a grid of overlapping patches, with each image
+        pixel being covered by four patches. If `True`, all of these patches
+        are plotted, which can be useful for diagnosing the computed PSFs. If
+        `False`, only a fourth of all patches are plotted (every other patch in
+        both x and y), which can produce simpler illustrations.
+    region_size : int
+        The width of the central region of each patch to plot, or 0 to plot
+        each entire patch. If the PSFs were computed with a `psf_size` less
+        than `patch_size`, it may be convenient to set `region_size=psf_size`,
+        to omit the empty edges of each patch.
+    fig : matplotlb.figure.Figure
+        A Figure on which to plot. If not provided, one will be created.
+    fig_scale : float
+        If `fig` is not provided, scale the generated Figure up or down by this
+        factor.
+    colorbar_label : str
+        The label to show on the colorbar
+    axis_border_color : str
+        The color to use for the lines separating the patch plots.
+    imshow_args : dict
+        Additional arguments to pass to each `plt.imshow()` call
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The generated figure
+    """
+    # Copy the ArrayCorrector. We'll change each patch to store the transfer
+    # kernel rather than the PSF
+    tks = copy.deepcopy(psfs)
+    extent = -np.inf
+    for i in range(len(tks._evaluations)):
+        psf_regularized_inverse = _regularize_array(
+                tks.psf_i_fft[i], alpha, epsilon, tks.target_fft)
+        transfer_kernel = np.fft.ifft2(
+                psf_regularized_inverse * tks.target_fft).real
+        # For some reason, the transfer kernel we get straddles the corners of
+        # the image, rather than being centered. We must be picking up a phase
+        # shift in Fourier space.
+        transfer_kernel = np.fft.fftshift(transfer_kernel)
+        tks._evaluations[tks._evaluation_points[i]] = transfer_kernel
+        extent = max(extent, np.max(np.abs(transfer_kernel)))
+
+    # The plot we want is very similar to that produced by visualize_PSFs, so
+    # we'll use that function and change some of the defaults.
+    imshow_args_default = dict(
+            norm=None,
+            cmap='bwr',
+            vmin=-extent,
+            vmax=extent)
+    imshow_args = imshow_args_default | imshow_args
+    return visualize_PSFs(
+            tks, all_patches=all_patches, region_size=region_size, fig=fig,
+            fig_scale=fig_scale, colorbar_label=colorbar_label,
+            axis_border_color=axis_border_color,
+            imshow_args=imshow_args)
