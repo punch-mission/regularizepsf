@@ -11,7 +11,8 @@ from regularizepsf.helper import _regularize_array
 
 
 def visualize_patch_counts(patch_collection: PatchCollectionABC,
-                           ax: matplotlib.axes.Axes = None) -> matplotlib.axes.Axes:
+                           ax: matplotlib.axes.Axes = None,
+                           label_pixel_bounds: bool = False) -> matplotlib.axes.Axes:
     """
     Utility to visualize the number of stars identified within each patch
 
@@ -23,6 +24,9 @@ def visualize_patch_counts(patch_collection: PatchCollectionABC,
     ax : matplotlib.axes.Axes
         An Axes object on which to plot. If not provided, a new Figure will be
         generated.
+    label_pixel_bounds : bool
+        If True, the axes of the plot will be labeled with the pixel range
+        spanned by each patch.
     """
     if patch_collection.counts is None or not len(patch_collection.counts):
         raise ValueError("This PatchCollection does not have any counts")
@@ -49,8 +53,25 @@ def visualize_patch_counts(patch_collection: PatchCollectionABC,
     m = ax.imshow(counts, origin='lower')
     plt.colorbar(m).set_label(
             "Number of stars found in patch")
-    ax.set_xlabel("Patch number")
-    ax.set_ylabel("Patch number")
+
+    if label_pixel_bounds:
+        xticks = [xt for xt in plt.xticks()[0] if 0 <= xt < len(columns)]
+        plt.xticks(
+                xticks,
+                [f"[{int(columns.min() + dc * i)},"
+                 f"\n{int(columns.min() + dc * (i+2))}]"
+                    for i in xticks])
+        yticks = [yt for yt in plt.yticks()[0] if 0 <= yt < len(rows)]
+        plt.yticks(
+                yticks,
+                [f"[{int(rows.min() + dr * i)},"
+                 f"\n{int(rows.min() + dr * (i+2))}]"
+                    for i in yticks])
+        ax.set_xlabel("Patch bounds (px)")
+        ax.set_ylabel("Patch bounds (px)")
+    else:
+        ax.set_xlabel("Patch number")
+        ax.set_ylabel("Patch number")
 
     return ax
 
@@ -75,6 +96,7 @@ def visualize_PSFs(psfs: ArrayCorrector,
                    fig_scale: float = 1,
                    colorbar_label: str = 'Normalized brightness',
                    axis_border_color: str = 'white',
+                   label_pixel_bounds: bool = False,
                    imshow_args: dict = {}) -> matplotlib.figure.Figure:
     """
     Utility to visualize computed PSFs.
@@ -115,6 +137,9 @@ def visualize_PSFs(psfs: ArrayCorrector,
         The label to show on the colorbar
     axis_border_color : str
         The color to use for the lines separating the patch plots.
+    label_pixel_bounds : bool
+        If True, the axes of the plot will be labeled with the pixel range
+        spanned by each patch.
     imshow_args : dict
         Additional arguments to pass to each `plt.imshow()` call
 
@@ -140,6 +165,8 @@ def visualize_PSFs(psfs: ArrayCorrector,
     # Identify which patches we'll be plotting
     rows = np.unique(sorted(r for r, c in psfs._evaluation_points))
     columns = np.unique(sorted(c for r, c in psfs._evaluation_points))
+    dr = rows[1] - rows[0]
+    dc = columns[1] - columns[0]
     if not all_patches:
         rows = rows[1::2]
         columns = columns[1::2]
@@ -189,6 +216,14 @@ def visualize_PSFs(psfs: ArrayCorrector,
         ax.spines[:].set_color(axis_border_color)
         ax.set_xticks([])
         ax.set_yticks([])
+        if i == 0 and label_pixel_bounds:
+            ax.set_xlabel(
+                    f"{int(columns[j])} to\n{int(columns[j] + 2 * dc)} px",
+                    rotation='horizontal', ha='center')
+        if j == 0 and label_pixel_bounds:
+            ax.set_ylabel(
+                    f"{int(rows[i])} to\n{int(rows[i] + 2 * dr)} px",
+                    rotation='horizontal', ha='right', va='center')
 
     cax = fig.add_subplot(gs[:, -1])
     fig.colorbar(im, cax=cax, label=colorbar_label)
@@ -218,6 +253,7 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
                    fig_scale: float = 1,
                    colorbar_label: str = 'Transfer kernel amplitude',
                    axis_border_color: str = 'black',
+                   label_pixel_bounds: bool = False,
                    imshow_args: dict = {}) -> matplotlib.figure.Figure:
     """
     Utility to compute and visualize transfer kernels.
@@ -254,6 +290,9 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
         The label to show on the colorbar
     axis_border_color : str
         The color to use for the lines separating the patch plots.
+    label_pixel_bounds : bool
+        If True, the axes of the plot will be labeled with the pixel range
+        spanned by each patch.
     imshow_args : dict
         Additional arguments to pass to each `plt.imshow()` call
 
@@ -290,4 +329,4 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
             tks, all_patches=all_patches, region_size=region_size, fig=fig,
             fig_scale=fig_scale, colorbar_label=colorbar_label,
             axis_border_color=axis_border_color,
-            imshow_args=imshow_args)
+            label_pixel_bounds=label_pixel_bounds, imshow_args=imshow_args)
