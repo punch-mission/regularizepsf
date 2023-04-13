@@ -160,17 +160,26 @@ def test_find_stars_and_average_powers_of_2_mean():
 
 
 def test_find_stars_and_average_image_formats():
-    # Run find_stars_and_average with the three possible input-data formats
+    """Runs find_stars_and_average with the three possible input-data formats"""
     img_paths = [str(TEST_DIR / "data/DASH.fits")]
-    example_list = CoordinatePatchCollection.find_stars_and_average(img_paths, 32, 100)
-
-    def generator():
-        yield fits.getdata(img_paths[0]).astype(float)
-    example_generator = CoordinatePatchCollection.find_stars_and_average(generator(), 32, 100)
 
     imgs_array = fits.getdata(img_paths[0]).astype(float)
     imgs_array = imgs_array.reshape((1, *imgs_array.shape))
-    example_ndarray = CoordinatePatchCollection.find_stars_and_average(imgs_array, 32, 100)
+
+    # Use a mask to only process part of the image, to speed up this test
+    mask = np.ones_like(imgs_array, dtype=bool)
+    mask[:, :800, :800] = 0
+
+    example_ndarray = CoordinatePatchCollection.find_stars_and_average(
+            imgs_array, 32, 100, star_mask=mask)
+
+    example_list = CoordinatePatchCollection.find_stars_and_average(
+            img_paths, 32, 100, star_mask=mask)
+
+    def generator():
+        yield imgs_array[0]
+    example_generator = CoordinatePatchCollection.find_stars_and_average(
+            generator(), 32, 100, star_mask=mask)
 
     # Check that we got the correct output type for each one
     for example in (example_list, example_generator, example_ndarray):
