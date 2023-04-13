@@ -185,3 +185,49 @@ def test_find_stars_and_average_image_formats():
         assert np.all(example_list.patches[loc] == example_generator.patches[loc])
         assert np.all(example_list.patches[loc] == example_ndarray.patches[loc])
 
+
+def test_find_stars_and_average_mask_formats(tmp_path):
+    """ Test star-finding masks, in all accepted formats"""
+    img_paths = [str(TEST_DIR / "data/DASH.fits")]
+    imgs_array = fits.getdata(img_paths[0])
+    # Cut down the data size so this test runs quicker
+    imgs_array = imgs_array[:800, :800].astype(float)
+    imgs_array = imgs_array.reshape((1, *imgs_array.shape))
+
+    # Mask out everything except one corner
+    mask_array = np.ones_like(imgs_array, dtype=bool)
+    mask_array[:, :402, :402] = 0
+
+    # Try all the formats in which masks are accepted
+
+    example_ndarray = CoordinatePatchCollection.find_stars_and_average(
+            imgs_array, 32, 200, star_mask=mask_array)
+
+    def generator():
+        yield mask_array[0]
+    example_generator = CoordinatePatchCollection.find_stars_and_average(
+            imgs_array, 32, 200, star_mask=generator())
+
+    mask_fname = str(tmp_path / "mask.fits")
+    fits.writeto(mask_fname, mask_array[0].astype(int))
+    example_file = CoordinatePatchCollection.find_stars_and_average(
+            imgs_array, 32, 200, star_mask=[mask_fname])
+
+    example_no_mask = CoordinatePatchCollection.find_stars_and_average(
+            imgs_array, 32, 200, star_mask=None)
+
+    for loc in example_file.patches.keys():
+        # Check that the patches are the same for all three mask formats
+        assert np.all(example_file.patches[loc] == example_generator.patches[loc])
+        assert np.all(example_file.patches[loc] == example_ndarray.patches[loc])
+
+        if loc.x >= 400 or loc.y >= 400:
+            # This patch should be fully masked
+            assert np.all(example_file[loc] == 0)
+        elif loc.x <= 200 and loc.y <= 200:
+            # This patch should be fully unmasked
+            assert np.all(example_file[loc] == example_no_mask[loc])
+        else:
+            # This patche covers a mix of masked and non-masked areas
+            assert np.any(example_file[loc] != 0)
+
