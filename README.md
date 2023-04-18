@@ -28,15 +28,17 @@ Please contact Marcus Hughes at [marcus.hughes@swri.org](mailto:marcus.hughes@sw
 Please cite the associated paper if you use this technique: 
 
 ```
-@misc{https://doi.org/10.48550/arxiv.2212.02594,
-  doi = {10.48550/ARXIV.2212.02594},
-  url = {https://arxiv.org/abs/2212.02594},
-  author = {Hughes, J. M. and DeForest, C. E. and Seaton, D. B.},
-  keywords = {Instrumentation and Methods for Astrophysics (astro-ph.IM), FOS: Physical sciences, FOS: Physical sciences},
-  title = {Coma Off It: Removing Variable Point Spread Functions from Astronomical Images},
-  publisher = {arXiv},
-  year = {2022},
-  copyright = {arXiv.org perpetual, non-exclusive license}
+@article{Hughes_2023,
+doi = {10.3847/1538-3881/acc578},
+url = {https://dx.doi.org/10.3847/1538-3881/acc578},
+year = {2023},
+month = {apr},
+publisher = {The American Astronomical Society},
+volume = {165},
+number = {5},
+pages = {204},
+author = {J. Marcus Hughes and Craig E. DeForest and Daniel B. Seaton},
+title = {Coma Off It: Regularizing Variable Point-spread Functions},
+journal = {The Astronomical Journal}
 }
-
 ```
