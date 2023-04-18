@@ -160,17 +160,26 @@ def test_find_stars_and_average_powers_of_2_mean():
 
 
 def test_find_stars_and_average_image_formats():
-    # Run find_stars_and_average with the three possible input-data formats
+    """Runs find_stars_and_average with the three possible input-data formats"""
     img_paths = [str(TEST_DIR / "data/DASH.fits")]
-    example_list = CoordinatePatchCollection.find_stars_and_average(img_paths, 32, 100)
-
-    def generator():
-        yield fits.getdata(img_paths[0]).astype(float)
-    example_generator = CoordinatePatchCollection.find_stars_and_average(generator(), 32, 100)
 
     imgs_array = fits.getdata(img_paths[0]).astype(float)
     imgs_array = imgs_array.reshape((1, *imgs_array.shape))
-    example_ndarray = CoordinatePatchCollection.find_stars_and_average(imgs_array, 32, 100)
+
+    # Use a mask to only process part of the image, to speed up this test
+    mask = np.ones_like(imgs_array, dtype=bool)
+    mask[:, :800, :800] = 0
+
+    example_ndarray = CoordinatePatchCollection.find_stars_and_average(
+            imgs_array, 32, 100, star_mask=mask)
+
+    example_list = CoordinatePatchCollection.find_stars_and_average(
+            img_paths, 32, 100, star_mask=mask)
+
+    def generator():
+        yield imgs_array[0]
+    example_generator = CoordinatePatchCollection.find_stars_and_average(
+            generator(), 32, 100, star_mask=mask)
 
     # Check that we got the correct output type for each one
     for example in (example_list, example_generator, example_ndarray):
@@ -184,4 +193,50 @@ def test_find_stars_and_average_image_formats():
     for loc in example_list.patches.keys():
         assert np.all(example_list.patches[loc] == example_generator.patches[loc])
         assert np.all(example_list.patches[loc] == example_ndarray.patches[loc])
+
+
+def test_find_stars_and_average_mask_formats(tmp_path):
+    """ Test star-finding masks, in all accepted formats"""
+    img_paths = [str(TEST_DIR / "data/DASH.fits")]
+    imgs_array = fits.getdata(img_paths[0])
+    # Cut down the data size so this test runs quicker
+    imgs_array = imgs_array[:800, :800].astype(float)
+    imgs_array = imgs_array.reshape((1, *imgs_array.shape))
+
+    # Mask out everything except one corner
+    mask_array = np.ones_like(imgs_array, dtype=bool)
+    mask_array[:, :402, :402] = 0
+
+    # Try all the formats in which masks are accepted
+
+    example_ndarray = CoordinatePatchCollection.find_stars_and_average(
+            imgs_array, 32, 200, star_mask=mask_array)
+
+    def generator():
+        yield mask_array[0]
+    example_generator = CoordinatePatchCollection.find_stars_and_average(
+            imgs_array, 32, 200, star_mask=generator())
+
+    mask_fname = str(tmp_path / "mask.fits")
+    fits.writeto(mask_fname, mask_array[0].astype(int))
+    example_file = CoordinatePatchCollection.find_stars_and_average(
+            imgs_array, 32, 200, star_mask=[mask_fname])
+
+    example_no_mask = CoordinatePatchCollection.find_stars_and_average(
+            imgs_array, 32, 200, star_mask=None)
+
+    for loc in example_file.patches.keys():
+        # Check that the patches are the same for all three mask formats
+        assert np.all(example_file.patches[loc] == example_generator.patches[loc])
+        assert np.all(example_file.patches[loc] == example_ndarray.patches[loc])
+
+        if loc.x >= 400 or loc.y >= 400:
+            # This patch should be fully masked
+            assert np.all(example_file[loc] == 0)
+        elif loc.x <= 200 and loc.y <= 200:
+            # This patch should be fully unmasked
+            assert np.all(example_file[loc] == example_no_mask[loc])
+        else:
+            # This patche covers a mix of masked and non-masked areas
+            assert np.any(example_file[loc] != 0)
 

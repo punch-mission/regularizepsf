@@ -5,7 +5,7 @@ import warnings
 from collections import namedtuple
 from collections.abc import Callable
 from numbers import Real
-from typing import Any, Dict, Generator, List, Tuple
+from typing import Any, Dict, Generator, List, Optional, Tuple
 
 import deepdish as dd
 import numpy as np
@@ -271,7 +271,9 @@ class CoordinatePatchCollection(PatchCollectionABC):
                                interpolation_scale: int = 1,
                                average_mode: str = "median",
                                percentile: float = 10,
-                               star_threshold: int = 3, hdu_choice: int=0) -> CoordinatePatchCollection:
+                               star_threshold: int = 3,
+                               star_mask: Optional[list[str] | np.ndarray | Generator] = None,
+                               hdu_choice: int=0) -> CoordinatePatchCollection:
         """Loads a series of images, finds stars in each, 
             and builds a CoordinatePatchCollection with averaged stars
 
@@ -297,6 +299,14 @@ class CoordinatePatchCollection(PatchCollectionABC):
         star_threshold : int
             SEP's threshold for finding stars. See `threshold`
                 in https://sep.readthedocs.io/en/v1.1.x/api/sep.extract.html#sep-extract
+        star_mask : List[str] or np.ndarray or Generator
+            Masks to apply during star-finding. Can be a list of FITS filenames, a
+            numpy array of shape (n_images, ny, nx), or a Generator that yields
+            each mask array in turn. Where the mask pixel is `True`, the
+            corresponding data array pixel will not be selected as a star. See
+            `mask` in
+            https://sep.readthedocs.io/en/v1.1.x/api/sep.extract.html#sep-extract
+            for more details.
         hdu_choice : int
             Which HDU from each image will be used, 
                 default of 0 is most common but could be 1 for compressed images
@@ -312,13 +322,13 @@ class CoordinatePatchCollection(PatchCollectionABC):
             for large images can dramatically slow down the execution.
         """
         if isinstance(images, Generator):
-            iterator = images
+            data_iterator = images
         elif isinstance(images, np.ndarray):
             if len(images.shape) == 3:
                 def generator():
                     for image in images:
                         yield image
-                iterator = generator()
+                data_iterator = generator()
             else:
                 raise ValueError("Image data array must be 3D")
         elif isinstance(images, List) and isinstance(images[0], str):
@@ -326,9 +336,33 @@ class CoordinatePatchCollection(PatchCollectionABC):
                 for image_path in images:
                     with fits.open(image_path) as hdul:
                         yield hdul[hdu_choice].data.astype(float)
-            iterator = generator()
+            data_iterator = generator()
         else:
             raise ValueError("Unsupported type for `images`")
+
+        if star_mask is None:
+            def generator():
+                while True:
+                    yield None
+            star_mask_iterator = generator()
+        elif isinstance(star_mask, Generator):
+            star_mask_iterator = star_mask
+        elif isinstance(star_mask, np.ndarray):
+            if len(star_mask.shape) == 3:
+                def generator():
+                    for mask in star_mask:
+                        yield mask
+                star_mask_iterator = generator()
+            else:
+                raise ValueError("Star mask array must be 3D")
+        elif isinstance(star_mask, List) and isinstance(star_mask[0], str):
+            def generator():
+                for mask_path in star_mask:
+                    with fits.open(mask_path) as hdul:
+                        yield hdul[hdu_choice].data.astype(bool)
+            star_mask_iterator = generator()
+        else:
+            raise ValueError("Unsupported type for `star_mask`")
 
         # the output collection to return
         this_collection = cls({})
@@ -338,7 +372,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
         image_shape = None
 
         # for each image do the magic
-        for i, image in enumerate(iterator):
+        for i, (image, star_mask) in enumerate(zip(data_iterator, star_mask_iterator)):
             if image_shape is None:
                 image_shape = image.shape
             elif image.shape != image_shape:
@@ -363,7 +397,8 @@ class CoordinatePatchCollection(PatchCollectionABC):
             image_background_removed = image - background
             image_star_coords = sep.extract(image_background_removed, 
                                             star_threshold, 
-                                            err=background.globalrms)
+                                            err=background.globalrms,
+                                            mask=star_mask)
 
             coordinates = [CoordinateIdentifier(i,
                                                 int(round(y - psf_size * interpolation_scale / 2)),
