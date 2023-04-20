@@ -4,7 +4,7 @@ from astropy.io import fits
 import numpy as np
 import pytest
 
-from regularizepsf import visualize
+import regularizepsf
 from regularizepsf.fitter import CoordinatePatchCollection
 
 
@@ -20,7 +20,7 @@ def test_visualize_patch_counts():
     cpc = CoordinatePatchCollection.find_stars_and_average(
             data, 32, 100)
 
-    ax = visualize.visualize_patch_counts(cpc)
+    ax = regularizepsf.visualize_patch_counts(cpc)
     # The remove_text option of pytest-mpl only removes tick labels, not axis
     # labels
     for ax in ax.figure.axes:
@@ -40,7 +40,7 @@ def test_visualize_PSFs():
     cpc = CoordinatePatchCollection.find_stars_and_average(
             data, psf_size, patch_size)
 
-    ax = visualize.visualize_PSFs(
+    ax = regularizepsf.visualize_PSFs(
             cpc.to_array_corrector(np.zeros((patch_size,patch_size))),
             cpc,
             region_size=psf_size)
@@ -69,7 +69,7 @@ def test_visualize_transfer_kernels():
     target_psf = np.exp(
             -(np.square(x - patch_size/2) / (2 * np.square(2))
               + np.square(y - patch_size/2) / (2 * np.square(2))))
-    ax = visualize.visualize_transfer_kernels(
+    ax = regularizepsf.visualize_transfer_kernels(
             cpc.to_array_corrector(target_psf),
             region_size=psf_size,
             alpha=2, epsilon=.3,

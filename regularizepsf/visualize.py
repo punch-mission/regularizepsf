@@ -1,5 +1,6 @@
 import copy
 import itertools
+from typing import Optional
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -11,7 +12,7 @@ from regularizepsf.helper import _regularize_array
 
 
 def visualize_patch_counts(patch_collection: PatchCollectionABC,
-                           ax: matplotlib.axes.Axes = None,
+                           ax: Optional[matplotlib.axes.Axes] = None,
                            label_pixel_bounds: bool = False) -> matplotlib.axes.Axes:
     """
     Utility to visualize the number of stars identified within each patch
@@ -58,14 +59,14 @@ def visualize_patch_counts(patch_collection: PatchCollectionABC,
         xticks = [xt for xt in plt.xticks()[0] if 0 <= xt < len(columns)]
         plt.xticks(
                 xticks,
-                [f"[{int(columns.min() + dc * i)},"
-                 f"\n{int(columns.min() + dc * (i+2))}]"
+                [f"{int(columns.min() + dc * i)}"
+                 f" to\n{int(columns.min() + dc * (i+2))} px"
                     for i in xticks])
         yticks = [yt for yt in plt.yticks()[0] if 0 <= yt < len(rows)]
         plt.yticks(
                 yticks,
-                [f"[{int(rows.min() + dr * i)},"
-                 f"\n{int(rows.min() + dr * (i+2))}]"
+                [f"{int(rows.min() + dr * i)}"
+                 f" to\n{int(rows.min() + dr * (i+2))} px"
                     for i in yticks])
         ax.set_xlabel("Patch bounds (px)")
         ax.set_ylabel("Patch bounds (px)")
@@ -89,38 +90,37 @@ _colormap = _generate_colormap()
 
 
 def visualize_PSFs(psfs: ArrayCorrector,
-                   corrected: PatchCollectionABC = None,
+                   corrected: Optional[PatchCollectionABC] = None,
                    all_patches: bool = False,
                    region_size: int = 0,
-                   fig: matplotlib.figure.Figure = None,
+                   label_pixel_bounds: bool = False,
+                   fig: Optional[matplotlib.figure.Figure] = None,
                    fig_scale: float = 1,
                    colorbar_label: str = 'Normalized brightness',
                    axis_border_color: str = 'white',
-                   label_pixel_bounds: bool = False,
                    imshow_args: dict = {}) -> matplotlib.figure.Figure:
     """
-    Utility to visualize computed PSFs.
+    Utility to visualize estimated PSFs.
 
-    Accepts an `ArrayCorrector`, which contains the computed PSFs across the
+    Accepts an `ArrayCorrector`, which contains the estimated PSFs across the
     image.
 
     This utility can also produce a "before and after" visualization. To do
     this, apply your `ArrayCorrector` to your image set, and then run
     `CoordinatePatchCollection.find_stars_and_average` on your corrected
-    images. This will compute the PSF of your corrected images. Pass the
-    computed `CoordinatePatchCollection` as the `corrected` argument to this
-    function.
+    images. This will estimated the PSF of your corrected images. Pass this
+    `CoordinatePatchCollection` as the `corrected` argument to this function.
 
     Parameters
     ----------
     psfs : ArrayCorrector
-        An `ArrayCorrector` containing the computed PSFs
+        An `ArrayCorrector` containing the estimated PSFs
     corrected : PatchCollectionABC
         A `CoordinatePatchCollection` computed on the corrected set of images
     all_patches : boolean
-        PSFs are computed for a grid of overlapping patches, with each image
+        PSFs are estimated in a grid of overlapping patches, with each image
         pixel being covered by four patches. If `True`, all of these patches
-        are plotted, which can be useful for diagnosing the computed PSFs. If
+        are plotted, which can be useful for diagnosing the estimated PSFs. If
         `False`, only a fourth of all patches are plotted (every other patch in
         both x and y), which can produce simpler illustrations.
     region_size : int
@@ -128,6 +128,9 @@ def visualize_PSFs(psfs: ArrayCorrector,
         each entire patch. If the PSFs were computed with a `psf_size` less
         than `patch_size`, it may be convenient to set `region_size=psf_size`,
         to omit the empty edges of each patch.
+    label_pixel_bounds : bool
+        If True, the axes of the plot will be labeled with the pixel range
+        spanned by each patch.
     fig : matplotlb.figure.Figure
         A Figure on which to plot. If not provided, one will be created.
     fig_scale : float
@@ -137,9 +140,6 @@ def visualize_PSFs(psfs: ArrayCorrector,
         The label to show on the colorbar
     axis_border_color : str
         The color to use for the lines separating the patch plots.
-    label_pixel_bounds : bool
-        If True, the axes of the plot will be labeled with the pixel range
-        spanned by each patch.
     imshow_args : dict
         Additional arguments to pass to each `plt.imshow()` call
 
@@ -249,29 +249,29 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
                    alpha: float, epsilon: float,
                    all_patches: bool = False,
                    region_size: int = 0,
-                   fig: matplotlib.figure.Figure = None,
+                   label_pixel_bounds: bool = False,
+                   fig: Optional[matplotlib.figure.Figure] = None,
                    fig_scale: float = 1,
                    colorbar_label: str = 'Transfer kernel amplitude',
                    axis_border_color: str = 'black',
-                   label_pixel_bounds: bool = False,
                    imshow_args: dict = {}) -> matplotlib.figure.Figure:
     """
     Utility to compute and visualize transfer kernels.
 
-    Accepts an `ArrayCorrector`, which contains the computed PSFs across the
+    Accepts an `ArrayCorrector`, which contains the estimated PSFs across the
     image. These PSFs, and the target PSF, will be used to compute each
     transfer kernel.
 
     Parameters
     ----------
     psfs : ArrayCorrector
-        An `ArrayCorrector` containing the computed PSFs and target PSF
+        An `ArrayCorrector` containing the estimated PSFs and target PSF
     alpha, epsilon : float
         Values used in computing the regularized reciprocal of the computed
         PSFs. Provide the same values that you would pass to
         `ArrayCorrector.correct_image`.
     all_patches : boolean
-        PSFs are computed for a grid of overlapping patches, with each image
+        PSFs are estimated in a grid of overlapping patches, with each image
         pixel being covered by four patches. If `True`, all of these patches
         are plotted, which can be useful for diagnosing the computed PSFs. If
         `False`, only a fourth of all patches are plotted (every other patch in
@@ -281,6 +281,9 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
         each entire patch. If the PSFs were computed with a `psf_size` less
         than `patch_size`, it may be convenient to set `region_size=psf_size`,
         to omit the empty edges of each patch.
+    label_pixel_bounds : bool
+        If True, the axes of the plot will be labeled with the pixel range
+        spanned by each patch.
     fig : matplotlb.figure.Figure
         A Figure on which to plot. If not provided, one will be created.
     fig_scale : float
@@ -290,9 +293,6 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
         The label to show on the colorbar
     axis_border_color : str
         The color to use for the lines separating the patch plots.
-    label_pixel_bounds : bool
-        If True, the axes of the plot will be labeled with the pixel range
-        spanned by each patch.
     imshow_args : dict
         Additional arguments to pass to each `plt.imshow()` call
 
