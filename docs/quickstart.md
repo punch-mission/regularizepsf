@@ -94,9 +94,9 @@ to an `ArrayCorrector` using the `to_array_corrector` method. It requires an eva
 in the previous section.
 ```py
 # Extract all the stars from that image and create a PSF model with a target PSF
-array_corrector =  CoordinatePatchCollection.find_stars_and_average([image_fn], 
-                                                                     psf_size, 
-                                                                     patch_size).to_array_corrector(target_evaluation)
+coordinate_patch_collection = CoordinatePatchCollection.find_stars_and_average(
+	[image_fn], psf_size, patch_size)
+array_corrector = coordinate_patch_collection.to_array_corrector(target_evaluation)
 ```
 
 ### Performing the correction
