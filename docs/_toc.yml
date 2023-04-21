@@ -5,9 +5,11 @@ format: jb-book
 root: intro
 chapters:
 - file: quickstart
+- file: plots
 - file: functional
 - file: theory
 - file: cite
 - file: help
+- file: development
 - file: api/regularizepsf/index
   title: API

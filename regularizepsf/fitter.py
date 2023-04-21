@@ -22,8 +22,9 @@ from regularizepsf.psf import PointSpreadFunctionABC, SimplePSF
 
 
 class PatchCollectionABC(metaclass=abc.ABCMeta):
-    def __init__(self, patches: dict[Any, np.ndarray]) -> None:
+    def __init__(self, patches: dict[Any, np.ndarray], counts: Optional[dict[Any, int]] = None) -> None:
         self.patches = patches
+        self.counts = counts
         if patches:
             shape = next(iter(patches.values())).shape
             # TODO: check that the patches are square
@@ -96,7 +97,10 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         """
         return identifier in self.patches
 
-    def add(self, identifier: Any, patch: np.ndarray) -> None:
+    def add(self,
+            identifier: Any,
+            patch: np.ndarray,
+            count: Optional[int] = None) -> None:
         """Add a new patch to the collection
 
         Parameters
@@ -104,9 +108,10 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         identifier : Any
             identifier for a given patch, 
                 specifically implemented for each PatchCollection
-
         patch : np.ndarray
             the data for a specific patch
+        count : int
+            Optionally, a corresponding item to add to the `counts` dictionary
 
         Returns
         -------
@@ -117,6 +122,9 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
             warnings.warn(f"{identifier} is being overwritten in this collection.",
                            Warning, stacklevel=2)
         self.patches[identifier] = patch
+
+        if count is not None:
+            self.counts[identifier] = count
 
         if self.size is None:
             self.size = patch.shape[0]
@@ -434,11 +442,14 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
             averaged.size = psf_size
 
-        output = CoordinatePatchCollection({})
+        output = CoordinatePatchCollection({}, counts={})
         for key, patch in averaged.items():
-            output.patches[CoordinateIdentifier(key.image_index,
-                                                key.x // interpolation_scale,
-                                                key.y // interpolation_scale)] = patch
+            count = averaged.counts[key]
+            output.add(CoordinateIdentifier(key.image_index,
+                                            key.x // interpolation_scale,
+                                            key.y // interpolation_scale),
+                       patch,
+                       count=count)
 
         return output
 
@@ -449,7 +460,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
         if mode == "mean":
             mean_stack = {tuple(corner): np.zeros((psf_size, psf_size))
                           for corner in corners}
-            counts = {tuple(corner): np.zeros((psf_size, psf_size))
+            mean_counts = {tuple(corner): np.zeros((psf_size, psf_size))
                           for corner in corners}
         else:
             # n.b. If mode is 'median', we could set mode='percentile'
@@ -457,6 +468,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
             # np.nanpercentile(x, 50) seems to be about half as fast as
             # np.nanmedian(x), so let's keep a speedy special case for medians.
             stack = {tuple(corner): [] for corner in corners}
+        counts = {tuple(corner): 0 for corner in corners}
 
         corners_x, corners_y = corners[:, 0], corners[:, 1]
         x_bounds = np.stack([corners_x, corners_x + patch_size], axis=-1)
@@ -479,13 +491,14 @@ class CoordinatePatchCollection(PatchCollectionABC):
                 if mode == "mean":
                     mean_stack[match_corner] = np.nansum([mean_stack[match_corner], 
                                                           patch], axis=0)
-                    counts[match_corner] += np.isfinite(patch)
+                    mean_counts[match_corner] += np.isfinite(patch)
                 else:
                     stack[match_corner].append(patch)
+                counts[match_corner] += 1
 
         if mode == "mean":
             averages = {CoordinateIdentifier(None, corner[0], corner[1]): 
-                        mean_stack[corner]/counts[corner]
+                        mean_stack[corner] / mean_counts[corner]
                         for corner in mean_stack}
         elif mode == "median":
             averages = {CoordinateIdentifier(None, corner[0], corner[1]):
@@ -501,11 +514,13 @@ class CoordinatePatchCollection(PatchCollectionABC):
                                 if len(stack[corner]) > 0 else
                                 np.zeros((psf_size, psf_size))
                         for corner in stack}
+        counts = {CoordinateIdentifier(None, corner[0], corner[1]): count
+                  for corner, count in counts.items()}
         # Now that we have our combined patches, pad them as appropriate
         pad_shape = self._calculate_pad_shape(patch_size)
         for key, patch in averages.items():
             averages[key] = np.pad(patch, pad_shape, mode="constant")
-        return CoordinatePatchCollection(averages)
+        return CoordinatePatchCollection(averages, counts=counts)
 
     @staticmethod
     def _validate_average_mode(mode: str, percentile: float) -> None:

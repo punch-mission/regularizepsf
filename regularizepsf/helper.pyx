@@ -51,8 +51,8 @@ cpdef _correct_image(np.ndarray[np.float_t, ndim=2] image,
 
         for xx in range(size):
             for yy in range(size):
-                psf_i_hat_abs = abs(values_fft[i, xx, yy])
-                psf_i_hat_norm[xx, yy] = (values_fft[i, xx, yy].conjugate() / psf_i_hat_abs) * ((psf_i_hat_abs**alpha) / ((psf_i_hat_abs**(alpha+1.0)) + (epsilon * abs(target_fft[xx, yy]))**(alpha+1.0)))
+                psf_i_hat_norm[xx, yy] = _regularize_value(
+                        values_fft[i, xx, yy], alpha, epsilon, target_fft[xx, yy])
                 temp[xx, yy] = img_i_hat[xx, yy] * psf_i_hat_norm[xx, yy] * target_fft[xx, yy]
         corrected_i = np.real(ifft2(temp))
 
@@ -62,6 +62,38 @@ cpdef _correct_image(np.ndarray[np.float_t, ndim=2] image,
                 result_img[this_x_prime+xx, this_y_prime+yy] = result_img[this_x_prime+xx, this_y_prime+yy] + (corrected_i[xx, yy] * apodization_window[xx, yy])
 
     return result_img[2 * size:image.shape[0] + 2 * size, 2 * size:image.shape[1] + 2 * size]
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef complex _regularize_value(
+        complex A,
+        float alpha,
+        float epsilon,
+        complex P):
+    """Implements Eqn (6) of Hughes et al. (2023) for one Fourier-space pixel"""
+    cdef float A_abs = abs(A)
+    cdef complex R_A = (A.conjugate() / A_abs) * (A_abs**alpha / (A_abs**(alpha+1.0) + (epsilon * abs(P))**(alpha+1.0)))
+    return R_A
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef _regularize_array(
+        np.ndarray[np.complex128_t, ndim=2] A,
+        float alpha,
+        float epsilon,
+        np.ndarray[np.complex128_t, ndim=2] P):
+    """Loops _regularize_value across a 2D array"""
+    cdef int size = A.shape[1]
+    cdef np.ndarray[np.complex128_t, ndim=2] output = np.empty((size, size), dtype=complex)
+
+    for xx in range(size):
+        for yy in range(size):
+            output[xx, yy] = _regularize_value(A[xx, yy], alpha, epsilon, P[xx, yy])
+    return output
 
 
 @cython.boundscheck(False)
