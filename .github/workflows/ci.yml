@@ -4,9 +4,10 @@
 name: CI
 
 on:
-  - push
-  - pull_request
-  - cron: '0 8 * * *'
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 8 * * *'
 
 jobs:
   build:
