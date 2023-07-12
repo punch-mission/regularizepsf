@@ -43,7 +43,7 @@ For most purposes, we recommend an array model because deriving the correct func
 can be tricky. Thus, this quickstart tutorial walks through the array model PSF model form.
 
 First, we need to define both the `psf_size` and the `patch_size`. This technique breaks the image into 
-overlapping square neighborhoods of length `patch_size` on each side. In this case a `patch_size` of 256 indicates we use a `256x255` neighborhood size. However, we know for 
+overlapping square neighborhoods of length `patch_size` on each side. In this case a `patch_size` of 256 indicates we use a `256x256` neighborhood size. However, we know for 
 this instrument that the PSF is more compact than this, i.e. a star will not contribute light over the full neighborhood. 
 For computational efficiency reasons, we thus use a `psf_size` of `32x32`. For each star, a box centered on the star
 of size `32x32` pixels is extracted. These are averaged to create the PSF model. The region outside the `32x32` box but 
