@@ -52,7 +52,7 @@ alt: Display of estimated PSFs across the image plane
 width: 754px
 align: center
 ---
-Plot showing a number of estimated PSFs across the image plane. By default, only every other row and column of patches is shown, so that each displayed patch is more easilty visible in a reasonable image size. The displayed position of each patch corresponds to the location of that patch in the image plane.
+Plot showing a number of estimated PSFs across the image plane. By default, only every other row and column of patches is shown, so that each displayed patch is more easily visible in a reasonable image size. The displayed position of each patch corresponds to the location of that patch in the image plane.
 ```
 
 ## Extracted and Corrected PSFs
