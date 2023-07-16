@@ -4,7 +4,7 @@ deepdish==0.3.7
 lmfit==1.0.3
 cython==0.29.32
 astropy==5.1.1
-scipy==1.9.3
+scipy>=1.10.0
 scikit-image==0.19.3
 sep==1.2.1
 matplotlib>=3.0
