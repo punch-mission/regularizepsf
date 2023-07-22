@@ -42,3 +42,20 @@ title = {Coma Off It: Regularizing Variable Point-spread Functions},
 journal = {The Astronomical Journal}
 }
 ```
+
+If you use this software, please also cite the package: 
+```
+@software{marcus_hughes_2023_8152967,
+  author       = {Marcus Hughes and
+                  Sam Van Kooten and
+                  Tania Varesano and
+                  Suman Chapai},
+  title        = {punch-mission/regularizepsf: 0.2.1},
+  month        = jul,
+  year         = 2023,
+  publisher    = {Zenodo},
+  version      = {0.2.1},
+  doi          = {10.5281/zenodo.8152967},
+  url          = {https://doi.org/10.5281/zenodo.8152967}
+}
+```
