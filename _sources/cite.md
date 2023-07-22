@@ -20,15 +20,17 @@ To cite the paper:
 
 To cite the software:
 ```
-@software{marcus_hughes_2023_7853250,
+@software{marcus_hughes_2023_8152967,
   author       = {Marcus Hughes and
-                  Sam Van Kooten},
-  title        = {punch-mission/regularizepsf: v0.2.0},
-  month        = apr,
+                  Sam Van Kooten and
+                  Tania Varesano and
+                  Suman Chapai},
+  title        = {punch-mission/regularizepsf: 0.2.1},
+  month        = jul,
   year         = 2023,
   publisher    = {Zenodo},
-  version      = {0.2.0},
-  doi          = {10.5281/zenodo.7853250},
-  url          = {https://doi.org/10.5281/zenodo.7853250}
+  version      = {0.2.1},
+  doi          = {10.5281/zenodo.8152967},
+  url          = {https://doi.org/10.5281/zenodo.8152967}
 }
 ```
