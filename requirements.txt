@@ -2,8 +2,8 @@ numpy==1.23.4
 dill==0.3.6
 deepdish==0.3.7
 lmfit==1.2.2
-cython==0.29.32
-astropy==5.3.1
+cython==3.0.0
+astropy=5.3.1
 scipy>=1.10.0
 scikit-image==0.19.3
 sep==1.2.1
