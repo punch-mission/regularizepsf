@@ -1,5 +1,5 @@
 numpy==1.23.4
-dill==0.3.6
+dill==0.3.7
 deepdish==0.3.7
 lmfit==1.2.2
 cython==3.0.0
