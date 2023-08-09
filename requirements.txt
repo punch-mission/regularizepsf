@@ -1,7 +1,7 @@
 numpy==1.23.4
 dill==0.3.6
 deepdish==0.3.7
-lmfit==1.0.3
+lmfit==1.2.2
 cython==0.29.32
 astropy==5.1.1
 scipy>=1.10.0
