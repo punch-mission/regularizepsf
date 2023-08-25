@@ -476,7 +476,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
         for identifier, patch in self.patches.items():
             # Normalize the patch
-            patch = patch / np.max(patch)
+            patch = patch / patch[psf_size//2, psf_size//2]
 
             # Determine which average region it belongs to
             center_x = identifier.x + self.size // 2
