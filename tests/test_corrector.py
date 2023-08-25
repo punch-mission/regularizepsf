@@ -55,22 +55,6 @@ def padded_100by100_image_psf_10_with_pattern():
     img_padded = np.pad(img, padding_shape, mode='constant')
     return img_padded
 
-#
-# @pytest.mark.parametrize("coord, value",
-#                          [((0, 0), 2),
-#                           ((10, 10), 1),
-#                           ((-10, -10), 0)])
-# def test_get_padded_img_section(coord, value, padded_100by100_image_psf_10_with_pattern):
-#     img_i = get_padded_img_section(padded_100by100_image_psf_10_with_pattern, coord[0], coord[1], 10)
-#     assert np.all(img_i == np.zeros((10, 10)) + value)
-#
-#
-# def test_set_padded_img_section(padded_100by100_image_psf_10_with_pattern):
-#     test_img = np.pad(np.ones((100, 100)), ((20, 20), (20, 20)), mode='constant')
-#     for coord, value in [((0, 0), 2), ((10, 10), 1), ((-10, -10), 0)]:
-#         set_padded_img_section(test_img, coord[0], coord[1], 10, np.zeros((10, 10))+value)
-#     assert np.all(test_img == padded_100by100_image_psf_10_with_pattern)
-
 
 def test_create_array_corrector():
     example = ArrayCorrector({(0, 0): np.zeros((10, 10))},
