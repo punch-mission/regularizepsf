@@ -210,6 +210,8 @@ def test_save_load_array_corrector(tmp_path):
     assert os.path.isfile(fname)
     loaded = example.load(fname)
     assert isinstance(loaded, ArrayCorrector)
+    assert np.all(loaded._target_evaluation == np.ones((100, 100)))
+    assert np.all(loaded._evaluations[(0,0)] == np.ones((100, 100)))
 
 
 def test_array_corrector_simulate_observation_with_zero_stars():

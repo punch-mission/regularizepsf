@@ -6,6 +6,7 @@ from typing import Any, Tuple
 
 import deepdish as dd
 import dill
+import h5py
 import numpy as np
 from numpy.fft import fft2, ifft2, ifftshift
 
@@ -264,11 +265,22 @@ class ArrayCorrector(CorrectorABC):
             raise UnevaluatedPointError(f"Model not evaluated at {xy}.")
 
     def save(self, path: str) -> None:
-        dd.io.save(path, (self._evaluations, self._target_evaluation))
+        with h5py.File(path, 'w') as f:
+            eval_grp = f.create_group('evaluations')
+            for key, val in self._evaluations.items():
+                eval_grp.create_dataset(f'{key}', data=val)
+            f.create_dataset('target', data=self._target_evaluation)
+        #dd.io.save(path, (self._evaluations, self._target_evaluation))
 
     @classmethod
     def load(cls, path: str) -> ArrayCorrector:
-        evaluations, target_evaluation = dd.io.load(path)
+        with h5py.File(path, 'r') as f:
+            target_evaluation = f['target'][:].copy()
+
+            evaluations = dict()
+            for key, val in f['evaluations'].items():
+                parsed_key = tuple(int(val) for val in key.replace("(", "").replace(")", "").split(","))
+                evaluations[parsed_key] = val[:].copy()
         return cls(evaluations, target_evaluation)
 
     def simulate_observation(self, image: np.ndarray) -> np.ndarray:
