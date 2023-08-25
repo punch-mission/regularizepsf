@@ -4,7 +4,6 @@ import abc
 from pathlib import Path
 from typing import Any, Tuple
 
-import deepdish as dd
 import dill
 import h5py
 import numpy as np
