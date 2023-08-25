@@ -269,7 +269,6 @@ class ArrayCorrector(CorrectorABC):
             for key, val in self._evaluations.items():
                 eval_grp.create_dataset(f'{key}', data=val)
             f.create_dataset('target', data=self._target_evaluation)
-        #dd.io.save(path, (self._evaluations, self._target_evaluation))
 
     @classmethod
     def load(cls, path: str) -> ArrayCorrector:
