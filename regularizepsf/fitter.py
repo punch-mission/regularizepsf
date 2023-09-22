@@ -7,7 +7,7 @@ from collections.abc import Callable
 from numbers import Real
 from typing import Any, Dict, Generator, List, Optional, Tuple
 
-import deepdish as dd
+import h5py
 import numpy as np
 import sep
 from astropy.io import fits
@@ -172,6 +172,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
 
         """
 
+    @abc.abstractmethod
     def save(self, path: str) -> None:
         """Save the PatchCollection to a file
 
@@ -184,9 +185,10 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         -------
         None
         """
-        dd.io.save(path, self.patches)
+
 
     @classmethod
+    @abc.abstractmethod
     def load(cls, path: str) -> PatchCollectionABC:
         """Load a PatchCollection from a file
 
@@ -200,7 +202,6 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         PatchCollectionABC
             the new patch collection
         """
-        return cls(dd.io.load(path))
 
     def keys(self) -> List:
         """Gets identifiers for all patches"""
@@ -476,7 +477,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
         for identifier, patch in self.patches.items():
             # Normalize the patch
-            patch = patch / np.max(patch)
+            patch = patch / patch[psf_size//2, psf_size//2]
 
             # Determine which average region it belongs to
             center_x = identifier.x + self.size // 2
@@ -569,3 +570,41 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
         return ArrayCorrector(evaluation_dictionary, target_evaluation)
 
+    def save(self, path: str) -> None:
+        """Save the CoordinatePatchCollection to a file
+
+        Parameters
+        ----------
+        path : str
+            where to save the patch collection
+
+        Returns
+        -------
+        None
+        """
+        with h5py.File(path, 'w') as f:
+            patch_grp = f.create_group('patches')
+            for key, val in self.patches.items():
+                patch_grp.create_dataset(f"({key.image_index, key.x, key.y})", data=val)
+
+    @classmethod
+    def load(cls, path: str) -> PatchCollectionABC:
+        """Load a PatchCollection from a file
+
+        Parameters
+        ----------
+        path : str
+            file path to load from
+
+        Returns
+        -------
+        PatchCollectionABC
+            the new patch collection
+        """
+        patches = dict()
+        with h5py.File(path, "r") as f:
+            for key, val in f['patches'].items():
+                parsed_key = tuple(int(val) for val in key.replace("(", "").replace(")", "").split(","))
+                coord_id = CoordinateIdentifier(image_index=parsed_key[0], x=parsed_key[1], y=parsed_key[2])
+                patches[coord_id] = val[:].copy()
+        return cls(patches)
