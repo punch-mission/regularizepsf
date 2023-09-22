@@ -5,6 +5,6 @@ lmfit==1.2.2
 cython==3.0.2
 astropy==5.3.1
 scipy>=1.10.0
-scikit-image==0.19.3
+scikit-image==0.21.0
 sep==1.2.1
 matplotlib>=3.0
