@@ -103,6 +103,7 @@ Module Contents
 
 
    .. py:method:: save(path: str) -> None
+      :abstractmethod:
 
       Save the PatchCollection to a file
 
@@ -114,6 +115,7 @@ Module Contents
 
    .. py:method:: load(path: str) -> PatchCollectionABC
       :classmethod:
+      :abstractmethod:
 
       Load a PatchCollection from a file
 
@@ -254,6 +256,28 @@ Module Contents
 
       :returns: An array corrector that can be used to correct PSFs
       :rtype: ArrayCorrector
+
+
+   .. py:method:: save(path: str) -> None
+
+      Save the CoordinatePatchCollection to a file
+
+      :param path: where to save the patch collection
+      :type path: str
+
+      :rtype: None
+
+
+   .. py:method:: load(path: str) -> PatchCollectionABC
+      :classmethod:
+
+      Load a PatchCollection from a file
+
+      :param path: file path to load from
+      :type path: str
+
+      :returns: the new patch collection
+      :rtype: PatchCollectionABC
 
 
 

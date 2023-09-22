@@ -310,6 +310,28 @@ Package Contents
       :rtype: ArrayCorrector
 
 
+   .. py:method:: save(path: str) -> None
+
+      Save the CoordinatePatchCollection to a file
+
+      :param path: where to save the patch collection
+      :type path: str
+
+      :rtype: None
+
+
+   .. py:method:: load(path: str) -> PatchCollectionABC
+      :classmethod:
+
+      Load a PatchCollection from a file
+
+      :param path: file path to load from
+      :type path: str
+
+      :returns: the new patch collection
+      :rtype: PatchCollectionABC
+
+
 
 .. py:function:: simple_psf(arg: Any = None) -> SimplePSF
 
