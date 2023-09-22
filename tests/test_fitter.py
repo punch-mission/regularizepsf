@@ -81,7 +81,7 @@ def test_coordinate_patch_average():
              })
     for patch in collection.values():
         # Make the normalization of each patch a no-op
-        patch[-1, -1] = 1
+        patch[5, 5] = 1
 
     averaged_collection = collection.average(
             np.array([[0, 0]]), 10, 10, mode='median')
