@@ -1,6 +1,6 @@
 numpy~=1.25
 dill~=0.3
-h5py~=3.9
+h5py~=3.10
 lmfit~=1.2
 cython~=3.0
 astropy~=5.3
