@@ -1,6 +1,6 @@
-on: workflow_dispatch
-  # schedule:
-  #   - cron: '15 14 * * THU'
+on:
+  schedule:
+    - cron: '0 0 * * THU'
 name: weekly PR
 jobs:
   createPullRequest:
