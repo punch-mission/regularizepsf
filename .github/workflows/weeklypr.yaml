@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: '10 8 * * THU'
+    - cron: '15 14 * * THU'
 name: weekly PR
 jobs:
   createPullRequest:
