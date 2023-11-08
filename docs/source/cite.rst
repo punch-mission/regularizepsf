@@ -1,4 +1,4 @@
-How to cite
+Citation
 ======================
 
 To cite the paper::
@@ -21,16 +21,16 @@ To cite the paper::
 
 To cite the software::
 
-    @software{marcus_hughes_2023_8152967,
+     @software{marcus_hughes_2023_8370994,
       author       = {Marcus Hughes and
                       Sam Van Kooten and
                       Tania Varesano and
                       Suman Chapai},
-      title        = {punch-mission/regularizepsf: 0.2.1},
-      month        = jul,
+      title        = {punch-mission/regularizepsf: 0.2.2},
+      month        = sep,
       year         = 2023,
       publisher    = {Zenodo},
-      version      = {0.2.1},
-      doi          = {10.5281/zenodo.8152967},
-      url          = {https://doi.org/10.5281/zenodo.8152967}
-    }
+      version      = {0.2.2},
+      doi          = {10.5281/zenodo.8370994},
+      url          = {https://doi.org/10.5281/zenodo.8370994}
+      }

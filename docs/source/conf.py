@@ -5,6 +5,10 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../..'))
+
 
 project = 'regularizepsf'
 copyright = '2023, J. Marcus Hughes and the PUNCH Science Operations Center'
@@ -15,6 +19,7 @@ release = '0.2.2'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ['autoapi.extension',
+              'sphinx.ext.autodoc',
               'sphinx.ext.napoleon']
 
 templates_path = ['_templates']
@@ -37,7 +42,9 @@ html_theme_options = {
             "icon": "fa-brands fa-github",
             "type": "fontawesome",
         }
-    ]
+    ],
+    "show_nav_level": 1,
+    "show_toc_level": 3,
 }
 html_context = {
     # "github_url": "https://github.com", # or your GitHub Enterprise site

@@ -1,8 +1,3 @@
-.. regularizepsf documentation master file, created by
-   sphinx-quickstart on Wed Nov  1 13:48:44 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to regularizepsf!
 =========================================
 
@@ -23,7 +18,12 @@ with the target PSF (d). The panels are gamma-corrected to highlight the periphe
    :maxdepth: 2
    :caption: Contents:
 
+   concepts
+   examples
+   visualization
+   help
    cite
+   development
 
 Indices and tables
 ==================
@@ -31,9 +31,6 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-.. note::
-   This project is under active development.
 
 .. _PUNCH: https://punch.space.swri.edu/
 .. _an Astronomical Journal paper: https://iopscience.iop.org/article/10.3847/1538-3881/acc578
