@@ -8,8 +8,13 @@ If at any time you run into issues, please contact us by :doc:`following the gui
 
 Building the docs
 ------------------
-The docs are built using ``sphinx``. First, you must install it and the other documentation requirements with
-``pip install -r ./docs/requirements.txt``. Then, navigate to the ``docs`` directory and run ``make html`` to build.
+The docs are built using ``sphinx``. First, you must install it and the other documentation requirements with ::
+
+    pip install -r ./docs/requirements.txt
+    pip install -r requirements.txt
+    python setup.py build_ext --inplace
+
+Then, navigate to the ``docs`` directory and run ``make html`` to build the docs.
 
 Running tests
 -------------
