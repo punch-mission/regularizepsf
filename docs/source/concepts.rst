@@ -1,7 +1,7 @@
 Concepts
 ==========
 
-For a very thorogh and mathematical treatment of the technique see `our Astronomical Journal paper <https://iopscience.iop.org/article/10.3847/1538-3881/acc578>`_.
+For a very thorough and mathematical treatment of the technique see `our Astronomical Journal paper <https://iopscience.iop.org/article/10.3847/1538-3881/acc578>`_.
 
 Overview of the technique
 -------------------------
@@ -9,7 +9,7 @@ A point spread function (PSF) describes how the optical system spreads light fro
 The basic premise of this technique is to model the point spread function of an imager using stars as our point sources.
 Then, we calculate the inverse PSF and apply it. We could directly convolve the inverse PSF but convolutions are slow.
 A convolution in the image is the same as multiplying in Fourier space, a much faster operation, so we do that instead.
-Instead of simply calculating the inverse PSF directly, we also include a "target PSF" model to make the resulting corrected
+Instead of simply calculating the inverse PSF directly, we also include a *target PSF* model to make the resulting corrected
 stars uniform. This target is typically a Gaussian as shown below in the :doc:`examples`.
 
 Since the PSF can vary across the image, we create many local models that apply only in smaller regions of the image.
