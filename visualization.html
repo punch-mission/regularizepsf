@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Development &#8212; regularizepsf 0.2.2 documentation</title>
+    <title>Visualization &#8212; regularizepsf 0.2.2 documentation</title>
   
   
   
@@ -39,11 +39,11 @@
     <script src="_static/documentation_options.js?v=000c92bf"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'development';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'visualization';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Reference" href="autoapi/index.html" />
-    <link rel="prev" title="Citation" href="cite.html" />
+    <link rel="next" title="Help" href="help.html" />
+    <link rel="prev" title="Examples" href="examples.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -149,8 +149,8 @@
                     </li>
                 
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="visualization.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
                         Visualization
                       </a>
                     </li>
@@ -175,8 +175,8 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
-                    <li class="nav-item current active">
-                      <a class="nav-link dropdown-item nav-internal" href="#">
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="development.html">
                         Development
                       </a>
                     </li>
@@ -302,8 +302,8 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="visualization.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
                         Visualization
                       </a>
                     </li>
@@ -328,8 +328,8 @@ document.write(`
                 </button>
                 <ul id="pst-nav-more-links-2" class="dropdown-menu">
                     
-                    <li class="nav-item current active">
-                      <a class="nav-link dropdown-item nav-internal" href="#">
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="development.html">
                         Development
                       </a>
                     </li>
@@ -416,7 +416,7 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Development</li>
+    <li class="breadcrumb-item active" aria-current="page">Visualization</li>
   </ul>
 </nav>
 </div>
@@ -433,32 +433,126 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="development">
-<h1>Development<a class="headerlink" href="#development" title="Link to this heading">#</a></h1>
-<p>We encourage all contributions. We recommend working in a virtual environment.
-This can be created by running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">venv</span> <span class="pre">venv</span></code>. Then, activate the environment with <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">venv/bin/activate</span></code>.
-You can then install the required packages with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements_dev.txt</span></code>.</p>
-<p>If at any time you run into issues, please contact us by <a class="reference internal" href="help.html"><span class="doc">following the guidelines here</span></a>.</p>
-<section id="building-the-docs">
-<h2>Building the docs<a class="headerlink" href="#building-the-docs" title="Link to this heading">#</a></h2>
-<p>The docs are built using <code class="docutils literal notranslate"><span class="pre">sphinx</span></code>. First, you must install it and the other documentation requirements with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="o">./</span><span class="n">docs</span><span class="o">/</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
-<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build_ext</span> <span class="o">--</span><span class="n">inplace</span>
+  <section id="visualization">
+<h1>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">regularizepsf</span></code> includes a handful of plotting utilities to help understand the results of your PSF fitting.</p>
+<section id="distribution-of-identified-stars">
+<h2>Distribution of identified stars<a class="headerlink" href="#distribution-of-identified-stars" title="Link to this heading">#</a></h2>
+<p>Once stars have been identified by <code class="docutils literal notranslate"><span class="pre">CoordinatePatchCollection.find_stars_and_average</span></code>,
+the distribution of those stars across the image plane can be plotted.
+This can help diagnose whether a sufficiently-large sample of stars is available in each patch—
+if not, a larger patch size or more input images may be required.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">regularizepsf</span> <span class="kn">import</span> <span class="n">CoordinatePatchCollection</span><span class="p">,</span> <span class="n">visualize_patch_counts</span>
+<span class="n">psf_size</span><span class="p">,</span> <span class="n">patch_size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">256</span>
+<span class="n">cpc</span> <span class="o">=</span> <span class="n">CoordinatePatchCollection</span><span class="o">.</span><span class="n">find_stars_and_average</span><span class="p">([</span><span class="n">image_fn</span><span class="p">],</span> <span class="n">psf_size</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">visualize_patch_counts</span><span class="p">(</span><span class="n">cpc</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>Then, navigate to the <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory and run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> to build the docs.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/star_distribution.png"><img alt="2D histogram of stars identified across the image plane" src="_images/star_distribution.png" style="width: 669px;" /></a>
+<figcaption>
+<p><span class="caption-text">Two-dimensional histogram of identified star locations across the image plane,
+including stars from all provided input files.
+Note that each patch overlaps its neighboring patches—each star is counted in four separate patches.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </section>
-<section id="running-tests">
-<h2>Running tests<a class="headerlink" href="#running-tests" title="Link to this heading">#</a></h2>
-<p>To run the tests for this package, run <code class="docutils literal notranslate"><span class="pre">pytest</span></code> in the repository base directory.</p>
-<p>This repository includes tests for the plotting utilities which compare generated plots to reference images saved in
-<code class="docutils literal notranslate"><span class="pre">tests/baseline</span></code>.
-To include these image-comparison tests, run <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--mpl</span></code>.
-To update these reference images, run <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--mpl</span> <span class="pre">--mpl-generate-path=tests/baseline</span></code>.</p>
-<p>If the image-comparison tests are failing,
-run <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--mpl</span> <span class="pre">--mpl-generate-summary=html</span></code> to generate a summary page showing the generated and reference images.
-The location of the generated file will be shown at the end of <code class="docutils literal notranslate"><span class="pre">pytest</span></code>’s command-line output.</p>
+<section id="extracted-psfs">
+<h2>Extracted PSFs<a class="headerlink" href="#extracted-psfs" title="Link to this heading">#</a></h2>
+<p>Once the <code class="docutils literal notranslate"><span class="pre">CoordinatePatchCollection</span></code> has been converted to an <code class="docutils literal notranslate"><span class="pre">ArrayCorrector</span></code>, the estimated PSF for each patch can be visualized.
+This can help diagnose whether the PSF estimation is robust, whether the image background is being adequately subtracted, etc.,
+and also serves as a useful illustration of the degree of PSF variation in the instrument.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">regularizepsf</span> <span class="kn">import</span> <span class="n">CoordinatePatchCollection</span><span class="p">,</span> <span class="n">visualize_PSFs</span>
+<span class="n">psf_size</span><span class="p">,</span> <span class="n">patch_size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">256</span>
+<span class="n">cpc</span> <span class="o">=</span> <span class="n">CoordinatePatchCollection</span><span class="o">.</span><span class="n">find_stars_and_average</span><span class="p">([</span><span class="n">image_fn</span><span class="p">],</span> <span class="n">psf_size</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">)</span>
+<span class="n">array_corrector</span> <span class="o">=</span> <span class="n">cpc</span><span class="o">.</span><span class="n">to_array_corrector</span><span class="p">(</span><span class="n">target_evaluation</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">visualize_PSFs</span><span class="p">(</span><span class="n">array_corrector</span><span class="p">,</span> <span class="n">region_size</span><span class="o">=</span><span class="n">psf_size</span><span class="p">,</span> <span class="n">fig_scale</span><span class="o">=</span><span class="mf">1.4</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="_images/estimated_psfs.png"><img alt="Display of estimated PSFs across the image plane" src="_images/estimated_psfs.png" style="width: 754px;" /></a>
+<figcaption>
+<p><span class="caption-text">Plot showing a number of estimated PSFs across the image plane.
+By default, only every other row and column of patches is shown,
+so that each displayed patch is more easily visible in a reasonable image size.
+The displayed position of each patch corresponds to the location of that patch in the image plane.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="extracted-and-corrected-psfs">
+<h2>Extracted and Corrected PSFs<a class="headerlink" href="#extracted-and-corrected-psfs" title="Link to this heading">#</a></h2>
+<p>A useful exercise is to plot the estimated and corrected PSFs side-by-side.
+This can be done by applying the <code class="docutils literal notranslate"><span class="pre">ArrayCorrector</span></code> to each image,
+and then repeating the star-finding and PSF-estimation step with the corrected images.
+The resulting <code class="docutils literal notranslate"><span class="pre">CoordinatePatchCollection</span></code> is accepted as a second argument to <code class="docutils literal notranslate"><span class="pre">visualize_PSFs</span></code>
+to produce a side-by-side comparison.
+In the following example, we will use a Python generator to produce the corrected images on-demand,
+rather than saving them to disk and reading them back again.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">regularizepsf</span> <span class="kn">import</span> <span class="n">CoordinatePatchCollection</span><span class="p">,</span> <span class="n">visualize_PSFs</span>
+<span class="n">psf_size</span><span class="p">,</span> <span class="n">patch_size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">256</span>
+<span class="n">cpc</span> <span class="o">=</span> <span class="n">CoordinatePatchCollection</span><span class="o">.</span><span class="n">find_stars_and_average</span><span class="p">([</span><span class="n">image_fn</span><span class="p">],</span> <span class="n">psf_size</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">)</span>
+<span class="n">array_corrector</span> <span class="o">=</span> <span class="n">cpc</span><span class="o">.</span><span class="n">to_array_corrector</span><span class="p">(</span><span class="n">target_evaluation</span><span class="p">)</span>
+
+<span class="n">alpha</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">epsilon</span> <span class="o">=</span> <span class="mf">.2</span>
+<span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">image_fn</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">loader</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">array_corrector</span><span class="o">.</span><span class="n">correct_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">image</span>
+
+<span class="n">cpc_after</span> <span class="o">=</span> <span class="n">CoordinatePatchCollection</span><span class="o">.</span><span class="n">find_stars_and_average</span><span class="p">(</span><span class="n">loader</span><span class="p">(),</span> <span class="n">psf_size</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">)</span>
+
+<span class="n">visualize_PSFs</span><span class="p">(</span><span class="n">array_corrector</span><span class="p">,</span> <span class="n">cpc_after</span><span class="p">,</span> <span class="n">region_size</span><span class="o">=</span><span class="n">psf_size</span><span class="p">,</span> <span class="n">fig_scale</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="_images/estimated_corrected_psfs.png"><img alt="Display of estimated and corrected PSFs across the image plane" src="_images/estimated_corrected_psfs.png" style="width: 1233px;" /></a>
+<figcaption>
+<p><span class="caption-text">Plot showing a number of estimated PSFs across the image plane, and the corresponding corrected PSFs.
+It can be seen that the corrected PSFs are much more uniform.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="transfer-kernels">
+<h2>Transfer Kernels<a class="headerlink" href="#transfer-kernels" title="Link to this heading">#</a></h2>
+<p>The <em>transfer kernel</em> for each patch is a convolution kernel that combines the effects of de-convolving the estimated
+instrumental PSF and re-convolving with the target PSF.
+While the actual corrections are done in Fourier space,
+the effect of PSF regularization can be thought of as convolving each image patch with that patch’s transfer kernel.
+Visualizing these kernels may help identify the source of artifacts that appear in the corrected images.
+Transfer kernels can be computed and plotted with a utility function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">regularizepsf</span> <span class="kn">import</span> <span class="n">CoordinatePatchCollection</span><span class="p">,</span> <span class="n">visualize_transfer_kernels</span>
+
+<span class="n">psf_size</span><span class="p">,</span> <span class="n">patch_size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">256</span>
+<span class="n">cpc</span> <span class="o">=</span> <span class="n">CoordinatePatchCollection</span><span class="o">.</span><span class="n">find_stars_and_average</span><span class="p">([</span><span class="n">image_fn</span><span class="p">],</span> <span class="n">psf_size</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">)</span>
+<span class="n">array_corrector</span> <span class="o">=</span> <span class="n">cpc</span><span class="o">.</span><span class="n">to_array_corrector</span><span class="p">(</span><span class="n">target_evaluation</span><span class="p">)</span>
+
+<span class="n">alpha</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">epsilon</span> <span class="o">=</span> <span class="mf">.2</span>
+<span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">image_fn</span><span class="p">]</span>
+
+
+<span class="n">visualize</span><span class="o">.</span><span class="n">visualize_transfer_kernels</span><span class="p">(</span>
+    <span class="n">array_corrector</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">,</span>
+    <span class="n">epsilon</span><span class="p">,</span>
+    <span class="n">region_size</span><span class="o">=</span><span class="n">psf_size</span><span class="p">,</span>
+    <span class="n">fig_scale</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+    <span class="n">imshow_args</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">vmin</span><span class="o">=-</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.3</span><span class="p">))</span>
+</pre></div>
+</div>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="_images/transfer_kernels.png"><img alt="Display of transfer kernels across the image plane" src="_images/transfer_kernels.png" style="width: 815px;" /></a>
+<figcaption>
+<p><span class="caption-text">Plot showing transfer kernels across the image plane.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 </section>
 </section>
 
@@ -473,20 +567,20 @@ The location of the generated file will be shown at the end of <code class="docu
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="cite.html"
+       href="examples.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Citation</p>
+        <p class="prev-next-title">Examples</p>
       </div>
     </a>
     <a class="right-next"
-       href="autoapi/index.html"
+       href="help.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">API Reference</p>
+        <p class="prev-next-title">Help</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -505,15 +599,17 @@ The location of the generated file will be shown at the end of <code class="docu
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-the-docs">Building the docs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-tests">Running tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distribution-of-identified-stars">Distribution of identified stars</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extracted-psfs">Extracted PSFs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extracted-and-corrected-psfs">Extracted and Corrected PSFs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-kernels">Transfer Kernels</a></li>
 </ul>
   </nav></div>
 
   <div class="sidebar-secondary-item">
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/punch-mission/regularizepsf/edit/main/docs/source/development.rst">
+    <a href="https://github.com/punch-mission/regularizepsf/edit/main/docs/source/visualization.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

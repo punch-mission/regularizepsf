@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -8,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; regularizePSF</title>
+    <title>Index &#8212; regularizepsf 0.2.2 documentation</title>
   
   
   
@@ -18,50 +17,27 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="_static/design-tabs.js"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
-const thebe_selector = ".thebe,.cell"
-const thebe_selector_input = "pre"
-const thebe_selector_output = ".output, .cell_output"
-</script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script src="_static/documentation_options.js?v=000c92bf"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
@@ -108,8 +84,8 @@ const thebe_selector_output = ".output, .cell_output"
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search this book..."
-         aria-label="Search this book..."
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -119,66 +95,287 @@ const thebe_selector_output = ".output, .cell_output"
   </div>
   
     <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">regularizepsf 0.2.2 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="concepts.html">
+                        Concepts
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="examples.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="visualization.html">
+                        Visualization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="help.html">
+                        Help
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cite.html">
+                        Citation
+                      </a>
+                    </li>
+                
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="development.html">
+                        Development
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="autoapi/index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/punch-mission/regularizepsf" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
     </nav>
   
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
   <div class="sidebar-header-items sidebar-primary__section">
     
     
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="concepts.html">
+                        Concepts
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="examples.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="visualization.html">
+                        Visualization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="help.html">
+                        Help
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cite.html">
+                        Citation
+                      </a>
+                    </li>
+                
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
+                    More
+                </button>
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="development.html">
+                        Development
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="autoapi/index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/punch-mission/regularizepsf" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
     
   </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-  
-
-<a class="navbar-brand logo" href="intro.html">
-  
-  
-  
-  
-  
-    <p class="title logo__title">regularizePSF</p>
-  
-</a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item navbar-nav active">
-        
-        <ul class="nav bd-sidenav bd-sidenav__home-link">
-            <li class="toctree-l1">
-                <a class="reference internal" href="intro.html">
-                    Welcome
-                </a>
-            </li>
-        </ul>
-        <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plots.html">Plotting Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functional.html">Correct using <code class="docutils literal notranslate"><span class="pre">FunctionalCorrector</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Mathematical Theory</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
-<li class="toctree-l1"><a class="reference internal" href="help.html">Getting help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api/regularizepsf/index.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/regularizepsf/corrector/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regularizepsf.corrector</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/regularizepsf/exceptions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regularizepsf.exceptions</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/regularizepsf/fitter/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regularizepsf.fitter</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/regularizepsf/psf/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regularizepsf.psf</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/regularizepsf/visualize/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regularizepsf.visualize</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-    </div>
-</nav></div>
-    </div>
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
@@ -192,130 +389,12 @@ const thebe_selector_output = ".output, .cell_output"
       <main id="main-content" class="bd-main">
         
         
-
-<div class="sbt-scroll-pixel-helper"></div>
-
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
-<div class="header-article-items header-article__inner">
-  
-    <div class="header-article-items__start">
-      
-        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <span class="fa-solid fa-bars"></span>
-</label></div>
-      
-    </div>
-  
-  
-    <div class="header-article-items__end">
-      
-        <div class="header-article-item">
-
-<div class="article-header-buttons">
-
-
-
-
-
-<div class="dropdown dropdown-source-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
-    <i class="fab fa-github"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="https://github.com/punch-mission/regularizepsf" target="_blank"
-   class="btn btn-sm btn-source-repository-button dropdown-item"
-   title="Source repository"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="btn__text-container">Repository</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://github.com/punch-mission/regularizepsf/issues/new?title=Issue%20on%20page%20%2Fgenindex.html&body=Your%20issue%20content%20here." target="_blank"
-   class="btn btn-sm btn-source-issues-button dropdown-item"
-   title="Open an issue"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="btn__text-container">Open issue</span>
-</a>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-<button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
-  title="Fullscreen mode"
-  data-bs-placement="bottom" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-
-
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script>
-
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-
-</div></div>
-      
-    </div>
-  
-</div>
-</div>
+              <div class="bd-header-article"></div>
               
               
-
-<div id="jb-print-docs-body" class="onlyprint">
-    <h1></h1>
-    <!-- Table of contents -->
-    <div id="print-main-content">
-        <div id="jb-print-toc">
-            
-        </div>
-    </div>
-</div>
-
               
                 
 <div id="searchbox"></div>
@@ -345,25 +424,47 @@ document.write(`
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.PointSpreadFunctionABC.__call__">__call__() (PointSpreadFunctionABC method)</a>
+      <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.PointSpreadFunctionABC.__call__">__call__() (regularizepsf.psf.PointSpreadFunctionABC method)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.SimplePSF.__call__">(SimplePSF method)</a>
+        <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.SimplePSF.__call__">(regularizepsf.psf.SimplePSF method)</a>
 </li>
-        <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.VariedPSF.__call__">(VariedPSF method)</a>
+        <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.VariedPSF.__call__">(regularizepsf.psf.VariedPSF method)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.__contains__">__contains__() (regularizepsf.fitter.PatchCollectionABC method)</a>
+</li>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.ArrayCorrector.__getitem__">__getitem__() (regularizepsf.ArrayCorrector method)</a>
+
+      <ul>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector.__getitem__">(regularizepsf.corrector.ArrayCorrector method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.__getitem__">(regularizepsf.fitter.PatchCollectionABC method)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.__len__">__len__() (regularizepsf.fitter.PatchCollectionABC method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.__contains__">__contains__() (PatchCollectionABC method)</a>
-</li>
-      <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector.__getitem__">__getitem__() (ArrayCorrector method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.ArrayCorrector.__getitem__">[1]</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection._calculate_pad_shape">_calculate_pad_shape() (regularizepsf.CoordinatePatchCollection method)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.__getitem__">(PatchCollectionABC method)</a>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection._calculate_pad_shape">(regularizepsf.fitter.CoordinatePatchCollection method)</a>
 </li>
       </ul></li>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.__len__">__len__() (PatchCollectionABC method)</a>
+      <li><a href="autoapi/regularizepsf/visualize/index.html#regularizepsf.visualize._colormap">_colormap (in module regularizepsf.visualize)</a>
+</li>
+      <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC._fit_lmfit">_fit_lmfit() (regularizepsf.fitter.PatchCollectionABC method)</a>
+</li>
+      <li><a href="autoapi/regularizepsf/visualize/index.html#regularizepsf.visualize._generate_colormap">_generate_colormap() (in module regularizepsf.visualize)</a>
+</li>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection._validate_average_mode">_validate_average_mode() (regularizepsf.CoordinatePatchCollection static method)</a>
+
+      <ul>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection._validate_average_mode">(regularizepsf.fitter.CoordinatePatchCollection static method)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf._varied_psf">_varied_psf() (in module regularizepsf.psf)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -371,20 +472,22 @@ document.write(`
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.add">add() (PatchCollectionABC method)</a>
+      <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.add">add() (regularizepsf.fitter.PatchCollectionABC method)</a>
 </li>
-      <li><a href="api/regularizepsf/index.html#regularizepsf.ArrayCorrector">ArrayCorrector (class in regularizepsf)</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.ArrayCorrector">ArrayCorrector (class in regularizepsf)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector">(class in regularizepsf.corrector)</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector">(class in regularizepsf.corrector)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.average">average() (CoordinatePatchCollection method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.average">[1]</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.average">average() (regularizepsf.CoordinatePatchCollection method)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.average">(PatchCollectionABC method)</a>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.average">(regularizepsf.fitter.CoordinatePatchCollection method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.average">(regularizepsf.fitter.PatchCollectionABC method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -393,33 +496,37 @@ document.write(`
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/index.html#regularizepsf.calculate_covering">calculate_covering() (in module regularizepsf)</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.calculate_covering">calculate_covering() (in module regularizepsf)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.calculate_covering">(in module regularizepsf.corrector)</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.calculate_covering">(in module regularizepsf.corrector)</a>
 </li>
       </ul></li>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinateIdentifier">CoordinateIdentifier (in module regularizepsf.fitter)</a>
+      <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinateIdentifier">CoordinateIdentifier (in module regularizepsf.fitter)</a>
 </li>
-      <li><a href="api/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection">CoordinatePatchCollection (class in regularizepsf)</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection">CoordinatePatchCollection (class in regularizepsf)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection">(class in regularizepsf.fitter)</a>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection">(class in regularizepsf.fitter)</a>
+</li>
+      </ul></li>
+      <li><a href="examples.html#regularizepsf.corrector.ArrayCorrector.correct_image">correct_image() (in module regularizepsf.corrector.ArrayCorrector)</a>
+
+      <ul>
+        <li><a href="autoapi/regularizepsf/index.html#regularizepsf.ArrayCorrector.correct_image">(regularizepsf.ArrayCorrector method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector.correct_image">(regularizepsf.corrector.ArrayCorrector method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.CorrectorABC.correct_image">(regularizepsf.corrector.CorrectorABC method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.correct_image">(regularizepsf.corrector.FunctionalCorrector method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/index.html#regularizepsf.FunctionalCorrector.correct_image">(regularizepsf.FunctionalCorrector method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector.correct_image">correct_image() (ArrayCorrector method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.ArrayCorrector.correct_image">[1]</a>
-
-      <ul>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.CorrectorABC.correct_image">(CorrectorABC method)</a>
-</li>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.correct_image">(FunctionalCorrector method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.FunctionalCorrector.correct_image">[1]</a>
-</li>
-        <li><a href="quickstart.html#regularizepsf.corrector.ArrayCorrector.correct_image">(in module regularizepsf.corrector.ArrayCorrector)</a>
-</li>
-      </ul></li>
-      <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.CorrectorABC">CorrectorABC (class in regularizepsf.corrector)</a>
+      <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.CorrectorABC">CorrectorABC (class in regularizepsf.corrector)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -427,16 +534,22 @@ document.write(`
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.evaluate_to_array_form">evaluate_to_array_form() (FunctionalCorrector method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.FunctionalCorrector.evaluate_to_array_form">[1]</a>
+      <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.evaluate_to_array_form">evaluate_to_array_form() (regularizepsf.corrector.FunctionalCorrector method)</a>
+
+      <ul>
+        <li><a href="autoapi/regularizepsf/index.html#regularizepsf.FunctionalCorrector.evaluate_to_array_form">(regularizepsf.FunctionalCorrector method)</a>
 </li>
-      <li><a href="api/regularizepsf/exceptions/index.html#regularizepsf.exceptions.EvaluatedModelInconsistentSizeError">EvaluatedModelInconsistentSizeError</a>
+      </ul></li>
+      <li><a href="autoapi/regularizepsf/exceptions/index.html#regularizepsf.exceptions.EvaluatedModelInconsistentSizeError">EvaluatedModelInconsistentSizeError</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.extract">extract() (CoordinatePatchCollection class method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.extract">[1]</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.extract">extract() (regularizepsf.CoordinatePatchCollection class method)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.extract">(PatchCollectionABC class method)</a>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.extract">(regularizepsf.fitter.CoordinatePatchCollection class method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.extract">(regularizepsf.fitter.PatchCollectionABC class method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -445,24 +558,28 @@ document.write(`
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.find_stars_and_average">find_stars_and_average() (CoordinatePatchCollection class method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.find_stars_and_average">[1]</a>
+      <li><a href="examples.html#regularizepsf.fitter.CoordinatePatchCollection.find_stars_and_average">find_stars_and_average() (in module regularizepsf.fitter.CoordinatePatchCollection)</a>
 
       <ul>
-        <li><a href="quickstart.html#regularizepsf.fitter.CoordinatePatchCollection.find_stars_and_average">(in module regularizepsf.fitter.CoordinatePatchCollection)</a>
+        <li><a href="autoapi/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.find_stars_and_average">(regularizepsf.CoordinatePatchCollection class method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.find_stars_and_average">(regularizepsf.fitter.CoordinatePatchCollection class method)</a>
 </li>
       </ul></li>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.fit">fit() (CoordinatePatchCollection method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.fit">[1]</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.fit">fit() (regularizepsf.CoordinatePatchCollection method)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.fit">(PatchCollectionABC method)</a>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.fit">(regularizepsf.fitter.CoordinatePatchCollection method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.fit">(regularizepsf.fitter.PatchCollectionABC method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/index.html#regularizepsf.FunctionalCorrector">FunctionalCorrector (class in regularizepsf)</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.FunctionalCorrector">FunctionalCorrector (class in regularizepsf)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector">(class in regularizepsf.corrector)</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector">(class in regularizepsf.corrector)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -471,13 +588,17 @@ document.write(`
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/exceptions/index.html#regularizepsf.exceptions.InvalidSizeError">InvalidSizeError</a>
+      <li><a href="autoapi/regularizepsf/exceptions/index.html#regularizepsf.exceptions.InvalidSizeError">InvalidSizeError</a>
 </li>
+      <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.is_variable">is_variable (regularizepsf.corrector.FunctionalCorrector property)</a>
+
+      <ul>
+        <li><a href="autoapi/regularizepsf/index.html#regularizepsf.FunctionalCorrector.is_variable">(regularizepsf.FunctionalCorrector property)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.is_variable">is_variable (FunctionalCorrector property)</a>, <a href="api/regularizepsf/index.html#regularizepsf.FunctionalCorrector.is_variable">[1]</a>
-</li>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.items">items() (PatchCollectionABC method)</a>
+      <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.items">items() (regularizepsf.fitter.PatchCollectionABC method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -485,7 +606,7 @@ document.write(`
 <h2 id="K">K</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.keys">keys() (PatchCollectionABC method)</a>
+      <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.keys">keys() (regularizepsf.fitter.PatchCollectionABC method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -493,16 +614,22 @@ document.write(`
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector.load">load() (ArrayCorrector class method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.ArrayCorrector.load">[1]</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.ArrayCorrector.load">load() (regularizepsf.ArrayCorrector class method)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.load">(CoordinatePatchCollection class method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.load">[1]</a>
+        <li><a href="autoapi/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.load">(regularizepsf.CoordinatePatchCollection class method)</a>
 </li>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.CorrectorABC.load">(CorrectorABC class method)</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector.load">(regularizepsf.corrector.ArrayCorrector class method)</a>
 </li>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.load">(FunctionalCorrector class method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.FunctionalCorrector.load">[1]</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.CorrectorABC.load">(regularizepsf.corrector.CorrectorABC class method)</a>
 </li>
-        <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.load">(PatchCollectionABC class method)</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.load">(regularizepsf.corrector.FunctionalCorrector class method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.load">(regularizepsf.fitter.CoordinatePatchCollection class method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.load">(regularizepsf.fitter.PatchCollectionABC class method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/index.html#regularizepsf.FunctionalCorrector.load">(regularizepsf.FunctionalCorrector class method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -515,17 +642,17 @@ document.write(`
     module
 
       <ul>
-        <li><a href="api/regularizepsf/index.html#module-regularizepsf">regularizepsf</a>
+        <li><a href="autoapi/regularizepsf/index.html#module-regularizepsf">regularizepsf</a>
 </li>
-        <li><a href="api/regularizepsf/corrector/index.html#module-regularizepsf.corrector">regularizepsf.corrector</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#module-regularizepsf.corrector">regularizepsf.corrector</a>
 </li>
-        <li><a href="api/regularizepsf/exceptions/index.html#module-regularizepsf.exceptions">regularizepsf.exceptions</a>
+        <li><a href="autoapi/regularizepsf/exceptions/index.html#module-regularizepsf.exceptions">regularizepsf.exceptions</a>
 </li>
-        <li><a href="api/regularizepsf/fitter/index.html#module-regularizepsf.fitter">regularizepsf.fitter</a>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#module-regularizepsf.fitter">regularizepsf.fitter</a>
 </li>
-        <li><a href="api/regularizepsf/psf/index.html#module-regularizepsf.psf">regularizepsf.psf</a>
+        <li><a href="autoapi/regularizepsf/psf/index.html#module-regularizepsf.psf">regularizepsf.psf</a>
 </li>
-        <li><a href="api/regularizepsf/visualize/index.html#module-regularizepsf.visualize">regularizepsf.visualize</a>
+        <li><a href="autoapi/regularizepsf/visualize/index.html#module-regularizepsf.visualize">regularizepsf.visualize</a>
 </li>
       </ul></li>
   </ul></td>
@@ -534,21 +661,21 @@ document.write(`
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.PointSpreadFunctionABC.parameters">parameters (PointSpreadFunctionABC property)</a>
+      <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.PointSpreadFunctionABC.parameters">parameters (regularizepsf.psf.PointSpreadFunctionABC property)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.SimplePSF.parameters">(SimplePSF property)</a>
+        <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.SimplePSF.parameters">(regularizepsf.psf.SimplePSF property)</a>
 </li>
-        <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.VariedPSF.parameters">(VariedPSF property)</a>
+        <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.VariedPSF.parameters">(regularizepsf.psf.VariedPSF property)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC">PatchCollectionABC (class in regularizepsf.fitter)</a>
+      <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC">PatchCollectionABC (class in regularizepsf.fitter)</a>
 </li>
-      <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.PointSpreadFunctionABC">PointSpreadFunctionABC (class in regularizepsf.psf)</a>
+      <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.PointSpreadFunctionABC">PointSpreadFunctionABC (class in regularizepsf.psf)</a>
 </li>
-      <li><a href="api/regularizepsf/exceptions/index.html#regularizepsf.exceptions.PSFParameterValidationError">PSFParameterValidationError</a>
+      <li><a href="autoapi/regularizepsf/exceptions/index.html#regularizepsf.exceptions.PSFParameterValidationError">PSFParameterValidationError</a>
 </li>
   </ul></td>
 </tr></table>
@@ -560,21 +687,21 @@ document.write(`
     regularizepsf
 
       <ul>
-        <li><a href="api/regularizepsf/index.html#module-regularizepsf">module</a>
+        <li><a href="autoapi/regularizepsf/index.html#module-regularizepsf">module</a>
 </li>
       </ul></li>
       <li>
     regularizepsf.corrector
 
       <ul>
-        <li><a href="api/regularizepsf/corrector/index.html#module-regularizepsf.corrector">module</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#module-regularizepsf.corrector">module</a>
 </li>
       </ul></li>
       <li>
     regularizepsf.exceptions
 
       <ul>
-        <li><a href="api/regularizepsf/exceptions/index.html#module-regularizepsf.exceptions">module</a>
+        <li><a href="autoapi/regularizepsf/exceptions/index.html#module-regularizepsf.exceptions">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -583,21 +710,21 @@ document.write(`
     regularizepsf.fitter
 
       <ul>
-        <li><a href="api/regularizepsf/fitter/index.html#module-regularizepsf.fitter">module</a>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#module-regularizepsf.fitter">module</a>
 </li>
       </ul></li>
       <li>
     regularizepsf.psf
 
       <ul>
-        <li><a href="api/regularizepsf/psf/index.html#module-regularizepsf.psf">module</a>
+        <li><a href="autoapi/regularizepsf/psf/index.html#module-regularizepsf.psf">module</a>
 </li>
       </ul></li>
       <li>
     regularizepsf.visualize
 
       <ul>
-        <li><a href="api/regularizepsf/visualize/index.html#module-regularizepsf.visualize">module</a>
+        <li><a href="autoapi/regularizepsf/visualize/index.html#module-regularizepsf.visualize">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -606,34 +733,44 @@ document.write(`
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector.save">save() (ArrayCorrector method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.ArrayCorrector.save">[1]</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.ArrayCorrector.save">save() (regularizepsf.ArrayCorrector method)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.save">(CoordinatePatchCollection method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.save">[1]</a>
+        <li><a href="autoapi/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.save">(regularizepsf.CoordinatePatchCollection method)</a>
 </li>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.CorrectorABC.save">(CorrectorABC method)</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector.save">(regularizepsf.corrector.ArrayCorrector method)</a>
 </li>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.save">(FunctionalCorrector method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.FunctionalCorrector.save">[1]</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.CorrectorABC.save">(regularizepsf.corrector.CorrectorABC method)</a>
 </li>
-        <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.save">(PatchCollectionABC method)</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.save">(regularizepsf.corrector.FunctionalCorrector method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.save">(regularizepsf.fitter.CoordinatePatchCollection method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.save">(regularizepsf.fitter.PatchCollectionABC method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/index.html#regularizepsf.FunctionalCorrector.save">(regularizepsf.FunctionalCorrector method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/index.html#regularizepsf.simple_psf">simple_psf() (in module regularizepsf)</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.simple_psf">simple_psf() (in module regularizepsf)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.simple_psf">(in module regularizepsf.psf)</a>
+        <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.simple_psf">(in module regularizepsf.psf)</a>
 </li>
       </ul></li>
-      <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.SimplePSF">SimplePSF (class in regularizepsf.psf)</a>
+      <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.SimplePSF">SimplePSF (class in regularizepsf.psf)</a>
 </li>
-      <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector.simulate_observation">simulate_observation() (ArrayCorrector method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.ArrayCorrector.simulate_observation">[1]</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.ArrayCorrector.simulate_observation">simulate_observation() (regularizepsf.ArrayCorrector method)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.CorrectorABC.simulate_observation">(CorrectorABC method)</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.ArrayCorrector.simulate_observation">(regularizepsf.corrector.ArrayCorrector method)</a>
 </li>
-        <li><a href="api/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.simulate_observation">(FunctionalCorrector method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.FunctionalCorrector.simulate_observation">[1]</a>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.CorrectorABC.simulate_observation">(regularizepsf.corrector.CorrectorABC method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/corrector/index.html#regularizepsf.corrector.FunctionalCorrector.simulate_observation">(regularizepsf.corrector.FunctionalCorrector method)</a>
+</li>
+        <li><a href="autoapi/regularizepsf/index.html#regularizepsf.FunctionalCorrector.simulate_observation">(regularizepsf.FunctionalCorrector method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -642,15 +779,19 @@ document.write(`
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.to_array_corrector">to_array_corrector() (CoordinatePatchCollection method)</a>, <a href="api/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.to_array_corrector">[1]</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.CoordinatePatchCollection.to_array_corrector">to_array_corrector() (regularizepsf.CoordinatePatchCollection method)</a>
+
+      <ul>
+        <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.CoordinatePatchCollection.to_array_corrector">(regularizepsf.fitter.CoordinatePatchCollection method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/exceptions/index.html#regularizepsf.exceptions.UnevaluatedPointError">UnevaluatedPointError</a>
+      <li><a href="autoapi/regularizepsf/exceptions/index.html#regularizepsf.exceptions.UnevaluatedPointError">UnevaluatedPointError</a>
 </li>
   </ul></td>
 </tr></table>
@@ -658,38 +799,38 @@ document.write(`
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/exceptions/index.html#regularizepsf.exceptions.ValidationError">ValidationError</a>
+      <li><a href="autoapi/regularizepsf/exceptions/index.html#regularizepsf.exceptions.ValidationError">ValidationError</a>
 </li>
-      <li><a href="api/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.values">values() (PatchCollectionABC method)</a>
+      <li><a href="autoapi/regularizepsf/fitter/index.html#regularizepsf.fitter.PatchCollectionABC.values">values() (regularizepsf.fitter.PatchCollectionABC method)</a>
 </li>
-      <li><a href="api/regularizepsf/index.html#regularizepsf.varied_psf">varied_psf() (in module regularizepsf)</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.varied_psf">varied_psf() (in module regularizepsf)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.varied_psf">(in module regularizepsf.psf)</a>
+        <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.varied_psf">(in module regularizepsf.psf)</a>
 </li>
       </ul></li>
-      <li><a href="api/regularizepsf/psf/index.html#regularizepsf.psf.VariedPSF">VariedPSF (class in regularizepsf.psf)</a>
+      <li><a href="autoapi/regularizepsf/psf/index.html#regularizepsf.psf.VariedPSF">VariedPSF (class in regularizepsf.psf)</a>
 </li>
-      <li><a href="api/regularizepsf/exceptions/index.html#regularizepsf.exceptions.VariedPSFParameterMismatchError">VariedPSFParameterMismatchError</a>
+      <li><a href="autoapi/regularizepsf/exceptions/index.html#regularizepsf.exceptions.VariedPSFParameterMismatchError">VariedPSFParameterMismatchError</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/regularizepsf/index.html#regularizepsf.visualize_patch_counts">visualize_patch_counts() (in module regularizepsf)</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.visualize_patch_counts">visualize_patch_counts() (in module regularizepsf)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/visualize/index.html#regularizepsf.visualize.visualize_patch_counts">(in module regularizepsf.visualize)</a>
+        <li><a href="autoapi/regularizepsf/visualize/index.html#regularizepsf.visualize.visualize_patch_counts">(in module regularizepsf.visualize)</a>
 </li>
       </ul></li>
-      <li><a href="api/regularizepsf/index.html#regularizepsf.visualize_PSFs">visualize_PSFs() (in module regularizepsf)</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.visualize_PSFs">visualize_PSFs() (in module regularizepsf)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/visualize/index.html#regularizepsf.visualize.visualize_PSFs">(in module regularizepsf.visualize)</a>
+        <li><a href="autoapi/regularizepsf/visualize/index.html#regularizepsf.visualize.visualize_PSFs">(in module regularizepsf.visualize)</a>
 </li>
       </ul></li>
-      <li><a href="api/regularizepsf/index.html#regularizepsf.visualize_transfer_kernels">visualize_transfer_kernels() (in module regularizepsf)</a>
+      <li><a href="autoapi/regularizepsf/index.html#regularizepsf.visualize_transfer_kernels">visualize_transfer_kernels() (in module regularizepsf)</a>
 
       <ul>
-        <li><a href="api/regularizepsf/visualize/index.html#regularizepsf.visualize.visualize_transfer_kernels">(in module regularizepsf.visualize)</a>
+        <li><a href="autoapi/regularizepsf/visualize/index.html#regularizepsf.visualize.visualize_transfer_kernels">(in module regularizepsf.visualize)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -699,7 +840,6 @@ document.write(`
 
                 </article>
               
-
               
               
               
@@ -718,41 +858,51 @@ document.write(`
           </div>
           <footer class="bd-footer-content">
             
-<div class="bd-footer-content__inner container">
-  
-  <div class="footer-item">
-    
-<p class="component-author">
-By PUNCH Science Operations Center
-</p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-</div>
           </footer>
         
-
       </main>
     </div>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, J. Marcus Hughes and the PUNCH Science Operations Center.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
   </footer>
   </body>
 </html>
