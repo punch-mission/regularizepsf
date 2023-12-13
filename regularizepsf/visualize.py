@@ -51,7 +51,7 @@ def visualize_patch_counts(patch_collection: PatchCollectionABC,
         c = int((c - columns.min()) / dc)
         counts[r, c] = count
 
-    m = ax.imshow(counts, origin='lower')
+    m = ax.imshow(counts, origin="lower")
     plt.colorbar(m).set_label(
             "Number of stars found in patch")
 
@@ -96,8 +96,8 @@ def visualize_PSFs(psfs: ArrayCorrector,
                    label_pixel_bounds: bool = False,
                    fig: Optional[matplotlib.figure.Figure] = None,
                    fig_scale: float = 1,
-                   colorbar_label: str = 'Normalized brightness',
-                   axis_border_color: str = 'white',
+                   colorbar_label: str = "Normalized brightness",
+                   axis_border_color: str = "white",
                    imshow_args: dict = {}) -> matplotlib.figure.Figure:
     """
     Utility to visualize estimated PSFs.
@@ -149,14 +149,14 @@ def visualize_PSFs(psfs: ArrayCorrector,
         The generated figure
     """
     # Special-case vmin/vmax, and pass them to our PowerNorm
-    if 'norm' not in imshow_args:
-        vmin = imshow_args.pop('vmin', 0)
-        vmax = imshow_args.pop('vmax', 1)
+    if "norm" not in imshow_args:
+        vmin = imshow_args.pop("vmin", 0)
+        vmax = imshow_args.pop("vmax", 1)
     else:
         # The default Norm will be overridden
         vmin, vmax = None, None
     imshow_args_default = dict(
-        origin='lower',
+        origin="lower",
         cmap=_colormap,
         norm=matplotlib.colors.PowerNorm(gamma=1/2.2, vmin=vmin, vmax=vmax)
     )
@@ -219,11 +219,11 @@ def visualize_PSFs(psfs: ArrayCorrector,
         if i == 0 and label_pixel_bounds:
             ax.set_xlabel(
                     f"{int(columns[j])} to\n{int(columns[j] + 2 * dc)} px",
-                    rotation='horizontal', ha='center')
+                    rotation="horizontal", ha="center")
         if j == 0 and label_pixel_bounds:
             ax.set_ylabel(
                     f"{int(rows[i])} to\n{int(rows[i] + 2 * dr)} px",
-                    rotation='horizontal', ha='right', va='center')
+                    rotation="horizontal", ha="right", va="center")
 
     cax = fig.add_subplot(gs[:, -1])
     fig.colorbar(im, cax=cax, label=colorbar_label)
@@ -236,12 +236,12 @@ def visualize_PSFs(psfs: ArrayCorrector,
                 image = image[trim:-trim, trim:-trim]
             im = ax.imshow(image, **imshow_args)
             # Ensure there's a thin white line between subplots
-            ax.spines[:].set_color('white')
+            ax.spines[:].set_color("white")
             ax.set_xticks([])
             ax.set_yticks([])
 
-        fig.text(0.31, 0.95, 'Uncorrected', ha='center', fontsize=15)
-        fig.text(0.7, 0.95, 'Corrected', ha='center', fontsize=15)
+        fig.text(0.31, 0.95, "Uncorrected", ha="center", fontsize=15)
+        fig.text(0.7, 0.95, "Corrected", ha="center", fontsize=15)
     return fig
 
 
@@ -252,8 +252,8 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
                    label_pixel_bounds: bool = False,
                    fig: Optional[matplotlib.figure.Figure] = None,
                    fig_scale: float = 1,
-                   colorbar_label: str = 'Transfer kernel amplitude',
-                   axis_border_color: str = 'black',
+                   colorbar_label: str = "Transfer kernel amplitude",
+                   axis_border_color: str = "black",
                    imshow_args: dict = {}) -> matplotlib.figure.Figure:
     """
     Utility to compute and visualize transfer kernels.
@@ -321,7 +321,7 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
     # we'll use that function and change some of the defaults.
     imshow_args_default = dict(
             norm=None,
-            cmap='bwr',
+            cmap="bwr",
             vmin=-extent,
             vmax=extent)
     imshow_args = imshow_args_default | imshow_args

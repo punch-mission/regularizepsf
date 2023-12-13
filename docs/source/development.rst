@@ -28,4 +28,3 @@ To update these reference images, run ``pytest --mpl --mpl-generate-path=tests/b
 If the image-comparison tests are failing,
 run ``pytest --mpl --mpl-generate-summary=html`` to generate a summary page showing the generated and reference images.
 The location of the generated file will be shown at the end of ``pytest``'s command-line output.
-
