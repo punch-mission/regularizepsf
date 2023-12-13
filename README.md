@@ -13,10 +13,10 @@ the initial image with the target PSF (d). The panels are gamma-corrected to hig
 
 ## Getting started
 
-`pip install regularizepsf` and then follow along with the [Quickstart section](https://punch-mission.github.io/regularizepsf/quickstart.html). 
+`pip install regularizepsf` and then follow along with the [Quickstart section](https://punch-mission.github.io/regularizepsf/quickstart.html).
 
 ## Contributing
-We encourage all contributions. If you have a problem with the code or would like to see a new feature, please open an issue. Or you can submit a pull request. 
+We encourage all contributions. If you have a problem with the code or would like to see a new feature, please open an issue. Or you can submit a pull request.
 
 ## License
 See LICENSE for the MIT license
@@ -25,7 +25,7 @@ See LICENSE for the MIT license
 Please contact Marcus Hughes at [marcus.hughes@swri.org](mailto:marcus.hughes@swri.org).
 
 ## Citation
-Please cite the associated paper if you use this technique: 
+Please cite the associated paper if you use this technique:
 
 ```
 @article{Hughes_2023,
@@ -43,19 +43,4 @@ journal = {The Astronomical Journal}
 }
 ```
 
-If you use this software, please also cite the package: 
-```
-@software{marcus_hughes_2023_10066960,
-  author       = {Marcus Hughes and
-                  Sam Van Kooten and
-                  Tania Varesano and
-                  Suman Chapai},
-  title        = {punch-mission/regularizepsf: 0.2.3},
-  month        = nov,
-  year         = 2023,
-  publisher    = {Zenodo},
-  version      = {0.2.3},
-  doi          = {10.5281/zenodo.10066960},
-  url          = {https://doi.org/10.5281/zenodo.10066960}
-}
-```
+If you use this software, please also cite the package with the specific version used. [Zenodo always has the most up-to-date citation](https://zenodo.org/records/10066960).
