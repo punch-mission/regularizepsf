@@ -43,19 +43,4 @@ journal = {The Astronomical Journal}
 }
 ```
 
-If you use this software, please also cite the package: 
-```
-@software{marcus_hughes_2023_10066960,
-  author       = {Marcus Hughes and
-                  Sam Van Kooten and
-                  Tania Varesano and
-                  Suman Chapai},
-  title        = {punch-mission/regularizepsf: 0.2.3},
-  month        = nov,
-  year         = 2023,
-  publisher    = {Zenodo},
-  version      = {0.2.3},
-  doi          = {10.5281/zenodo.10066960},
-  url          = {https://doi.org/10.5281/zenodo.10066960}
-}
-```
+If you use this software, please also cite the package with the specific version used. [Zenodo always has the most up-to-date citation](https://zenodo.org/records/10066960). 
