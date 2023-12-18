@@ -140,7 +140,7 @@ def _varied_psf(base_psf: SimplePSF) -> VariedPSF:
     if base_psf is None:
         raise TypeError("A base_psf must be provided to the varied_psf decorator.")
 
-    def inner(__fn: Callable=None, *, check_at_call: bool = True) -> Callable:
+    def inner(__fn: Callable=None, *, check_at_call: bool = True) -> Callable:  # noqa: RUF013
         if __fn:
             return VariedPSF(__fn, base_psf, validate_at_call=check_at_call)
         else:

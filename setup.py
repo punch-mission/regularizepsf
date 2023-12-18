@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 from Cython.Build import cythonize
 from setuptools import Extension, setup
 
@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 ext_modules = [Extension("regularizepsf.helper",
                          sources=["regularizepsf/helper.pyx"],
-                         include_dirs=[numpy.get_include()])]
+                         include_dirs=[np.get_include()])]
 
 setup(
     name="regularizepsf",

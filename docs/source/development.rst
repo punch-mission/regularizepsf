@@ -1,6 +1,8 @@
 Development
 ============
-We encourage all contributions. We recommend working in a virtual environment.
+We encourage all contributions. Please see our `contribution guide first <https://github.com/punch-mission/punch-mission/blob/main/contributing.md>`_.
+
+We recommend working in a virtual environment.
 This can be created by running ``python -m venv venv``. Then, activate the environment with ``source venv/bin/activate``.
 You can then install the required packages with ``pip install -r requirements_dev.txt``.
 

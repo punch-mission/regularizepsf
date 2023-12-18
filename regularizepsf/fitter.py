@@ -346,7 +346,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
                         yield hdul[hdu_choice].data.astype(float)
             data_iterator = generator()
         else:
-            raise ValueError("Unsupported type for `images`")
+            raise TypeError("Unsupported type for `images`")
 
         if star_mask is None:
             def generator():
@@ -600,7 +600,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
         PatchCollectionABC
             the new patch collection
         """
-        patches = dict()
+        patches = {}
         with h5py.File(path, "r") as f:
             for key, val in f["patches"].items():
                 parsed_key = tuple(int(val) for val in key.replace("(", "").replace(")", "").split(","))

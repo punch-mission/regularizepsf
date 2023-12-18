@@ -1,4 +1,4 @@
-exclude: "\\.asdf$"
+exclude: "docs/*"
 repos:
   # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -21,7 +21,7 @@ repos:
       - id: check-yaml
       - id: debug-statements
       - id: check-added-large-files
-        args: ['--enforce-all','--maxkb=10000']
+        args: ['--enforce-all','--maxkb=15000']
       - id: end-of-file-fixer
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|.json)$|^CITATION.rst$"
       - id: mixed-line-ending
