@@ -1,5 +1,4 @@
 numpy~=1.26
-dill~=0.3
 h5py~=3.10
 lmfit~=1.2
 cython~=3.0
@@ -14,3 +13,4 @@ pytest-runner
 hypothesis
 ruff
 pytest-mpl
+pre-commit

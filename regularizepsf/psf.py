@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import abc
 import inspect
-from functools import partial
+from typing import Any, Dict, List, Callable, cast
 from numbers import Real
-from typing import Any, Callable, Dict, List, cast
+from functools import partial
 
 import numpy as np
 
-from regularizepsf.exceptions import (PSFParameterValidationError,
-                                      VariedPSFParameterMismatchError)
+from regularizepsf.exceptions import PSFParameterValidationError, VariedPSFParameterMismatchError
 
 
 class PointSpreadFunctionABC(metaclass=abc.ABCMeta):
@@ -140,7 +139,7 @@ def _varied_psf(base_psf: SimplePSF) -> VariedPSF:
     if base_psf is None:
         raise TypeError("A base_psf must be provided to the varied_psf decorator.")
 
-    def inner(__fn: Callable=None, *, check_at_call: bool = True) -> Callable:
+    def inner(__fn: Callable=None, *, check_at_call: bool = True) -> Callable:  # noqa: RUF013
         if __fn:
             return VariedPSF(__fn, base_psf, validate_at_call=check_at_call)
         else:

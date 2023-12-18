@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 import abc
+from typing import Any, Tuple, Optional
 from pathlib import Path
-from typing import Any, Tuple
 
-import dill
 import h5py
 import numpy as np
 from numpy.fft import fft2, ifft2, ifftshift
 
-from regularizepsf.exceptions import (EvaluatedModelInconsistentSizeError,
-                                      InvalidSizeError, UnevaluatedPointError)
+from regularizepsf.exceptions import EvaluatedModelInconsistentSizeError, InvalidSizeError, UnevaluatedPointError
 from regularizepsf.helper import _correct_image, _precalculate_ffts
 from regularizepsf.psf import PointSpreadFunctionABC, SimplePSF, VariedPSF
 
@@ -160,14 +158,11 @@ class FunctionalCorrector(CorrectorABC):
                                              epsilon=epsilon)
 
     def save(self, path: str) -> None:
-        with open(path, "wb") as f:
-            dill.dump(self, f)
+        raise NotImplementedError("You cannot save a FunctionalCorrector.")
 
     @classmethod
     def load(cls, path: str) -> FunctionalCorrector:
-        with open(path, "rb") as f:
-            return dill.load(f)
-
+        raise NotImplementedError("You cannot load a FunctionalCorrector.")
 
     def simulate_observation(self, image: np.ndarray, size: int) -> np.ndarray:
         """Simulates on a star field what an observation using this PSF looks like
@@ -238,7 +233,15 @@ class ArrayCorrector(CorrectorABC):
         self.target_fft, self.psf_i_fft = _precalculate_ffts(
                 normalized_target, normalized_values)
 
-    def correct_image(self, image: np.ndarray, size: int = None,  # noqa: ARG002, size used in FunctionalCorrector
+    @property
+    def evaluations(self) -> dict[Any, np.ndarray]:
+        return self._evaluations
+
+    @property
+    def evaluation_points(self) -> list:
+        return self._evaluation_points
+
+    def correct_image(self, image: np.ndarray, size: Optional[int] = None,  # noqa: ARG002
                       alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
         if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape,
                                                                           (self._size,
@@ -272,7 +275,7 @@ class ArrayCorrector(CorrectorABC):
         with h5py.File(path, "r") as f:
             target_evaluation = f["target"][:].copy()
 
-            evaluations = dict()
+            evaluations = {}
             for key, val in f["evaluations"].items():
                 parsed_key = tuple(int(val) for val in key.replace("(", "").replace(")", "").split(","))
                 evaluations[parsed_key] = val[:].copy()
