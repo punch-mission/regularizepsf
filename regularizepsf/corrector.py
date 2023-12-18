@@ -239,8 +239,8 @@ class ArrayCorrector(CorrectorABC):
         return self._evaluations
 
     @property
-    def evaluation_points(self) -> np.ndarray:
-        return self.evaluation_points
+    def evaluation_points(self) -> list:
+        return self._evaluation_points
 
     def correct_image(self, image: np.ndarray, size: Optional[int] = None,  # noqa: ARG002, size used in FunctionalCorrector
                       alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
