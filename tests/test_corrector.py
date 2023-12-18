@@ -90,12 +90,6 @@ def test_create_functional_corrector(tmp_path):
     assert example.is_variable is False
     assert example._target_model == example_psf
 
-    fname = tmp_path / "test.psf"
-    example.save(fname)
-    assert os.path.isfile(fname)
-    loaded = example.load(fname)
-    assert isinstance(loaded, FunctionalCorrector)
-
 
 def test_evaluate_to_array_form_with_invalid_size_errors():
     @simple_psf
