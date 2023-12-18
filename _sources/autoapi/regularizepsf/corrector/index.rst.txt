@@ -139,6 +139,7 @@ Functions
 
 
    .. py:method:: save(path: str) -> None
+      :abstractmethod:
 
       Save the model to a file.
 
@@ -150,6 +151,7 @@ Functions
 
    .. py:method:: load(path: str) -> FunctionalCorrector
       :classmethod:
+      :abstractmethod:
 
       Loads a model from the path
 
@@ -179,7 +181,15 @@ Functions
    A PSF corrector that is evaluated as array patches
 
 
-   .. py:method:: correct_image(image: numpy.ndarray, size: int = None, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
+   .. py:property:: evaluations
+      :type: dict[Any, numpy.ndarray]
+
+
+   .. py:property:: evaluation_points
+      :type: list
+
+
+   .. py:method:: correct_image(image: numpy.ndarray, size: Optional[int] = None, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
 
       PSF correct an image according to the model
 

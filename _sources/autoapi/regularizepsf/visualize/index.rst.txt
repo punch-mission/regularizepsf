@@ -43,14 +43,14 @@ Attributes
    :type label_pixel_bounds: bool
 
 
-.. py:function:: _generate_colormap()
+.. py:function:: _generate_colormap() -> matplotlib.colors.ListedColormap
 
 
 .. py:data:: _colormap
 
    
 
-.. py:function:: visualize_PSFs(psfs: regularizepsf.corrector.ArrayCorrector, corrected: Optional[regularizepsf.fitter.PatchCollectionABC] = None, all_patches: bool = False, region_size: int = 0, label_pixel_bounds: bool = False, fig: Optional[matplotlib.figure.Figure] = None, fig_scale: float = 1, colorbar_label: str = 'Normalized brightness', axis_border_color: str = 'white', imshow_args: dict = {}) -> matplotlib.figure.Figure
+.. py:function:: visualize_PSFs(psfs: regularizepsf.corrector.ArrayCorrector, corrected: Optional[regularizepsf.fitter.PatchCollectionABC] = None, all_patches: bool = False, region_size: int = 0, label_pixel_bounds: bool = False, fig: Optional[matplotlib.figure.Figure] = None, fig_scale: float = 1, colorbar_label: str = 'Normalized brightness', axis_border_color: str = 'white', imshow_args: Optional[dict] = None) -> matplotlib.figure.Figure
 
    Utility to visualize estimated PSFs.
 
@@ -97,7 +97,7 @@ Attributes
    :rtype: matplotlib.figure.Figure
 
 
-.. py:function:: visualize_transfer_kernels(psfs: regularizepsf.corrector.ArrayCorrector, alpha: float, epsilon: float, all_patches: bool = False, region_size: int = 0, label_pixel_bounds: bool = False, fig: Optional[matplotlib.figure.Figure] = None, fig_scale: float = 1, colorbar_label: str = 'Transfer kernel amplitude', axis_border_color: str = 'black', imshow_args: dict = {}) -> matplotlib.figure.Figure
+.. py:function:: visualize_transfer_kernels(psfs: regularizepsf.corrector.ArrayCorrector, alpha: float, epsilon: float, all_patches: bool = False, region_size: int = 0, label_pixel_bounds: bool = False, fig: Optional[matplotlib.figure.Figure] = None, fig_scale: float = 1, colorbar_label: str = 'Transfer kernel amplitude', axis_border_color: str = 'black', imshow_args: Optional[dict] = None) -> matplotlib.figure.Figure
 
    Utility to compute and visualize transfer kernels.
 

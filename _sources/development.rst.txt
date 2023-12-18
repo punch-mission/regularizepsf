@@ -1,10 +1,19 @@
 Development
 ============
-We encourage all contributions. We recommend working in a virtual environment.
+We encourage all contributions. Please see our `contribution guide first <https://github.com/punch-mission/punch-mission/blob/main/contributing.md>`_.
+
+We recommend working in a virtual environment.
 This can be created by running ``python -m venv venv``. Then, activate the environment with ``source venv/bin/activate``.
 You can then install the required packages with ``pip install -r requirements_dev.txt``.
 
 If at any time you run into issues, please contact us by :doc:`following the guidelines here <help>`.
+
+Setting up pre-commit
+----------------------
+
+The first time you develop code, you'll need to install the pre-commit. This checks that our style is consistent.
+It gets installed when you do ``pip install -r requirements_dev.txt`` but then requires you to activate them by
+running ``pre-commit install``. Now everytime you commit, our checks will run first.
 
 Building the docs
 ------------------
@@ -28,4 +37,3 @@ To update these reference images, run ``pytest --mpl --mpl-generate-path=tests/b
 If the image-comparison tests are failing,
 run ``pytest --mpl --mpl-generate-summary=html`` to generate a summary page showing the generated and reference images.
 The location of the generated file will be shown at the end of ``pytest``'s command-line output.
-

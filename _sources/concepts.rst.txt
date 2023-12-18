@@ -38,4 +38,3 @@ Finally, there are many visualizations to assist in understanding the results an
 outlined in :doc:`visualization`.
 
 To speed up computation of the many FFTs, the correction is done in Cython in the ``helper.pyx`` file.
-
