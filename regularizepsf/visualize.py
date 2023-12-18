@@ -90,16 +90,17 @@ def _generate_colormap() -> matplotlib.colors.ListedColormap:
 _colormap = _generate_colormap()
 
 
-def visualize_PSFs(psfs: ArrayCorrector,  # noqa: N802 fine to capitalize PSF
-                   corrected: Optional[PatchCollectionABC] = None,
-                   all_patches: bool = False,
-                   region_size: int = 0,
-                   label_pixel_bounds: bool = False,
-                   fig: Optional[mpl.figure.Figure] = None,
-                   fig_scale: float = 1,
-                   colorbar_label: str = "Normalized brightness",
-                   axis_border_color: str = "white",
-                   imshow_args: dict = None) -> mpl.figure.Figure:
+def visualize_PSFs(  # noqa: N802, C901
+        psfs: ArrayCorrector,
+        corrected: Optional[PatchCollectionABC] = None,
+        all_patches: bool = False,
+        region_size: int = 0,
+        label_pixel_bounds: bool = False,
+        fig: Optional[mpl.figure.Figure] = None,
+        fig_scale: float = 1,
+        colorbar_label: str = "Normalized brightness",
+        axis_border_color: str = "white",
+        imshow_args: Optional[dict] = None) -> mpl.figure.Figure:
     """
     Utility to visualize estimated PSFs.
 
@@ -165,8 +166,8 @@ def visualize_PSFs(psfs: ArrayCorrector,  # noqa: N802 fine to capitalize PSF
     imshow_args = imshow_args_default | imshow_args
 
     # Identify which patches we'll be plotting
-    rows = np.unique(sorted(r for r, c in psfs._evaluation_points))
-    columns = np.unique(sorted(c for r, c in psfs._evaluation_points))
+    rows = np.unique(sorted(r for r, c in psfs.evaluation_points))
+    columns = np.unique(sorted(c for r, c in psfs.evaluation_points))
     dr = rows[1] - rows[0]
     dc = columns[1] - columns[0]
     if not all_patches:
@@ -256,7 +257,7 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
                    fig_scale: float = 1,
                    colorbar_label: str = "Transfer kernel amplitude",
                    axis_border_color: str = "black",
-                   imshow_args: dict = None) -> mpl.figure.Figure:
+                   imshow_args: Optional[dict] = None) -> mpl.figure.Figure:
     """
     Utility to compute and visualize transfer kernels.
 
@@ -309,7 +310,7 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
     # kernel rather than the PSF
     tks = copy.deepcopy(psfs)
     extent = -np.inf
-    for i in range(len(tks._evaluations)):
+    for i in range(len(tks.evaluations)):
         psf_regularized_inverse = _regularize_array(
                 tks.psf_i_fft[i], alpha, epsilon, tks.target_fft)
         transfer_kernel = np.fft.ifft2(
@@ -318,7 +319,7 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
         # the image, rather than being centered. We must be picking up a phase
         # shift in Fourier space.
         transfer_kernel = np.fft.fftshift(transfer_kernel)
-        tks._evaluations[tks._evaluation_points[i]] = transfer_kernel
+        tks.evaluations[tks.evaluation_points[i]] = transfer_kernel
         extent = max(extent, np.max(np.abs(transfer_kernel)))
 
     # The plot we want is very similar to that produced by visualize_PSFs, so

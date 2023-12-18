@@ -272,7 +272,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
         return out
 
     @classmethod
-    def find_stars_and_average(cls,
+    def find_stars_and_average(cls,  # noqa: C901
                                images: list[str] | np.ndarray | Generator,
                                psf_size: int,
                                patch_size: int,
@@ -333,14 +333,14 @@ class CoordinatePatchCollection(PatchCollectionABC):
             data_iterator = images
         elif isinstance(images, np.ndarray):
             if len(images.shape) == 3:
-                def generator():
+                def generator() -> np.ndarray:
                     for image in images:
                         yield image
                 data_iterator = generator()
             else:
                 raise ValueError("Image data array must be 3D")
         elif isinstance(images, List) and isinstance(images[0], str):
-            def generator():
+            def generator() -> np.ndarray:
                 for image_path in images:
                     with fits.open(image_path) as hdul:
                         yield hdul[hdu_choice].data.astype(float)
@@ -349,7 +349,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
             raise TypeError("Unsupported type for `images`")
 
         if star_mask is None:
-            def generator():
+            def generator() -> None:
                 while True:
                     yield None
             star_mask_iterator = generator()
@@ -357,14 +357,14 @@ class CoordinatePatchCollection(PatchCollectionABC):
             star_mask_iterator = star_mask
         elif isinstance(star_mask, np.ndarray):
             if len(star_mask.shape) == 3:
-                def generator():
+                def generator() -> np.ndarray:
                     for mask in star_mask:
                         yield mask
                 star_mask_iterator = generator()
             else:
                 raise ValueError("Star mask array must be 3D")
         elif isinstance(star_mask, List) and isinstance(star_mask[0], str):
-            def generator():
+            def generator() -> np.ndarray:
                 for mask_path in star_mask:
                     with fits.open(mask_path) as hdul:
                         yield hdul[hdu_choice].data.astype(bool)

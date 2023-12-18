@@ -234,6 +234,14 @@ class ArrayCorrector(CorrectorABC):
         self.target_fft, self.psf_i_fft = _precalculate_ffts(
                 normalized_target, normalized_values)
 
+    @property
+    def evaluations(self) -> dict[Any, np.ndarray]:
+        return self._evaluations
+
+    @property
+    def evaluation_points(self) -> np.ndarray:
+        return self.evaluation_points
+
     def correct_image(self, image: np.ndarray, size: Optional[int] = None,  # noqa: ARG002, size used in FunctionalCorrector
                       alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
         if not all(img_dim_i >= psf_dim_i for img_dim_i, psf_dim_i in zip(image.shape,

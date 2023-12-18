@@ -29,10 +29,8 @@ extend-select = ['W',
                 'PGH',
                 'TRY',
                 'NPY',
-                'RUF',
-                #'PTH'
-                ]
+                'RUF']
 target-version = 'py38'
 ignore = ['ANN101', 'ANN102', 'TRY003', 'RET505', 'ANN401', 'RET506', 'W291']
-exclude = ['tests']
+exclude = ['tests/*']
 line-length=120
