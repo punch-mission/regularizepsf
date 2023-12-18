@@ -1,12 +1,11 @@
 import pathlib
 
-from astropy.io import fits
 import numpy as np
 import pytest
+from astropy.io import fits
 
 import regularizepsf
 from regularizepsf.fitter import CoordinatePatchCollection
-
 
 TEST_DIR = pathlib.Path(__file__).parent.resolve()
 

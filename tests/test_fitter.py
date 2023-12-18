@@ -1,14 +1,14 @@
 import os.path
 import pathlib
 
-from astropy.io import fits
-import pytest
 import numpy as np
-from hypothesis import given, strategies as st, settings, HealthCheck
+import pytest
+from astropy.io import fits
+from hypothesis import HealthCheck, given, settings
+from hypothesis import strategies as st
 
-from regularizepsf.fitter import CoordinatePatchCollection, CoordinateIdentifier
 from regularizepsf.exceptions import InvalidSizeError
-
+from regularizepsf.fitter import CoordinateIdentifier, CoordinatePatchCollection
 
 TEST_DIR = pathlib.Path(__file__).parent.resolve()
 
@@ -239,4 +239,3 @@ def test_find_stars_and_average_mask_formats(tmp_path):
         else:
             # This patche covers a mix of masked and non-masked areas
             assert np.any(example_file[loc] != 0)
-

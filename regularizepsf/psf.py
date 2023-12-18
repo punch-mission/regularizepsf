@@ -2,16 +2,13 @@ from __future__ import annotations
 
 import abc
 import inspect
-from functools import partial
+from typing import Any, Dict, List, Callable, cast
 from numbers import Real
-from typing import Any, Callable, Dict, List, cast
+from functools import partial
 
 import numpy as np
 
-from regularizepsf.exceptions import (
-    PSFParameterValidationError,
-    VariedPSFParameterMismatchError,
-)
+from regularizepsf.exceptions import PSFParameterValidationError, VariedPSFParameterMismatchError
 
 
 class PointSpreadFunctionABC(metaclass=abc.ABCMeta):
@@ -68,9 +65,9 @@ class SimplePSF(PointSpreadFunctionABC):
             if i >= 2:
                 self._parameters.add(variable)
 
-    def __call__(self, 
+    def __call__(self,
                  x: Real | np.ndarray,
-                 y: Real | np.ndarray, 
+                 y: Real | np.ndarray,
                  **kwargs: Dict[str, Any]) -> Real | np.ndarray:
         return self._f(x, y, **kwargs)
 
@@ -89,9 +86,9 @@ def simple_psf(arg: Any=None) -> SimplePSF:
 class VariedPSF(PointSpreadFunctionABC):
     """Model for a PSF that varies over the field of view"""
 
-    def __init__(self, 
+    def __init__(self,
                  vary_function: Callable,
-                 base_psf: SimplePSF, 
+                 base_psf: SimplePSF,
                  validate_at_call: bool = True) -> None:
         self._vary_function = vary_function
         self._base_psf = base_psf
@@ -121,7 +118,7 @@ class VariedPSF(PointSpreadFunctionABC):
         self._origin_parameters: set[str] = set(origin_evaluation.keys())
         if self._base_psf.parameters != self._origin_parameters:
             msg = (f"The base PSF model has parameters {self._base_psf.parameters} "
-                   f"while the varied psf supplies {self._origin_parameters}" 
+                   f"while the varied psf supplies {self._origin_parameters}"
                    "at the origin. These must match.")
             raise VariedPSFParameterMismatchError(msg)
 
@@ -142,7 +139,7 @@ def _varied_psf(base_psf: SimplePSF) -> VariedPSF:
     if base_psf is None:
         raise TypeError("A base_psf must be provided to the varied_psf decorator.")
 
-    def inner(__fn: Callable=None, *, check_at_call: bool = True) -> Callable:
+    def inner(__fn: Callable=None, *, check_at_call: bool = True) -> Callable:  # noqa: RUF013
         if __fn:
             return VariedPSF(__fn, base_psf, validate_at_call=check_at_call)
         else:
