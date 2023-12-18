@@ -6,10 +6,8 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 from pytest import fixture
 
-from regularizepsf.corrector import (ArrayCorrector, FunctionalCorrector,
-                                     calculate_covering)
-from regularizepsf.exceptions import (EvaluatedModelInconsistentSizeError,
-                                      InvalidSizeError, UnevaluatedPointError)
+from regularizepsf.corrector import ArrayCorrector, FunctionalCorrector, calculate_covering
+from regularizepsf.exceptions import EvaluatedModelInconsistentSizeError, InvalidSizeError, UnevaluatedPointError
 from regularizepsf.psf import simple_psf, varied_psf
 
 

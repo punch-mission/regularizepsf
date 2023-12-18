@@ -1,7 +1,6 @@
 import pytest
 
-from regularizepsf.exceptions import (PSFParameterValidationError,
-                                      VariedPSFParameterMismatchError)
+from regularizepsf.exceptions import PSFParameterValidationError, VariedPSFParameterMismatchError
 from regularizepsf.psf import SimplePSF, VariedPSF, simple_psf, varied_psf
 
 

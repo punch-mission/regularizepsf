@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import abc
 import inspect
-from functools import partial
+from typing import Any, Dict, List, Callable, cast
 from numbers import Real
-from typing import Any, Callable, Dict, List, cast
+from functools import partial
 
 import numpy as np
 
-from regularizepsf.exceptions import (PSFParameterValidationError,
-                                      VariedPSFParameterMismatchError)
+from regularizepsf.exceptions import PSFParameterValidationError, VariedPSFParameterMismatchError
 
 
 class PointSpreadFunctionABC(metaclass=abc.ABCMeta):

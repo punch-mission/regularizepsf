@@ -8,8 +8,7 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from regularizepsf.exceptions import InvalidSizeError
-from regularizepsf.fitter import (CoordinateIdentifier,
-                                  CoordinatePatchCollection)
+from regularizepsf.fitter import CoordinateIdentifier, CoordinatePatchCollection
 
 TEST_DIR = pathlib.Path(__file__).parent.resolve()
 

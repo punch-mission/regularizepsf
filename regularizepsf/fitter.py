@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import abc
 import warnings
-from collections import namedtuple
+from typing import Any, Dict, List, Tuple, Optional, Generator
 from numbers import Real
-from typing import Any, Dict, Generator, List, Optional, Tuple
+from collections import namedtuple
 
 import h5py
 import numpy as np
