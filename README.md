@@ -25,7 +25,7 @@ See LICENSE for the MIT license
 Please contact Marcus Hughes at [marcus.hughes@swri.org](mailto:marcus.hughes@swri.org).
 
 ## Citation
-Please cite the associated paper if you use this technique:
+Please cite [the associated paper](https://iopscience.iop.org/article/10.3847/1538-3881/acc578) if you use this technique:
 
 ```
 @article{Hughes_2023,
