@@ -19,10 +19,10 @@ the initial image with the target PSF (d). The panels are gamma-corrected to hig
 We encourage all contributions. If you have a problem with the code or would like to see a new feature, please open an issue. Or you can submit a pull request.
 
 ## License
-See LICENSE for the MIT license
+See [LICENSE file](LICENSE)
 
 ## Need help?
-Please contact Marcus Hughes at [marcus.hughes@swri.org](mailto:marcus.hughes@swri.org).
+Please ask a question in our [discussions](https://github.com/punch-mission/regularizepsf/discussions)
 
 ## Citation
 Please cite [the associated paper](https://iopscience.iop.org/article/10.3847/1538-3881/acc578) if you use this technique:
