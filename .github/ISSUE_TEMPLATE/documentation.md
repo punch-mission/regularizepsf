@@ -6,4 +6,4 @@ labels: documentation
 assignees: jmbhughes
 ---
 
-**How did you improve the documentation?**
+**How could we improve the documentation?**
