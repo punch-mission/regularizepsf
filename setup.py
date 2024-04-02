@@ -11,7 +11,7 @@ ext_modules = [Extension("regularizepsf.helper",
 
 setup(
     name="regularizepsf",
-    version="0.2.3",
+    version="0.3.1",
     description="Point spread function modeling and regularization",
     long_description=long_description,
     long_description_content_type="text/markdown",
