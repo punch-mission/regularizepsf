@@ -1,5 +1,5 @@
 numpy~=1.26
-h5py~=3.10
+h5py~=3.11
 lmfit~=1.2
 cython~=3.0
 astropy~=6.0
