@@ -4,7 +4,7 @@ lmfit~=1.2
 cython~=3.0
 astropy~=6.0
 scipy~=1.13
-scikit-image~=0.22
+scikit-image~=0.23
 sep~=1.2
 matplotlib~=3.8
 
