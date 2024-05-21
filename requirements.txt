@@ -6,4 +6,4 @@ astropy~=6.0
 scipy~=1.13
 scikit-image~=0.22
 sep~=1.2
-matplotlib~=3.8
+matplotlib~=3.9
