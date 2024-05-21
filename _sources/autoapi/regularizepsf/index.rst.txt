@@ -1,27 +1,24 @@
-:py:mod:`regularizepsf`
-=======================
+regularizepsf
+=============
 
 .. py:module:: regularizepsf
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   corrector/index.rst
-   exceptions/index.rst
-   fitter/index.rst
-   psf/index.rst
-   visualize/index.rst
+   /autoapi/regularizepsf/corrector/index
+   /autoapi/regularizepsf/exceptions/index
+   /autoapi/regularizepsf/fitter/index
+   /autoapi/regularizepsf/psf/index
+   /autoapi/regularizepsf/visualize/index
 
-
-Package Contents
-----------------
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -30,9 +27,8 @@ Classes
    regularizepsf.CoordinatePatchCollection
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -44,21 +40,26 @@ Functions
    regularizepsf.visualize_transfer_kernels
 
 
+Package Contents
+----------------
 
 .. py:class:: ArrayCorrector(evaluations: dict[Any, numpy.ndarray], target_evaluation: numpy.ndarray)
 
-
    Bases: :py:obj:`CorrectorABC`
 
+
    A PSF corrector that is evaluated as array patches
+
 
 
    .. py:property:: evaluations
       :type: dict[Any, numpy.ndarray]
 
 
+
    .. py:property:: evaluation_points
       :type: list
+
 
 
    .. py:method:: correct_image(image: numpy.ndarray, size: Optional[int] = None, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
@@ -80,6 +81,7 @@ Functions
       :rtype: np.ndarray
 
 
+
    .. py:method:: __getitem__(xy: Tuple[int, int]) -> numpy.ndarray
 
 
@@ -93,13 +95,16 @@ Functions
       :rtype: None
 
 
+
    .. py:method:: load(path: str) -> ArrayCorrector
       :classmethod:
+
 
       Loads a model from the path
 
       :param path: where to load the model from, suggested extension is ".psf"
       :type path: str or `pathlib.Path`
+
 
 
    .. py:method:: simulate_observation(image: numpy.ndarray) -> numpy.ndarray
@@ -116,12 +121,13 @@ Functions
 
 .. py:class:: FunctionalCorrector(psf: regularizepsf.psf.PointSpreadFunctionABC, target_model: regularizepsf.psf.SimplePSF | None)
 
-
    Bases: :py:obj:`CorrectorABC`
+
 
    A version of the PSF corrector that stores the model as a set of functions.
    For the actual correction, the functions must first
    be evaluated to an ArrayCorrector.
+
 
    .. py:property:: is_variable
       :type: bool
@@ -133,6 +139,7 @@ Functions
       returns: True if the PSF model is varied (changes across the field-of-view)
                 and False otherwise
       :rtype: bool
+
 
    .. py:method:: evaluate_to_array_form(x: numpy.ndarray, y: numpy.ndarray, size: int) -> ArrayCorrector
 
@@ -147,6 +154,7 @@ Functions
 
       :returns: an array evaluated form of this PSF corrector
       :rtype: ArrayCorrector
+
 
 
    .. py:method:: correct_image(image: numpy.ndarray, size: int, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
@@ -168,8 +176,10 @@ Functions
       :rtype: np.ndarray
 
 
+
    .. py:method:: save(path: str) -> None
       :abstractmethod:
+
 
       Save the model to a file.
 
@@ -179,14 +189,18 @@ Functions
       :rtype: None
 
 
+
    .. py:method:: load(path: str) -> FunctionalCorrector
       :classmethod:
+
       :abstractmethod:
+
 
       Loads a model from the path
 
       :param path: where to load the model from, suggested extension is ".psf"
       :type path: str or `pathlib.Path`
+
 
 
    .. py:method:: simulate_observation(image: numpy.ndarray, size: int) -> numpy.ndarray
@@ -219,14 +233,16 @@ Functions
 
 .. py:class:: CoordinatePatchCollection(patches: dict[Any, numpy.ndarray], counts: Optional[dict[Any, int]] = None)
 
-
    Bases: :py:obj:`PatchCollectionABC`
+
 
    A representation of a PatchCollection that operates
    on pixel coordinates from a set of images
 
+
    .. py:method:: extract(images: list[numpy.ndarray], coordinates: list[CoordinateIdentifier], size: int) -> PatchCollectionABC
       :classmethod:
+
 
       Construct a PatchCollection from a set of images
       using the specified coordinates and patch size
@@ -244,8 +260,10 @@ Functions
       :rtype: np.ndarray
 
 
+
    .. py:method:: find_stars_and_average(images: list[str] | numpy.ndarray | Generator, psf_size: int, patch_size: int, interpolation_scale: int = 1, average_mode: str = 'median', percentile: float = 10, star_threshold: int = 3, star_mask: Optional[list[str] | numpy.ndarray | Generator] = None, hdu_choice: int = 0) -> CoordinatePatchCollection
       :classmethod:
+
 
       Loads a series of images, finds stars in each,
           and builds a CoordinatePatchCollection with averaged stars
@@ -294,6 +312,7 @@ Functions
           for large images can dramatically slow down the execution.
 
 
+
    .. py:method:: average(corners: numpy.ndarray, patch_size: int, psf_size: int, mode: str = 'median', percentile: float = 10) -> PatchCollectionABC
 
       Construct a new PatchCollection where patches
@@ -312,10 +331,13 @@ Functions
       :rtype: PatchCollectionABC
 
 
+
    .. py:method:: _validate_average_mode(mode: str, percentile: float) -> None
       :staticmethod:
 
+
       Determine if the average_mode is a valid kind
+
 
 
    .. py:method:: _calculate_pad_shape(size: int) -> Tuple[int, int]
@@ -324,8 +346,10 @@ Functions
    .. py:method:: fit(base_psf: regularizepsf.psf.SimplePSF, is_varied: bool = False) -> regularizepsf.psf.PointSpreadFunctionABC
       :abstractmethod:
 
+
       :param base_psf:
       :param is_varied:
+
 
 
    .. py:method:: to_array_corrector(target_evaluation: numpy.array) -> regularizepsf.corrector.ArrayCorrector
@@ -339,6 +363,7 @@ Functions
       :rtype: ArrayCorrector
 
 
+
    .. py:method:: save(path: str) -> None
 
       Save the CoordinatePatchCollection to a file
@@ -349,8 +374,10 @@ Functions
       :rtype: None
 
 
+
    .. py:method:: load(path: str) -> PatchCollectionABC
       :classmethod:
+
 
       Load a PatchCollection from a file
 
@@ -364,9 +391,7 @@ Functions
 
 .. py:function:: simple_psf(arg: Any = None) -> SimplePSF
 
-
 .. py:function:: varied_psf(base_psf: SimplePSF = None) -> VariedPSF
-
 
 .. py:function:: visualize_patch_counts(patch_collection: regularizepsf.fitter.PatchCollectionABC, ax: Optional[matplotlib.axes.Axes] = None, label_pixel_bounds: bool = False) -> matplotlib.axes.Axes
 

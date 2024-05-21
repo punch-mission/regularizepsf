@@ -1,14 +1,20 @@
-:py:mod:`regularizepsf.psf`
-===========================
+regularizepsf.psf
+=================
 
 .. py:module:: regularizepsf.psf
 
 
-Module Contents
----------------
+Exceptions
+----------
+
+.. autoapisummary::
+
+   regularizepsf.psf.PSFParameterValidationError
+   regularizepsf.psf.VariedPSFParameterMismatchError
+
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -17,9 +23,8 @@ Classes
    regularizepsf.psf.VariedPSF
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -28,18 +33,30 @@ Functions
    regularizepsf.psf.varied_psf
 
 
+Module Contents
+---------------
+
+.. py:exception:: PSFParameterValidationError
+
+   Bases: :py:obj:`ValidationError`
+
+
+   Common base class for all non-exit exceptions.
+
+
+.. py:exception:: VariedPSFParameterMismatchError
+
+   Bases: :py:obj:`ValidationError`
+
+
+   Common base class for all non-exit exceptions.
+
 
 .. py:class:: PointSpreadFunctionABC
 
-
-   .. py:property:: parameters
-      :type: List
-      :abstractmethod:
-
-      Varying parameters of the model.
-
    .. py:method:: __call__(x: numbers.Real | numpy.ndarary, y: numbers.Real | numpy.ndarray) -> numbers.Real | numpy.ndarray
       :abstractmethod:
+
 
       Evaluation of the point spread function
 
@@ -53,17 +70,21 @@ Functions
 
 
 
-.. py:class:: SimplePSF(function: Callable)
+   .. py:property:: parameters
+      :type: List
 
+      :abstractmethod:
+
+      Varying parameters of the model.
+
+
+.. py:class:: SimplePSF(function: Callable)
 
    Bases: :py:obj:`PointSpreadFunctionABC`
 
+
    Model for a simple PSF
 
-   .. py:property:: parameters
-      :type: set[str]
-
-      Varying parameters of the model.
 
    .. py:method:: __call__(x: numbers.Real | numpy.ndarray, y: numbers.Real | numpy.ndarray, **kwargs: Dict[str, Any]) -> numbers.Real | numpy.ndarray
 
@@ -79,20 +100,21 @@ Functions
 
 
 
-.. py:function:: simple_psf(arg: Any = None) -> SimplePSF
+   .. py:property:: parameters
+      :type: set[str]
 
+      Varying parameters of the model.
+
+
+.. py:function:: simple_psf(arg: Any = None) -> SimplePSF
 
 .. py:class:: VariedPSF(vary_function: Callable, base_psf: SimplePSF, validate_at_call: bool = True)
 
-
    Bases: :py:obj:`PointSpreadFunctionABC`
+
 
    Model for a PSF that varies over the field of view
 
-   .. py:property:: parameters
-      :type: List
-
-      Varying parameters of the model.
 
    .. py:method:: __call__(x: numbers.Real | numpy.ndarray, y: numbers.Real | numpy.ndarray) -> numbers.Real | numpy.ndarray
 
@@ -108,9 +130,13 @@ Functions
 
 
 
+   .. py:property:: parameters
+      :type: List
+
+      Varying parameters of the model.
+
+
 .. py:function:: _varied_psf(base_psf: SimplePSF) -> VariedPSF
 
-
 .. py:function:: varied_psf(base_psf: SimplePSF = None) -> VariedPSF
-
 

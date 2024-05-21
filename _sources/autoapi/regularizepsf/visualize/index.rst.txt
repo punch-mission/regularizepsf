@@ -1,15 +1,29 @@
-:py:mod:`regularizepsf.visualize`
-=================================
+regularizepsf.visualize
+=======================
 
 .. py:module:: regularizepsf.visualize
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   regularizepsf.visualize.CoordinateIdentifier
+   regularizepsf.visualize._colormap
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   regularizepsf.visualize.ArrayCorrector
+   regularizepsf.visualize.PatchCollectionABC
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -19,13 +33,251 @@ Functions
    regularizepsf.visualize.visualize_transfer_kernels
 
 
+Module Contents
+---------------
 
-Attributes
-~~~~~~~~~~
+.. py:class:: ArrayCorrector(evaluations: dict[Any, numpy.ndarray], target_evaluation: numpy.ndarray)
 
-.. autoapisummary::
+   Bases: :py:obj:`CorrectorABC`
 
-   regularizepsf.visualize._colormap
+
+   A PSF corrector that is evaluated as array patches
+
+
+
+   .. py:property:: evaluations
+      :type: dict[Any, numpy.ndarray]
+
+
+
+   .. py:property:: evaluation_points
+      :type: list
+
+
+
+   .. py:method:: correct_image(image: numpy.ndarray, size: Optional[int] = None, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
+
+      PSF correct an image according to the model
+
+      :param image: image to be corrected
+      :type image: 2D float np.ndarray
+      :param size: how big to make the patches when correcting an image,
+                   only used for FunctionalCorrector
+      :type size: int
+      :param alpha: controls the “hardness” of the transition from amplification
+                    to attenuation, see notes
+      :type alpha: float
+      :param epsilon: controls the maximum of the amplification, see notes
+      :type epsilon: float
+
+      :returns: a image that has been PSF corrected
+      :rtype: np.ndarray
+
+
+
+   .. py:method:: __getitem__(xy: Tuple[int, int]) -> numpy.ndarray
+
+
+   .. py:method:: save(path: str) -> None
+
+      Save the model to a file.
+
+      :param path: where to save the model, suggested extension is ".psf"
+      :type path: str or `pathlib.Path`
+
+      :rtype: None
+
+
+
+   .. py:method:: load(path: str) -> ArrayCorrector
+      :classmethod:
+
+
+      Loads a model from the path
+
+      :param path: where to load the model from, suggested extension is ".psf"
+      :type path: str or `pathlib.Path`
+
+
+
+   .. py:method:: simulate_observation(image: numpy.ndarray) -> numpy.ndarray
+
+      Simulates on a star field what an observation using this PSF looks like
+
+      :param image: image of point source stars to simluate PSF for
+      :type image: 2D float np.ndarray
+
+      :returns: an image with the PSF applied
+      :rtype: np.ndarray
+
+
+
+.. py:data:: CoordinateIdentifier
+
+.. py:class:: PatchCollectionABC(patches: dict[Any, numpy.ndarray], counts: Optional[dict[Any, int]] = None)
+
+   .. py:method:: __len__() -> int
+
+
+   .. py:method:: extract(images: list[numpy.ndarray], coordinates: list, size: int) -> PatchCollectionABC
+      :classmethod:
+
+      :abstractmethod:
+
+
+      Construct a PatchCollection from a set of images
+      using the specified coordinates and patch size
+
+      :param images: the images loaded
+      :type images: list of np.ndarrays
+      :param coordinates:
+                          A list of coordinates for the lower left pixel of each patch,
+                              specified in each type of PatchCollection
+      :type coordinates: list
+      :param size: size of one side of the square patches extracted
+      :type size: int
+
+      :returns: the square patches extracted into a PatchCollection
+      :rtype: np.ndarray
+
+
+
+   .. py:method:: __getitem__(identifier: Any) -> numpy.ndarray
+
+      Access a patch with square brackets
+
+      :param identifier: identifier for a given patch, specifically implemented
+                         for each PatchCollection
+      :type identifier: Any
+
+      :returns: a patch's data
+      :rtype: np.ndarray
+
+
+
+   .. py:method:: __contains__(identifier: Any) -> bool
+
+      Determines if a patch is in the collection
+
+      :param identifier:
+                         identifier for a given patch,
+                             specifically implemented for each PatchCollection
+      :type identifier: Any
+
+      :returns:
+
+                True if patch with specified identifier is in the collection,
+                    False otherwise
+      :rtype: bool
+
+
+
+   .. py:method:: add(identifier: Any, patch: numpy.ndarray, count: Optional[int] = None) -> None
+
+      Add a new patch to the collection
+
+      :param identifier:
+                         identifier for a given patch,
+                             specifically implemented for each PatchCollection
+      :type identifier: Any
+      :param patch: the data for a specific patch
+      :type patch: np.ndarray
+      :param count: Optionally, a corresponding item to add to the `counts` dictionary
+      :type count: int
+
+      :rtype: None
+
+
+
+   .. py:method:: average(corners: numpy.ndarray, step: int, size: int, mode: str) -> PatchCollectionABC
+      :abstractmethod:
+
+
+      Construct a new PatchCollection where patches
+      lying inside a new grid are averaged together
+
+      :param corners: an Nx2 `np.ndarray` of the lower left corners of the new patch grid
+      :type corners: np.ndarray
+      :param step: how far apart each corner patch is
+      :type step: int
+      :param size: dimension of the new (size, size) shaped square patches
+      :type size: int
+      :param mode: either average using "mean" or "median"
+      :type mode: str
+
+      :returns: a PatchCollection where data is sampled at the new grid
+      :rtype: PatchCollectionABC
+
+
+
+   .. py:method:: fit(base_psf: regularizepsf.psf.SimplePSF, is_varied: bool = False) -> regularizepsf.psf.PointSpreadFunctionABC
+      :abstractmethod:
+
+
+      :param base_psf:
+      :param is_varied:
+
+
+
+   .. py:method:: save(path: str) -> None
+      :abstractmethod:
+
+
+      Save the PatchCollection to a file
+
+      :param path: where to save the patch collection
+      :type path: str
+
+      :rtype: None
+
+
+
+   .. py:method:: load(path: str) -> PatchCollectionABC
+      :classmethod:
+
+      :abstractmethod:
+
+
+      Load a PatchCollection from a file
+
+      :param path: file path to load from
+      :type path: str
+
+      :returns: the new patch collection
+      :rtype: PatchCollectionABC
+
+
+
+   .. py:method:: keys() -> List
+
+      Gets identifiers for all patches
+
+
+
+   .. py:method:: values() -> List
+
+      Gets values of all patches
+
+
+
+   .. py:method:: items() -> Dict
+
+      A dictionary like iterator over the patches
+
+
+
+   .. py:method:: _fit_lmfit(base_psf: regularizepsf.psf.SimplePSF, initial_guesses: dict[str, numbers.Real]) -> dict[Any, lmfit.minimizer.MinimizerResult]
+
+      Fit a patch using lmfit
+
+      :param base_psf: the PSF model to use in fitting
+      :type base_psf: SimplePSF
+      :param initial_guesses: the initial guesses for all the PSF parameters
+      :type initial_guesses: dict[str, Real]
+
+      :returns: keys are the identifiers, values are the `MinimizerResults` from lmfit
+      :rtype: dict
+
 
 
 .. py:function:: visualize_patch_counts(patch_collection: regularizepsf.fitter.PatchCollectionABC, ax: Optional[matplotlib.axes.Axes] = None, label_pixel_bounds: bool = False) -> matplotlib.axes.Axes
@@ -45,10 +297,7 @@ Attributes
 
 .. py:function:: _generate_colormap() -> matplotlib.colors.ListedColormap
 
-
 .. py:data:: _colormap
-
-   
 
 .. py:function:: visualize_PSFs(psfs: regularizepsf.corrector.ArrayCorrector, corrected: Optional[regularizepsf.fitter.PatchCollectionABC] = None, all_patches: bool = False, region_size: int = 0, label_pixel_bounds: bool = False, fig: Optional[matplotlib.figure.Figure] = None, fig_scale: float = 1, colorbar_label: str = 'Normalized brightness', axis_border_color: str = 'white', imshow_args: Optional[dict] = None) -> matplotlib.figure.Figure
 

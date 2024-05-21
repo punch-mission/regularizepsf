@@ -1,37 +1,154 @@
-:py:mod:`regularizepsf.corrector`
-=================================
+regularizepsf.corrector
+=======================
 
 .. py:module:: regularizepsf.corrector
 
 
-Module Contents
----------------
-
-Classes
-~~~~~~~
+Exceptions
+----------
 
 .. autoapisummary::
 
+   regularizepsf.corrector.EvaluatedModelInconsistentSizeError
+   regularizepsf.corrector.InvalidSizeError
+   regularizepsf.corrector.UnevaluatedPointError
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   regularizepsf.corrector.PointSpreadFunctionABC
+   regularizepsf.corrector.SimplePSF
+   regularizepsf.corrector.VariedPSF
    regularizepsf.corrector.CorrectorABC
    regularizepsf.corrector.FunctionalCorrector
    regularizepsf.corrector.ArrayCorrector
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    regularizepsf.corrector.calculate_covering
 
 
+Module Contents
+---------------
+
+.. py:exception:: EvaluatedModelInconsistentSizeError
+
+   Bases: :py:obj:`ValidationError`
+
+
+   Common base class for all non-exit exceptions.
+
+
+.. py:exception:: InvalidSizeError
+
+   Bases: :py:obj:`ValidationError`
+
+
+   Common base class for all non-exit exceptions.
+
+
+.. py:exception:: UnevaluatedPointError
+
+   Bases: :py:obj:`Exception`
+
+
+   Common base class for all non-exit exceptions.
+
+
+.. py:class:: PointSpreadFunctionABC
+
+   .. py:method:: __call__(x: numbers.Real | numpy.ndarary, y: numbers.Real | numpy.ndarray) -> numbers.Real | numpy.ndarray
+      :abstractmethod:
+
+
+      Evaluation of the point spread function
+
+      :param x: first dimension coordinate to evaluate at
+      :type x: real number or `np.ndarray`
+      :param y: second dimension coordinate to evaluate at
+      :type y: real number or `np.ndarray`
+
+      :returns: the value of the point spread function at (x,y)
+      :rtype: real number or `np.ndarray`
+
+
+
+   .. py:property:: parameters
+      :type: List
+
+      :abstractmethod:
+
+      Varying parameters of the model.
+
+
+.. py:class:: SimplePSF(function: Callable)
+
+   Bases: :py:obj:`PointSpreadFunctionABC`
+
+
+   Model for a simple PSF
+
+
+   .. py:method:: __call__(x: numbers.Real | numpy.ndarray, y: numbers.Real | numpy.ndarray, **kwargs: Dict[str, Any]) -> numbers.Real | numpy.ndarray
+
+      Evaluation of the point spread function
+
+      :param x: first dimension coordinate to evaluate at
+      :type x: real number or `np.ndarray`
+      :param y: second dimension coordinate to evaluate at
+      :type y: real number or `np.ndarray`
+
+      :returns: the value of the point spread function at (x,y)
+      :rtype: real number or `np.ndarray`
+
+
+
+   .. py:property:: parameters
+      :type: set[str]
+
+      Varying parameters of the model.
+
+
+.. py:class:: VariedPSF(vary_function: Callable, base_psf: SimplePSF, validate_at_call: bool = True)
+
+   Bases: :py:obj:`PointSpreadFunctionABC`
+
+
+   Model for a PSF that varies over the field of view
+
+
+   .. py:method:: __call__(x: numbers.Real | numpy.ndarray, y: numbers.Real | numpy.ndarray) -> numbers.Real | numpy.ndarray
+
+      Evaluation of the point spread function
+
+      :param x: first dimension coordinate to evaluate at
+      :type x: real number or `np.ndarray`
+      :param y: second dimension coordinate to evaluate at
+      :type y: real number or `np.ndarray`
+
+      :returns: the value of the point spread function at (x,y)
+      :rtype: real number or `np.ndarray`
+
+
+
+   .. py:property:: parameters
+      :type: List
+
+      Varying parameters of the model.
+
 
 .. py:class:: CorrectorABC
 
-
    .. py:method:: save(path: str | pathlib.Path) -> None
       :abstractmethod:
+
 
       Save the model to a file.
 
@@ -41,9 +158,12 @@ Functions
       :rtype: None
 
 
+
    .. py:method:: load(path: str | pathlib.Path) -> CorrectorABC
       :classmethod:
+
       :abstractmethod:
+
 
       Loads a model from the path
 
@@ -51,8 +171,10 @@ Functions
       :type path: str or `pathlib.Path`
 
 
+
    .. py:method:: correct_image(image: numpy.ndarray, size: int, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
       :abstractmethod:
+
 
       PSF correct an image according to the model
 
@@ -71,8 +193,10 @@ Functions
       :rtype: np.ndarray
 
 
+
    .. py:method:: simulate_observation(image: numpy.ndarray) -> numpy.ndarray
       :abstractmethod:
+
 
       Simulates on a star field what an observation using this PSF looks like
 
@@ -86,12 +210,13 @@ Functions
 
 .. py:class:: FunctionalCorrector(psf: regularizepsf.psf.PointSpreadFunctionABC, target_model: regularizepsf.psf.SimplePSF | None)
 
-
    Bases: :py:obj:`CorrectorABC`
+
 
    A version of the PSF corrector that stores the model as a set of functions.
    For the actual correction, the functions must first
    be evaluated to an ArrayCorrector.
+
 
    .. py:property:: is_variable
       :type: bool
@@ -103,6 +228,7 @@ Functions
       returns: True if the PSF model is varied (changes across the field-of-view)
                 and False otherwise
       :rtype: bool
+
 
    .. py:method:: evaluate_to_array_form(x: numpy.ndarray, y: numpy.ndarray, size: int) -> ArrayCorrector
 
@@ -119,6 +245,7 @@ Functions
       :rtype: ArrayCorrector
 
 
+
    .. py:method:: correct_image(image: numpy.ndarray, size: int, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
 
       PSF correct an image according to the model
@@ -138,8 +265,10 @@ Functions
       :rtype: np.ndarray
 
 
+
    .. py:method:: save(path: str) -> None
       :abstractmethod:
+
 
       Save the model to a file.
 
@@ -149,14 +278,18 @@ Functions
       :rtype: None
 
 
+
    .. py:method:: load(path: str) -> FunctionalCorrector
       :classmethod:
+
       :abstractmethod:
+
 
       Loads a model from the path
 
       :param path: where to load the model from, suggested extension is ".psf"
       :type path: str or `pathlib.Path`
+
 
 
    .. py:method:: simulate_observation(image: numpy.ndarray, size: int) -> numpy.ndarray
@@ -175,18 +308,21 @@ Functions
 
 .. py:class:: ArrayCorrector(evaluations: dict[Any, numpy.ndarray], target_evaluation: numpy.ndarray)
 
-
    Bases: :py:obj:`CorrectorABC`
 
+
    A PSF corrector that is evaluated as array patches
+
 
 
    .. py:property:: evaluations
       :type: dict[Any, numpy.ndarray]
 
 
+
    .. py:property:: evaluation_points
       :type: list
+
 
 
    .. py:method:: correct_image(image: numpy.ndarray, size: Optional[int] = None, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
@@ -208,6 +344,7 @@ Functions
       :rtype: np.ndarray
 
 
+
    .. py:method:: __getitem__(xy: Tuple[int, int]) -> numpy.ndarray
 
 
@@ -221,13 +358,16 @@ Functions
       :rtype: None
 
 
+
    .. py:method:: load(path: str) -> ArrayCorrector
       :classmethod:
+
 
       Loads a model from the path
 
       :param path: where to load the model from, suggested extension is ".psf"
       :type path: str or `pathlib.Path`
+
 
 
    .. py:method:: simulate_observation(image: numpy.ndarray) -> numpy.ndarray
