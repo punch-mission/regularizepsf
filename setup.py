@@ -25,7 +25,7 @@ setup(
     install_requires=["numpy", "dill", "h5py", "lmfit", "sep", "cython", "astropy", "scipy", "scikit-image", "matplotlib"],
     package_data={"regularizepsf": ["helper.pyx"]},
     setup_requires=["cython"],
-    extras_require={"test": ["pytest", 
+    extras_require={"test": ["pytest",
                              "pytest-runner",
                              "hypothesis",
                              "ruff",
