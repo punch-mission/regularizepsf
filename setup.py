@@ -22,7 +22,7 @@ setup(
     author="J. Marcus Hughes",
     author_email="hughes.jmb@gmail.com",
     ext_modules=cythonize(ext_modules, annotate=True, compiler_directives={"language_level": 3}),
-    install_requires=["numpy", "dill", "h5py", "lmfit", "sep", "cython", "astropy", "scipy", "scikit-image", "matplotlib", "setuptools"],
+    install_requires=["numpy<2", "dill", "h5py", "lmfit", "sep", "cython", "astropy", "scipy", "scikit-image", "matplotlib", "setuptools"],
     package_data={"regularizepsf": ["helper.pyx"]},
     setup_requires=["cython"],
     extras_require={"test": ["pytest",
