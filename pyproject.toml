@@ -1,39 +1,13 @@
 [build-system]
-requires = ["setuptools", "wheel", "numpy>=1.19.0", "Cython>=0.29.21"]
+requires = ["setuptools", "wheel", "numpy>=1.19.0, <2.0.0", "Cython>=0.29.21"]
 build-backend = "setuptools.build_meta"
 
 [tool.ruff]
-#extend-select = ['W',
-#                'C901',
-#                'I',
-#                'N',
-#                'YTT',
-#                'ANN',
-#                'S',
-#                'BLE',
-#                'B',
-#                'A',
-#                'C4',
-#                'ICN',
-#                'INP',
-#                'PIE',
-#                'T20',
-#                'PT',
-#                'Q',
-#                'RSE',
-#                'RET',
-#                'SLF',
-#                'SIM',
-#                'TID',
-#                'ARG',
-#                'PGH',
-#                'TRY',
-#                'NPY',
-#                'RUF']
-#target-version = 'py38'
-#ignore = ['ANN101', 'ANN102', 'TRY003', 'RET505', 'ANN401', 'RET506', 'W291']
 exclude = ['tests/*']
 line-length=120
+
+#[tool.ruff.lint]
+#select = ["NPY201"]
 
 [tool.isort]
 balanced_wrapping = true
