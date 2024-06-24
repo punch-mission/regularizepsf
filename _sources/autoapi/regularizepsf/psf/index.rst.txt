@@ -4,15 +4,6 @@ regularizepsf.psf
 .. py:module:: regularizepsf.psf
 
 
-Exceptions
-----------
-
-.. autoapisummary::
-
-   regularizepsf.psf.PSFParameterValidationError
-   regularizepsf.psf.VariedPSFParameterMismatchError
-
-
 Classes
 -------
 
@@ -35,22 +26,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:exception:: PSFParameterValidationError
-
-   Bases: :py:obj:`ValidationError`
-
-
-   Common base class for all non-exit exceptions.
-
-
-.. py:exception:: VariedPSFParameterMismatchError
-
-   Bases: :py:obj:`ValidationError`
-
-
-   Common base class for all non-exit exceptions.
-
 
 .. py:class:: PointSpreadFunctionABC
 

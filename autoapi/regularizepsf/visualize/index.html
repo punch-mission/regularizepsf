@@ -456,24 +456,7 @@ document.write(`
 <h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.visualize.CoordinateIdentifier" title="regularizepsf.visualize.CoordinateIdentifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoordinateIdentifier</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#regularizepsf.visualize._colormap" title="regularizepsf.visualize._colormap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_colormap</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.visualize.ArrayCorrector" title="regularizepsf.visualize.ArrayCorrector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayCorrector</span></code></a></p></td>
-<td><p>A PSF corrector that is evaluated as array patches</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#regularizepsf.visualize.PatchCollectionABC" title="regularizepsf.visualize.PatchCollectionABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PatchCollectionABC</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.visualize._colormap" title="regularizepsf.visualize._colormap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_colormap</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -502,313 +485,6 @@ document.write(`
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="regularizepsf.visualize.ArrayCorrector">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.visualize.</span></span><span class="sig-name descname"><span class="pre">ArrayCorrector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_evaluation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.visualize.ArrayCorrector" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">CorrectorABC</span></code></p>
-<p>A PSF corrector that is evaluated as array patches</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="regularizepsf.visualize.ArrayCorrector.evaluations">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.visualize.ArrayCorrector.evaluations" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="regularizepsf.visualize.ArrayCorrector.evaluation_points">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluation_points</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#regularizepsf.visualize.ArrayCorrector.evaluation_points" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.ArrayCorrector.correct_image">
-<span class="sig-name descname"><span class="pre">correct_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.visualize.ArrayCorrector.correct_image" title="Link to this definition">#</a></dt>
-<dd><p>PSF correct an image according to the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>image</strong> (<em>2D float np.ndarray</em>) – image to be corrected</p></li>
-<li><p><strong>size</strong> (<em>int</em>) – how big to make the patches when correcting an image,
-only used for FunctionalCorrector</p></li>
-<li><p><strong>alpha</strong> (<em>float</em>) – controls the “hardness” of the transition from amplification
-to attenuation, see notes</p></li>
-<li><p><strong>epsilon</strong> (<em>float</em>) – controls the maximum of the amplification, see notes</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a image that has been PSF corrected</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.ArrayCorrector.__getitem__">
-<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.visualize.ArrayCorrector.__getitem__" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.ArrayCorrector.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#regularizepsf.visualize.ArrayCorrector.save" title="Link to this definition">#</a></dt>
-<dd><p>Save the model to a file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (str or <cite>pathlib.Path</cite>) – where to save the model, suggested extension is “.psf”</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.ArrayCorrector.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#regularizepsf.visualize.ArrayCorrector" title="regularizepsf.visualize.ArrayCorrector"><span class="pre">ArrayCorrector</span></a></span></span><a class="headerlink" href="#regularizepsf.visualize.ArrayCorrector.load" title="Link to this definition">#</a></dt>
-<dd><p>Loads a model from the path</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (str or <cite>pathlib.Path</cite>) – where to load the model from, suggested extension is “.psf”</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.ArrayCorrector.simulate_observation">
-<span class="sig-name descname"><span class="pre">simulate_observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.visualize.ArrayCorrector.simulate_observation" title="Link to this definition">#</a></dt>
-<dd><p>Simulates on a star field what an observation using this PSF looks like</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>image</strong> (<em>2D float np.ndarray</em>) – image of point source stars to simluate PSF for</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>an image with the PSF applied</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="regularizepsf.visualize.CoordinateIdentifier">
-<span class="sig-prename descclassname"><span class="pre">regularizepsf.visualize.</span></span><span class="sig-name descname"><span class="pre">CoordinateIdentifier</span></span><a class="headerlink" href="#regularizepsf.visualize.CoordinateIdentifier" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.visualize.</span></span><span class="sig-name descname"><span class="pre">PatchCollectionABC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC" title="Link to this definition">#</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.__len__">
-<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.__len__" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.extract">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#regularizepsf.visualize.PatchCollectionABC" title="regularizepsf.visualize.PatchCollectionABC"><span class="pre">PatchCollectionABC</span></a></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.extract" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Abstractmethod<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>Construct a PatchCollection from a set of images
-using the specified coordinates and patch size</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>images</strong> (<em>list</em><em> of </em><em>np.ndarrays</em>) – the images loaded</p></li>
-<li><p><strong>coordinates</strong> (<em>list</em>) – <dl class="simple">
-<dt>A list of coordinates for the lower left pixel of each patch,</dt><dd><p>specified in each type of PatchCollection</p>
-</dd>
-</dl>
-</p></li>
-<li><p><strong>size</strong> (<em>int</em>) – size of one side of the square patches extracted</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the square patches extracted into a PatchCollection</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.__getitem__">
-<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.__getitem__" title="Link to this definition">#</a></dt>
-<dd><p>Access a patch with square brackets</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>Any</em>) – identifier for a given patch, specifically implemented
-for each PatchCollection</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a patch’s data</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.__contains__">
-<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.__contains__" title="Link to this definition">#</a></dt>
-<dd><p>Determines if a patch is in the collection</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>Any</em>) – <dl class="simple">
-<dt>identifier for a given patch,</dt><dd><p>specifically implemented for each PatchCollection</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>True if patch with specified identifier is in the collection,</dt><dd><p>False otherwise</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.add" title="Link to this definition">#</a></dt>
-<dd><p>Add a new patch to the collection</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>identifier</strong> (<em>Any</em>) – <dl class="simple">
-<dt>identifier for a given patch,</dt><dd><p>specifically implemented for each PatchCollection</p>
-</dd>
-</dl>
-</p></li>
-<li><p><strong>patch</strong> (<em>np.ndarray</em>) – the data for a specific patch</p></li>
-<li><p><strong>count</strong> (<em>int</em>) – Optionally, a corresponding item to add to the <cite>counts</cite> dictionary</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.average">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corners</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#regularizepsf.visualize.PatchCollectionABC" title="regularizepsf.visualize.PatchCollectionABC"><span class="pre">PatchCollectionABC</span></a></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.average" title="Link to this definition">#</a></dt>
-<dd><p>Construct a new PatchCollection where patches
-lying inside a new grid are averaged together</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>corners</strong> (<em>np.ndarray</em>) – an Nx2 <cite>np.ndarray</cite> of the lower left corners of the new patch grid</p></li>
-<li><p><strong>step</strong> (<em>int</em>) – how far apart each corner patch is</p></li>
-<li><p><strong>size</strong> (<em>int</em>) – dimension of the new (size, size) shaped square patches</p></li>
-<li><p><strong>mode</strong> (<em>str</em>) – either average using “mean” or “median”</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a PatchCollection where data is sampled at the new grid</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#regularizepsf.visualize.PatchCollectionABC" title="regularizepsf.visualize.PatchCollectionABC">PatchCollectionABC</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.fit">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_psf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../psf/index.html#regularizepsf.psf.SimplePSF" title="regularizepsf.psf.SimplePSF"><span class="pre">regularizepsf.psf.SimplePSF</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_varied</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../psf/index.html#regularizepsf.psf.PointSpreadFunctionABC" title="regularizepsf.psf.PointSpreadFunctionABC"><span class="pre">regularizepsf.psf.PointSpreadFunctionABC</span></a></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.fit" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>base_psf</strong></p></li>
-<li><p><strong>is_varied</strong></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.save">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.save" title="Link to this definition">#</a></dt>
-<dd><p>Save the PatchCollection to a file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – where to save the patch collection</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#regularizepsf.visualize.PatchCollectionABC" title="regularizepsf.visualize.PatchCollectionABC"><span class="pre">PatchCollectionABC</span></a></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.load" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Abstractmethod<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>Load a PatchCollection from a file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – file path to load from</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the new patch collection</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#regularizepsf.visualize.PatchCollectionABC" title="regularizepsf.visualize.PatchCollectionABC">PatchCollectionABC</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.keys">
-<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.keys" title="Link to this definition">#</a></dt>
-<dd><p>Gets identifiers for all patches</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.values">
-<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.values" title="Link to this definition">#</a></dt>
-<dd><p>Gets values of all patches</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC.items">
-<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC.items" title="Link to this definition">#</a></dt>
-<dd><p>A dictionary like iterator over the patches</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.visualize.PatchCollectionABC._fit_lmfit">
-<span class="sig-name descname"><span class="pre">_fit_lmfit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_psf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../psf/index.html#regularizepsf.psf.SimplePSF" title="regularizepsf.psf.SimplePSF"><span class="pre">regularizepsf.psf.SimplePSF</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_guesses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numbers.Real</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">lmfit.minimizer.MinimizerResult</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regularizepsf.visualize.PatchCollectionABC._fit_lmfit" title="Link to this definition">#</a></dt>
-<dd><p>Fit a patch using lmfit</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>base_psf</strong> (<a class="reference internal" href="../corrector/index.html#regularizepsf.corrector.SimplePSF" title="regularizepsf.corrector.SimplePSF"><em>SimplePSF</em></a>) – the PSF model to use in fitting</p></li>
-<li><p><strong>initial_guesses</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Real</em><em>]</em>) – the initial guesses for all the PSF parameters</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>keys are the identifiers, values are the <cite>MinimizerResults</cite> from lmfit</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="regularizepsf.visualize.visualize_patch_counts">
 <span class="sig-prename descclassname"><span class="pre">regularizepsf.visualize.</span></span><span class="sig-name descname"><span class="pre">visualize_patch_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patch_collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../fitter/index.html#regularizepsf.fitter.PatchCollectionABC" title="regularizepsf.fitter.PatchCollectionABC"><span class="pre">regularizepsf.fitter.PatchCollectionABC</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">matplotlib.axes.Axes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pixel_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">matplotlib.axes.Axes</span></span></span><a class="headerlink" href="#regularizepsf.visualize.visualize_patch_counts" title="Link to this definition">#</a></dt>
@@ -816,7 +492,7 @@ lying inside a new grid are averaged together</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>patch_collection</strong> (<a class="reference internal" href="#regularizepsf.visualize.PatchCollectionABC" title="regularizepsf.visualize.PatchCollectionABC"><em>PatchCollectionABC</em></a>) – A patch collection, such as that returned by
+<li><p><strong>patch_collection</strong> (<a class="reference internal" href="../fitter/index.html#regularizepsf.fitter.PatchCollectionABC" title="regularizepsf.fitter.PatchCollectionABC"><em>PatchCollectionABC</em></a>) – A patch collection, such as that returned by
 <cite>CoordinatePatchCollection.find_stars_and_average</cite>.</p></li>
 <li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>) – An Axes object on which to plot. If not provided, a new Figure will be
 generated.</p></li>
@@ -851,8 +527,8 @@ images. This will estimated the PSF of your corrected images. Pass this
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>psfs</strong> (<a class="reference internal" href="#regularizepsf.visualize.ArrayCorrector" title="regularizepsf.visualize.ArrayCorrector"><em>ArrayCorrector</em></a>) – An <cite>ArrayCorrector</cite> containing the estimated PSFs</p></li>
-<li><p><strong>corrected</strong> (<a class="reference internal" href="#regularizepsf.visualize.PatchCollectionABC" title="regularizepsf.visualize.PatchCollectionABC"><em>PatchCollectionABC</em></a>) – A <cite>CoordinatePatchCollection</cite> computed on the corrected set of images</p></li>
+<li><p><strong>psfs</strong> (<a class="reference internal" href="../corrector/index.html#regularizepsf.corrector.ArrayCorrector" title="regularizepsf.corrector.ArrayCorrector"><em>ArrayCorrector</em></a>) – An <cite>ArrayCorrector</cite> containing the estimated PSFs</p></li>
+<li><p><strong>corrected</strong> (<a class="reference internal" href="../fitter/index.html#regularizepsf.fitter.PatchCollectionABC" title="regularizepsf.fitter.PatchCollectionABC"><em>PatchCollectionABC</em></a>) – A <cite>CoordinatePatchCollection</cite> computed on the corrected set of images</p></li>
 <li><p><strong>all_patches</strong> (<em>boolean</em>) – PSFs are estimated in a grid of overlapping patches, with each image
 pixel being covered by four patches. If <cite>True</cite>, all of these patches
 are plotted, which can be useful for diagnosing the estimated PSFs. If
@@ -891,7 +567,7 @@ transfer kernel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>psfs</strong> (<a class="reference internal" href="#regularizepsf.visualize.ArrayCorrector" title="regularizepsf.visualize.ArrayCorrector"><em>ArrayCorrector</em></a>) – An <cite>ArrayCorrector</cite> containing the estimated PSFs and target PSF</p></li>
+<li><p><strong>psfs</strong> (<a class="reference internal" href="../corrector/index.html#regularizepsf.corrector.ArrayCorrector" title="regularizepsf.corrector.ArrayCorrector"><em>ArrayCorrector</em></a>) – An <cite>ArrayCorrector</cite> containing the estimated PSFs and target PSF</p></li>
 <li><p><strong>alpha</strong> (<em>float</em>) – Values used in computing the regularized reciprocal of the computed
 PSFs. Provide the same values that you would pass to
 <cite>ArrayCorrector.correct_image</cite>.</p></li>
@@ -967,36 +643,8 @@ factor.</p></li>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attributes">Attributes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.ArrayCorrector"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.ArrayCorrector.evaluations"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.evaluations</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.ArrayCorrector.evaluation_points"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.evaluation_points</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.ArrayCorrector.correct_image"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.correct_image()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.ArrayCorrector.__getitem__"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.__getitem__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.ArrayCorrector.save"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.save()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.ArrayCorrector.load"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.load()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.ArrayCorrector.simulate_observation"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.simulate_observation()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.CoordinateIdentifier"><code class="docutils literal notranslate"><span class="pre">CoordinateIdentifier</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.__len__"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.__len__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.extract"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.extract()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.__getitem__"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.__getitem__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.__contains__"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.__contains__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.add"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.add()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.average"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.average()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.fit"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.fit()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.save"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.save()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.load"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.load()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.keys"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.keys()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.values"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.values()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC.items"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.items()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.PatchCollectionABC._fit_lmfit"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC._fit_lmfit()</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize.visualize_patch_counts"><code class="docutils literal notranslate"><span class="pre">visualize_patch_counts()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize._generate_colormap"><code class="docutils literal notranslate"><span class="pre">_generate_colormap()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.visualize._colormap"><code class="docutils literal notranslate"><span class="pre">_colormap</span></code></a></li>

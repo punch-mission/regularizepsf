@@ -464,46 +464,15 @@ document.write(`
 </table>
 </div>
 </section>
-<section id="exceptions">
-<h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.fitter.InvalidSizeError" title="regularizepsf.fitter.InvalidSizeError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvalidSizeError</span></code></a></p></td>
-<td><p>Common base class for all non-exit exceptions.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.fitter.ArrayCorrector" title="regularizepsf.fitter.ArrayCorrector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayCorrector</span></code></a></p></td>
-<td><p>A PSF corrector that is evaluated as array patches</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#regularizepsf.fitter.PointSpreadFunctionABC" title="regularizepsf.fitter.PointSpreadFunctionABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointSpreadFunctionABC</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.fitter.PatchCollectionABC" title="regularizepsf.fitter.PatchCollectionABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PatchCollectionABC</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.fitter.SimplePSF" title="regularizepsf.fitter.SimplePSF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimplePSF</span></code></a></p></td>
-<td><p>Model for a simple PSF</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#regularizepsf.fitter.PatchCollectionABC" title="regularizepsf.fitter.PatchCollectionABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PatchCollectionABC</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.fitter.CoordinatePatchCollection" title="regularizepsf.fitter.CoordinatePatchCollection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoordinatePatchCollection</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#regularizepsf.fitter.CoordinatePatchCollection" title="regularizepsf.fitter.CoordinatePatchCollection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoordinatePatchCollection</span></code></a></p></td>
 <td><p>A representation of a PatchCollection that operates</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.fitter.calculate_covering" title="regularizepsf.fitter.calculate_covering"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_covering</span></code></a>(→ numpy.ndarray)</p></td>
-<td><p>Determines the grid of overlapping neighborhood patches.</p></td>
 </tr>
 </tbody>
 </table>
@@ -511,190 +480,6 @@ document.write(`
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="regularizepsf.fitter.ArrayCorrector">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.fitter.</span></span><span class="sig-name descname"><span class="pre">ArrayCorrector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_evaluation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.fitter.ArrayCorrector" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">CorrectorABC</span></code></p>
-<p>A PSF corrector that is evaluated as array patches</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="regularizepsf.fitter.ArrayCorrector.evaluations">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.fitter.ArrayCorrector.evaluations" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="regularizepsf.fitter.ArrayCorrector.evaluation_points">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluation_points</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#regularizepsf.fitter.ArrayCorrector.evaluation_points" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.fitter.ArrayCorrector.correct_image">
-<span class="sig-name descname"><span class="pre">correct_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.fitter.ArrayCorrector.correct_image" title="Link to this definition">#</a></dt>
-<dd><p>PSF correct an image according to the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>image</strong> (<em>2D float np.ndarray</em>) – image to be corrected</p></li>
-<li><p><strong>size</strong> (<em>int</em>) – how big to make the patches when correcting an image,
-only used for FunctionalCorrector</p></li>
-<li><p><strong>alpha</strong> (<em>float</em>) – controls the “hardness” of the transition from amplification
-to attenuation, see notes</p></li>
-<li><p><strong>epsilon</strong> (<em>float</em>) – controls the maximum of the amplification, see notes</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a image that has been PSF corrected</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.fitter.ArrayCorrector.__getitem__">
-<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.fitter.ArrayCorrector.__getitem__" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.fitter.ArrayCorrector.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#regularizepsf.fitter.ArrayCorrector.save" title="Link to this definition">#</a></dt>
-<dd><p>Save the model to a file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (str or <cite>pathlib.Path</cite>) – where to save the model, suggested extension is “.psf”</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.fitter.ArrayCorrector.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#regularizepsf.fitter.ArrayCorrector" title="regularizepsf.fitter.ArrayCorrector"><span class="pre">ArrayCorrector</span></a></span></span><a class="headerlink" href="#regularizepsf.fitter.ArrayCorrector.load" title="Link to this definition">#</a></dt>
-<dd><p>Loads a model from the path</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (str or <cite>pathlib.Path</cite>) – where to load the model from, suggested extension is “.psf”</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.fitter.ArrayCorrector.simulate_observation">
-<span class="sig-name descname"><span class="pre">simulate_observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.fitter.ArrayCorrector.simulate_observation" title="Link to this definition">#</a></dt>
-<dd><p>Simulates on a star field what an observation using this PSF looks like</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>image</strong> (<em>2D float np.ndarray</em>) – image of point source stars to simluate PSF for</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>an image with the PSF applied</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="regularizepsf.fitter.calculate_covering">
-<span class="sig-prename descclassname"><span class="pre">regularizepsf.fitter.</span></span><span class="sig-name descname"><span class="pre">calculate_covering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.fitter.calculate_covering" title="Link to this definition">#</a></dt>
-<dd><p>Determines the grid of overlapping neighborhood patches.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>image_shape</strong> (<em>tuple</em><em> of </em><em>2 ints</em>) – shape of the image we plan to correct</p></li>
-<li><p><strong>size</strong> (<em>int</em>) – size of the square patches we want to create</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>an array of shape Nx2 where return[:, 0]
-are the x coordinate and return[:, 1] are the y coordinates</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py exception">
-<dt class="sig sig-object py" id="regularizepsf.fitter.InvalidSizeError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.fitter.</span></span><span class="sig-name descname"><span class="pre">InvalidSizeError</span></span><a class="headerlink" href="#regularizepsf.fitter.InvalidSizeError" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationError</span></code></p>
-<p>Common base class for all non-exit exceptions.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="regularizepsf.fitter.PointSpreadFunctionABC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.fitter.</span></span><span class="sig-name descname"><span class="pre">PointSpreadFunctionABC</span></span><a class="headerlink" href="#regularizepsf.fitter.PointSpreadFunctionABC" title="Link to this definition">#</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.fitter.PointSpreadFunctionABC.__call__">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.fitter.PointSpreadFunctionABC.__call__" title="Link to this definition">#</a></dt>
-<dd><p>Evaluation of the point spread function</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (real number or <cite>np.ndarray</cite>) – first dimension coordinate to evaluate at</p></li>
-<li><p><strong>y</strong> (real number or <cite>np.ndarray</cite>) – second dimension coordinate to evaluate at</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the value of the point spread function at (x,y)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>real number or <cite>np.ndarray</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="regularizepsf.fitter.PointSpreadFunctionABC.parameters">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span></em><a class="headerlink" href="#regularizepsf.fitter.PointSpreadFunctionABC.parameters" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Abstractmethod<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>Varying parameters of the model.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="regularizepsf.fitter.SimplePSF">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.fitter.</span></span><span class="sig-name descname"><span class="pre">SimplePSF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.fitter.SimplePSF" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#regularizepsf.fitter.PointSpreadFunctionABC" title="regularizepsf.fitter.PointSpreadFunctionABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointSpreadFunctionABC</span></code></a></p>
-<p>Model for a simple PSF</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.fitter.SimplePSF.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.fitter.SimplePSF.__call__" title="Link to this definition">#</a></dt>
-<dd><p>Evaluation of the point spread function</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (real number or <cite>np.ndarray</cite>) – first dimension coordinate to evaluate at</p></li>
-<li><p><strong>y</strong> (real number or <cite>np.ndarray</cite>) – second dimension coordinate to evaluate at</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the value of the point spread function at (x,y)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>real number or <cite>np.ndarray</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="regularizepsf.fitter.SimplePSF.parameters">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.fitter.SimplePSF.parameters" title="Link to this definition">#</a></dt>
-<dd><p>Varying parameters of the model.</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="regularizepsf.fitter.PatchCollectionABC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.fitter.</span></span><span class="sig-name descname"><span class="pre">PatchCollectionABC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.fitter.PatchCollectionABC" title="Link to this definition">#</a></dt>
@@ -894,7 +679,7 @@ lying inside a new grid are averaged together</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>base_psf</strong> (<a class="reference internal" href="#regularizepsf.fitter.SimplePSF" title="regularizepsf.fitter.SimplePSF"><em>SimplePSF</em></a>) – the PSF model to use in fitting</p></li>
+<li><p><strong>base_psf</strong> (<a class="reference internal" href="../psf/index.html#regularizepsf.psf.SimplePSF" title="regularizepsf.psf.SimplePSF"><em>SimplePSF</em></a>) – the PSF model to use in fitting</p></li>
 <li><p><strong>initial_guesses</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Real</em><em>]</em>) – the initial guesses for all the PSF parameters</p></li>
 </ul>
 </dd>
@@ -1062,7 +847,7 @@ lying inside a new grid are averaged together</p>
 <dd class="field-even"><p>An array corrector that can be used to correct PSFs</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#regularizepsf.fitter.ArrayCorrector" title="regularizepsf.fitter.ArrayCorrector">ArrayCorrector</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../corrector/index.html#regularizepsf.corrector.ArrayCorrector" title="regularizepsf.corrector.ArrayCorrector">ArrayCorrector</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1150,32 +935,8 @@ lying inside a new grid are averaged together</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attributes">Attributes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exceptions">Exceptions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.ArrayCorrector"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.ArrayCorrector.evaluations"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.evaluations</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.ArrayCorrector.evaluation_points"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.evaluation_points</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.ArrayCorrector.correct_image"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.correct_image()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.ArrayCorrector.__getitem__"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.__getitem__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.ArrayCorrector.save"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.save()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.ArrayCorrector.load"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.load()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.ArrayCorrector.simulate_observation"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.simulate_observation()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.calculate_covering"><code class="docutils literal notranslate"><span class="pre">calculate_covering()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.InvalidSizeError"><code class="docutils literal notranslate"><span class="pre">InvalidSizeError</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.PointSpreadFunctionABC"><code class="docutils literal notranslate"><span class="pre">PointSpreadFunctionABC</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.PointSpreadFunctionABC.__call__"><code class="docutils literal notranslate"><span class="pre">PointSpreadFunctionABC.__call__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.PointSpreadFunctionABC.parameters"><code class="docutils literal notranslate"><span class="pre">PointSpreadFunctionABC.parameters</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.SimplePSF"><code class="docutils literal notranslate"><span class="pre">SimplePSF</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.SimplePSF.__call__"><code class="docutils literal notranslate"><span class="pre">SimplePSF.__call__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.SimplePSF.parameters"><code class="docutils literal notranslate"><span class="pre">SimplePSF.parameters</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.PatchCollectionABC"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.PatchCollectionABC.__len__"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.__len__()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.fitter.PatchCollectionABC.extract"><code class="docutils literal notranslate"><span class="pre">PatchCollectionABC.extract()</span></code></a></li>

@@ -453,43 +453,17 @@ document.write(`
                   
   <section id="module-regularizepsf.corrector">
 <span id="regularizepsf-corrector"></span><h1>regularizepsf.corrector<a class="headerlink" href="#module-regularizepsf.corrector" title="Link to this heading">#</a></h1>
-<section id="exceptions">
-<h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.corrector.EvaluatedModelInconsistentSizeError" title="regularizepsf.corrector.EvaluatedModelInconsistentSizeError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EvaluatedModelInconsistentSizeError</span></code></a></p></td>
-<td><p>Common base class for all non-exit exceptions.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#regularizepsf.corrector.InvalidSizeError" title="regularizepsf.corrector.InvalidSizeError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvalidSizeError</span></code></a></p></td>
-<td><p>Common base class for all non-exit exceptions.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.corrector.UnevaluatedPointError" title="regularizepsf.corrector.UnevaluatedPointError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnevaluatedPointError</span></code></a></p></td>
-<td><p>Common base class for all non-exit exceptions.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.corrector.PointSpreadFunctionABC" title="regularizepsf.corrector.PointSpreadFunctionABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointSpreadFunctionABC</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.corrector.CorrectorABC" title="regularizepsf.corrector.CorrectorABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CorrectorABC</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#regularizepsf.corrector.SimplePSF" title="regularizepsf.corrector.SimplePSF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimplePSF</span></code></a></p></td>
-<td><p>Model for a simple PSF</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.corrector.VariedPSF" title="regularizepsf.corrector.VariedPSF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VariedPSF</span></code></a></p></td>
-<td><p>Model for a PSF that varies over the field of view</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#regularizepsf.corrector.CorrectorABC" title="regularizepsf.corrector.CorrectorABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CorrectorABC</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.corrector.FunctionalCorrector" title="regularizepsf.corrector.FunctionalCorrector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionalCorrector</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#regularizepsf.corrector.FunctionalCorrector" title="regularizepsf.corrector.FunctionalCorrector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionalCorrector</span></code></a></p></td>
 <td><p>A version of the PSF corrector that stores the model as a set of functions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#regularizepsf.corrector.ArrayCorrector" title="regularizepsf.corrector.ArrayCorrector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayCorrector</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.corrector.ArrayCorrector" title="regularizepsf.corrector.ArrayCorrector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayCorrector</span></code></a></p></td>
 <td><p>A PSF corrector that is evaluated as array patches</p></td>
 </tr>
 </tbody>
@@ -509,128 +483,6 @@ document.write(`
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
-<dl class="py exception">
-<dt class="sig sig-object py" id="regularizepsf.corrector.EvaluatedModelInconsistentSizeError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">EvaluatedModelInconsistentSizeError</span></span><a class="headerlink" href="#regularizepsf.corrector.EvaluatedModelInconsistentSizeError" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationError</span></code></p>
-<p>Common base class for all non-exit exceptions.</p>
-</dd></dl>
-
-<dl class="py exception">
-<dt class="sig sig-object py" id="regularizepsf.corrector.InvalidSizeError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">InvalidSizeError</span></span><a class="headerlink" href="#regularizepsf.corrector.InvalidSizeError" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationError</span></code></p>
-<p>Common base class for all non-exit exceptions.</p>
-</dd></dl>
-
-<dl class="py exception">
-<dt class="sig sig-object py" id="regularizepsf.corrector.UnevaluatedPointError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">UnevaluatedPointError</span></span><a class="headerlink" href="#regularizepsf.corrector.UnevaluatedPointError" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
-<p>Common base class for all non-exit exceptions.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="regularizepsf.corrector.PointSpreadFunctionABC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">PointSpreadFunctionABC</span></span><a class="headerlink" href="#regularizepsf.corrector.PointSpreadFunctionABC" title="Link to this definition">#</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.corrector.PointSpreadFunctionABC.__call__">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.PointSpreadFunctionABC.__call__" title="Link to this definition">#</a></dt>
-<dd><p>Evaluation of the point spread function</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (real number or <cite>np.ndarray</cite>) – first dimension coordinate to evaluate at</p></li>
-<li><p><strong>y</strong> (real number or <cite>np.ndarray</cite>) – second dimension coordinate to evaluate at</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the value of the point spread function at (x,y)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>real number or <cite>np.ndarray</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="regularizepsf.corrector.PointSpreadFunctionABC.parameters">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span></em><a class="headerlink" href="#regularizepsf.corrector.PointSpreadFunctionABC.parameters" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Abstractmethod<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>Varying parameters of the model.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="regularizepsf.corrector.SimplePSF">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">SimplePSF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.corrector.SimplePSF" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#regularizepsf.corrector.PointSpreadFunctionABC" title="regularizepsf.corrector.PointSpreadFunctionABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointSpreadFunctionABC</span></code></a></p>
-<p>Model for a simple PSF</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.corrector.SimplePSF.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.SimplePSF.__call__" title="Link to this definition">#</a></dt>
-<dd><p>Evaluation of the point spread function</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (real number or <cite>np.ndarray</cite>) – first dimension coordinate to evaluate at</p></li>
-<li><p><strong>y</strong> (real number or <cite>np.ndarray</cite>) – second dimension coordinate to evaluate at</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the value of the point spread function at (x,y)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>real number or <cite>np.ndarray</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="regularizepsf.corrector.SimplePSF.parameters">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.corrector.SimplePSF.parameters" title="Link to this definition">#</a></dt>
-<dd><p>Varying parameters of the model.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="regularizepsf.corrector.VariedPSF">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">VariedPSF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vary_function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_psf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#regularizepsf.corrector.SimplePSF" title="regularizepsf.corrector.SimplePSF"><span class="pre">SimplePSF</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_at_call</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.corrector.VariedPSF" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#regularizepsf.corrector.PointSpreadFunctionABC" title="regularizepsf.corrector.PointSpreadFunctionABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointSpreadFunctionABC</span></code></a></p>
-<p>Model for a PSF that varies over the field of view</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="regularizepsf.corrector.VariedPSF.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.VariedPSF.__call__" title="Link to this definition">#</a></dt>
-<dd><p>Evaluation of the point spread function</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (real number or <cite>np.ndarray</cite>) – first dimension coordinate to evaluate at</p></li>
-<li><p><strong>y</strong> (real number or <cite>np.ndarray</cite>) – second dimension coordinate to evaluate at</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the value of the point spread function at (x,y)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>real number or <cite>np.ndarray</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="regularizepsf.corrector.VariedPSF.parameters">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span></em><a class="headerlink" href="#regularizepsf.corrector.VariedPSF.parameters" title="Link to this definition">#</a></dt>
-<dd><p>Varying parameters of the model.</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="regularizepsf.corrector.CorrectorABC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">CorrectorABC</span></span><a class="headerlink" href="#regularizepsf.corrector.CorrectorABC" title="Link to this definition">#</a></dt>
@@ -981,28 +833,9 @@ are the x coordinate and return[:, 1] are the y coordinates</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exceptions">Exceptions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.EvaluatedModelInconsistentSizeError"><code class="docutils literal notranslate"><span class="pre">EvaluatedModelInconsistentSizeError</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.InvalidSizeError"><code class="docutils literal notranslate"><span class="pre">InvalidSizeError</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.UnevaluatedPointError"><code class="docutils literal notranslate"><span class="pre">UnevaluatedPointError</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.PointSpreadFunctionABC"><code class="docutils literal notranslate"><span class="pre">PointSpreadFunctionABC</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.PointSpreadFunctionABC.__call__"><code class="docutils literal notranslate"><span class="pre">PointSpreadFunctionABC.__call__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.PointSpreadFunctionABC.parameters"><code class="docutils literal notranslate"><span class="pre">PointSpreadFunctionABC.parameters</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.SimplePSF"><code class="docutils literal notranslate"><span class="pre">SimplePSF</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.SimplePSF.__call__"><code class="docutils literal notranslate"><span class="pre">SimplePSF.__call__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.SimplePSF.parameters"><code class="docutils literal notranslate"><span class="pre">SimplePSF.parameters</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.VariedPSF"><code class="docutils literal notranslate"><span class="pre">VariedPSF</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.VariedPSF.__call__"><code class="docutils literal notranslate"><span class="pre">VariedPSF.__call__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.VariedPSF.parameters"><code class="docutils literal notranslate"><span class="pre">VariedPSF.parameters</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.CorrectorABC"><code class="docutils literal notranslate"><span class="pre">CorrectorABC</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.CorrectorABC.save"><code class="docutils literal notranslate"><span class="pre">CorrectorABC.save()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.CorrectorABC.load"><code class="docutils literal notranslate"><span class="pre">CorrectorABC.load()</span></code></a></li>

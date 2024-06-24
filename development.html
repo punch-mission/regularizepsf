@@ -440,19 +440,19 @@ document.write(`
 <p>We encourage all contributions. Please see our <a class="reference external" href="https://github.com/punch-mission/punch-mission/blob/main/contributing.md">contribution guide first</a>. If you’re contributing code, we recommend reading <a class="reference external" href="https://github.com/punch-mission/punch-mission/blob/main/development.md">our project-wide evelopment guide</a>.</p>
 <p>We recommend working in a virtual environment.
 This can be created by running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">venv</span> <span class="pre">venv</span></code>. Then, activate the environment with <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">venv/bin/activate</span></code>.
-You can then install the required packages with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements_dev.txt</span></code>.</p>
+You can then install the required packages with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;.[test]&quot;</span></code>.</p>
 <p>If at any time you run into issues, please contact us by <a class="reference internal" href="help.html"><span class="doc">following the guidelines here</span></a>.</p>
 <section id="setting-up-pre-commit">
 <h2>Setting up pre-commit<a class="headerlink" href="#setting-up-pre-commit" title="Link to this heading">#</a></h2>
 <p>The first time you develop code, you’ll need to install the pre-commit. This checks that our style is consistent.
-It gets installed when you do <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements_dev.txt</span></code> but then requires you to activate them by
+It gets installed when you do <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;.[test]&quot;</span></code> but then requires you to activate them by
 running <code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">install</span></code>. Now everytime you commit, our checks will run first.</p>
 </section>
 <section id="building-the-docs">
 <h2>Building the docs<a class="headerlink" href="#building-the-docs" title="Link to this heading">#</a></h2>
 <p>The docs are built using <code class="docutils literal notranslate"><span class="pre">sphinx</span></code>. First, you must install it and the other documentation requirements with</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="o">./</span><span class="n">docs</span><span class="o">/</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="s2">&quot;.[test]&quot;</span>
 <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build_ext</span> <span class="o">--</span><span class="n">inplace</span>
 </pre></div>
 </div>
