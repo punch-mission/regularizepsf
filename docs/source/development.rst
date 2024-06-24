@@ -4,7 +4,7 @@ We encourage all contributions. Please see our `contribution guide first <https:
 
 We recommend working in a virtual environment.
 This can be created by running ``python -m venv venv``. Then, activate the environment with ``source venv/bin/activate``.
-You can then install the required packages with ``pip install -r requirements_dev.txt``.
+You can then install the required packages with ``pip install ".[test]"``.
 
 If at any time you run into issues, please contact us by :doc:`following the guidelines here <help>`.
 
@@ -12,7 +12,7 @@ Setting up pre-commit
 ----------------------
 
 The first time you develop code, you'll need to install the pre-commit. This checks that our style is consistent.
-It gets installed when you do ``pip install -r requirements_dev.txt`` but then requires you to activate them by
+It gets installed when you do ``pip install ".[test]"`` but then requires you to activate them by
 running ``pre-commit install``. Now everytime you commit, our checks will run first.
 
 Building the docs
@@ -20,7 +20,7 @@ Building the docs
 The docs are built using ``sphinx``. First, you must install it and the other documentation requirements with ::
 
     pip install -r ./docs/requirements.txt
-    pip install -r requirements.txt
+    pip install ".[test]"
     python setup.py build_ext --inplace
 
 Then, navigate to the ``docs`` directory and run ``make html`` to build the docs.
