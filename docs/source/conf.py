@@ -57,3 +57,4 @@ html_context = {
 
 
 autoapi_dirs = ["../../regularizepsf"]
+autoapi_python_class_content = 'both'
