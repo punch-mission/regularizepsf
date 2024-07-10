@@ -51,6 +51,17 @@ Package Contents
    A PSF corrector that is evaluated as array patches
 
 
+   Initialize an ArrayCorrector
+
+   :param evaluations:
+                       evaluated version of the PSF as they vary over the image,
+                           keys should be (x, y) of the lower left
+                           pixel of each patch. values should be the `np.ndarray`
+                           that corresponds to that patch
+   :type evaluations: dict
+   :param target_evaluation: evaluated version of the target PSF
+   :type target_evaluation: np.ndarray
+
 
    .. py:property:: evaluations
       :type: dict[Any, numpy.ndarray]
@@ -127,6 +138,13 @@ Package Contents
    A version of the PSF corrector that stores the model as a set of functions.
    For the actual correction, the functions must first
    be evaluated to an ArrayCorrector.
+
+   Initialize a FunctionalCorrector
+
+   :param psf: the model describing the psf for each patch of the image
+   :type psf: SimplePSF or VariedPSF
+   :param target_model: the target PSF to use to establish uniformity across the image
+   :type target_model: SimplePSF or None
 
 
    .. py:property:: is_variable

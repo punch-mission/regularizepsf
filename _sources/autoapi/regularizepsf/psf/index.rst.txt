@@ -60,6 +60,12 @@ Module Contents
 
    Model for a simple PSF
 
+   Creates a PSF object
+
+   :param function:
+                    Python function representing the PSF,
+                        first two parameters must be x and y and must return an numpy array
+
 
    .. py:method:: __call__(x: numbers.Real | numpy.ndarray, y: numbers.Real | numpy.ndarray, **kwargs: Dict[str, Any]) -> numbers.Real | numpy.ndarray
 

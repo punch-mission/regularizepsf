@@ -531,6 +531,16 @@ document.write(`
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.psf.</span></span><span class="sig-name descname"><span class="pre">SimplePSF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.psf.SimplePSF" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#regularizepsf.psf.PointSpreadFunctionABC" title="regularizepsf.psf.PointSpreadFunctionABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointSpreadFunctionABC</span></code></a></p>
 <p>Model for a simple PSF</p>
+<p>Creates a PSF object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>function</strong> – <dl class="simple">
+<dt>Python function representing the PSF,</dt><dd><p>first two parameters must be x and y and must return an numpy array</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.psf.SimplePSF.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.psf.SimplePSF.__call__" title="Link to this definition">#</a></dt>

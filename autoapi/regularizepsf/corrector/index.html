@@ -567,6 +567,15 @@ to attenuation, see notes</p></li>
 <p>A version of the PSF corrector that stores the model as a set of functions.
 For the actual correction, the functions must first
 be evaluated to an ArrayCorrector.</p>
+<p>Initialize a FunctionalCorrector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psf</strong> (<a class="reference internal" href="../psf/index.html#regularizepsf.psf.SimplePSF" title="regularizepsf.psf.SimplePSF"><em>SimplePSF</em></a><em> or </em><a class="reference internal" href="../psf/index.html#regularizepsf.psf.VariedPSF" title="regularizepsf.psf.VariedPSF"><em>VariedPSF</em></a>) – the model describing the psf for each patch of the image</p></li>
+<li><p><strong>target_model</strong> (<a class="reference internal" href="../psf/index.html#regularizepsf.psf.SimplePSF" title="regularizepsf.psf.SimplePSF"><em>SimplePSF</em></a><em> or </em><em>None</em>) – the target PSF to use to establish uniformity across the image</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector.is_variable">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_variable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector.is_variable" title="Link to this definition">#</a></dt>
@@ -682,6 +691,21 @@ to attenuation, see notes</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">ArrayCorrector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_evaluation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#regularizepsf.corrector.CorrectorABC" title="regularizepsf.corrector.CorrectorABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CorrectorABC</span></code></a></p>
 <p>A PSF corrector that is evaluated as array patches</p>
+<p>Initialize an ArrayCorrector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>evaluations</strong> (<em>dict</em>) – <dl class="simple">
+<dt>evaluated version of the PSF as they vary over the image,</dt><dd><p>keys should be (x, y) of the lower left
+pixel of each patch. values should be the <cite>np.ndarray</cite>
+that corresponds to that patch</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>target_evaluation</strong> (<em>np.ndarray</em>) – evaluated version of the target PSF</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.evaluations">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.evaluations" title="Link to this definition">#</a></dt>

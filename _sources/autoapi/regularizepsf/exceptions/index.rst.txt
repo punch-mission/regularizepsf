@@ -27,6 +27,8 @@ Module Contents
 
    Common base class for all non-exit exceptions.
 
+   Initialize self.  See help(type(self)) for accurate signature.
+
 
 .. py:exception:: PSFParameterValidationError
 
@@ -34,6 +36,8 @@ Module Contents
 
 
    Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
 
 
 .. py:exception:: InvalidSizeError
@@ -43,6 +47,8 @@ Module Contents
 
    Common base class for all non-exit exceptions.
 
+   Initialize self.  See help(type(self)) for accurate signature.
+
 
 .. py:exception:: EvaluatedModelInconsistentSizeError
 
@@ -50,6 +56,8 @@ Module Contents
 
 
    Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
 
 
 .. py:exception:: VariedPSFParameterMismatchError
@@ -59,6 +67,8 @@ Module Contents
 
    Common base class for all non-exit exceptions.
 
+   Initialize self.  See help(type(self)) for accurate signature.
+
 
 .. py:exception:: UnevaluatedPointError
 
@@ -66,5 +76,7 @@ Module Contents
 
 
    Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
 
 
