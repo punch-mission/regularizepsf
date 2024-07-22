@@ -22,7 +22,7 @@ setup(
     author="J. Marcus Hughes",
     author_email="hughes.jmb@gmail.com",
     ext_modules=cythonize(ext_modules, annotate=True, compiler_directives={"language_level": 3}),
-    install_requires=["numpy==1.26.4",
+    install_requires=["numpy==2.0.1",
                       "dill",
                       "h5py",
                       "lmfit",
