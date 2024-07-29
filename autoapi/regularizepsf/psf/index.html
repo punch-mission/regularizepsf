@@ -541,6 +541,21 @@ document.write(`
 </p>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.psf.SimplePSF._f">
+<span class="sig-name descname"><span class="pre">_f</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="headerlink" href="#regularizepsf.psf.SimplePSF._f" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.psf.SimplePSF._signature">
+<span class="sig-name descname"><span class="pre">_signature</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">inspect.Signature</span></em><a class="headerlink" href="#regularizepsf.psf.SimplePSF._signature" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.psf.SimplePSF._parameters">
+<span class="sig-name descname"><span class="pre">_parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.psf.SimplePSF._parameters" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.psf.SimplePSF.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.psf.SimplePSF.__call__" title="Link to this definition">#</a></dt>
@@ -579,6 +594,36 @@ document.write(`
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.psf.</span></span><span class="sig-name descname"><span class="pre">VariedPSF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vary_function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_psf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#regularizepsf.psf.SimplePSF" title="regularizepsf.psf.SimplePSF"><span class="pre">SimplePSF</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_at_call</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.psf.VariedPSF" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#regularizepsf.psf.PointSpreadFunctionABC" title="regularizepsf.psf.PointSpreadFunctionABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointSpreadFunctionABC</span></code></a></p>
 <p>Model for a PSF that varies over the field of view</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.psf.VariedPSF._vary_function">
+<span class="sig-name descname"><span class="pre">_vary_function</span></span><a class="headerlink" href="#regularizepsf.psf.VariedPSF._vary_function" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.psf.VariedPSF._base_psf">
+<span class="sig-name descname"><span class="pre">_base_psf</span></span><a class="headerlink" href="#regularizepsf.psf.VariedPSF._base_psf" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.psf.VariedPSF.validate_at_call">
+<span class="sig-name descname"><span class="pre">validate_at_call</span></span><a class="headerlink" href="#regularizepsf.psf.VariedPSF.validate_at_call" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.psf.VariedPSF.parameterization_signature">
+<span class="sig-name descname"><span class="pre">parameterization_signature</span></span><a class="headerlink" href="#regularizepsf.psf.VariedPSF.parameterization_signature" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.psf.VariedPSF.origin_evaluation">
+<span class="sig-name descname"><span class="pre">origin_evaluation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.psf.VariedPSF.origin_evaluation" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.psf.VariedPSF._origin_parameters">
+<span class="sig-name descname"><span class="pre">_origin_parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.psf.VariedPSF._origin_parameters" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.psf.VariedPSF.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.psf.VariedPSF.__call__" title="Link to this definition">#</a></dt>
@@ -675,12 +720,21 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.SimplePSF"><code class="docutils literal notranslate"><span class="pre">SimplePSF</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.SimplePSF._f"><code class="docutils literal notranslate"><span class="pre">SimplePSF._f</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.SimplePSF._signature"><code class="docutils literal notranslate"><span class="pre">SimplePSF._signature</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.SimplePSF._parameters"><code class="docutils literal notranslate"><span class="pre">SimplePSF._parameters</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.SimplePSF.__call__"><code class="docutils literal notranslate"><span class="pre">SimplePSF.__call__()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.SimplePSF.parameters"><code class="docutils literal notranslate"><span class="pre">SimplePSF.parameters</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.simple_psf"><code class="docutils literal notranslate"><span class="pre">simple_psf()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.VariedPSF"><code class="docutils literal notranslate"><span class="pre">VariedPSF</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.VariedPSF._vary_function"><code class="docutils literal notranslate"><span class="pre">VariedPSF._vary_function</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.VariedPSF._base_psf"><code class="docutils literal notranslate"><span class="pre">VariedPSF._base_psf</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.VariedPSF.validate_at_call"><code class="docutils literal notranslate"><span class="pre">VariedPSF.validate_at_call</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.VariedPSF.parameterization_signature"><code class="docutils literal notranslate"><span class="pre">VariedPSF.parameterization_signature</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.VariedPSF.origin_evaluation"><code class="docutils literal notranslate"><span class="pre">VariedPSF.origin_evaluation</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.VariedPSF._origin_parameters"><code class="docutils literal notranslate"><span class="pre">VariedPSF._origin_parameters</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.VariedPSF.__call__"><code class="docutils literal notranslate"><span class="pre">VariedPSF.__call__()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.psf.VariedPSF.parameters"><code class="docutils literal notranslate"><span class="pre">VariedPSF.parameters</span></code></a></li>
 </ul>
@@ -742,7 +796,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.5.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
     <br/>
   </p>
 </div>

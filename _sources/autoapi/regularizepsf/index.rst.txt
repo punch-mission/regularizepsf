@@ -63,6 +63,26 @@ Package Contents
    :type target_evaluation: np.ndarray
 
 
+   .. py:attribute:: _evaluation_points
+      :type:  list[Any]
+
+
+   .. py:attribute:: _size
+
+
+   .. py:attribute:: _evaluations
+      :type:  dict[Any, numpy.ndarray]
+
+
+   .. py:attribute:: _target_evaluation
+
+
+   .. py:attribute:: normalized_values
+
+
+   .. py:attribute:: normalized_target
+
+
    .. py:property:: evaluations
       :type: dict[Any, numpy.ndarray]
 
@@ -145,6 +165,18 @@ Package Contents
    :type psf: SimplePSF or VariedPSF
    :param target_model: the target PSF to use to establish uniformity across the image
    :type target_model: SimplePSF or None
+
+
+   .. py:attribute:: _psf
+      :type:  regularizepsf.psf.PointSpreadFunctionABC
+
+
+   .. py:attribute:: _variable
+      :type:  bool
+
+
+   .. py:attribute:: _target_model
+      :type:  regularizepsf.psf.SimplePSF
 
 
    .. py:property:: is_variable

@@ -576,6 +576,21 @@ be evaluated to an ArrayCorrector.</p>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector._psf">
+<span class="sig-name descname"><span class="pre">_psf</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../psf/index.html#regularizepsf.psf.PointSpreadFunctionABC" title="regularizepsf.psf.PointSpreadFunctionABC"><span class="pre">regularizepsf.psf.PointSpreadFunctionABC</span></a></em><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector._psf" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector._variable">
+<span class="sig-name descname"><span class="pre">_variable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector._variable" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector._target_model">
+<span class="sig-name descname"><span class="pre">_target_model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../psf/index.html#regularizepsf.psf.SimplePSF" title="regularizepsf.psf.SimplePSF"><span class="pre">regularizepsf.psf.SimplePSF</span></a></em><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector._target_model" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector.is_variable">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_variable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector.is_variable" title="Link to this definition">#</a></dt>
@@ -706,6 +721,36 @@ that corresponds to that patch</p>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector._evaluation_points">
+<span class="sig-name descname"><span class="pre">_evaluation_points</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector._evaluation_points" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector._size">
+<span class="sig-name descname"><span class="pre">_size</span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector._size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector._evaluations">
+<span class="sig-name descname"><span class="pre">_evaluations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector._evaluations" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector._target_evaluation">
+<span class="sig-name descname"><span class="pre">_target_evaluation</span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector._target_evaluation" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.normalized_values">
+<span class="sig-name descname"><span class="pre">normalized_values</span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.normalized_values" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.normalized_target">
+<span class="sig-name descname"><span class="pre">normalized_target</span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.normalized_target" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.evaluations">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.evaluations" title="Link to this definition">#</a></dt>
@@ -870,6 +915,9 @@ are the x coordinate and return[:, 1] are the y coordinates</p>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.FunctionalCorrector"><code class="docutils literal notranslate"><span class="pre">FunctionalCorrector</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.FunctionalCorrector._psf"><code class="docutils literal notranslate"><span class="pre">FunctionalCorrector._psf</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.FunctionalCorrector._variable"><code class="docutils literal notranslate"><span class="pre">FunctionalCorrector._variable</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.FunctionalCorrector._target_model"><code class="docutils literal notranslate"><span class="pre">FunctionalCorrector._target_model</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.FunctionalCorrector.is_variable"><code class="docutils literal notranslate"><span class="pre">FunctionalCorrector.is_variable</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.FunctionalCorrector.evaluate_to_array_form"><code class="docutils literal notranslate"><span class="pre">FunctionalCorrector.evaluate_to_array_form()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.FunctionalCorrector.correct_image"><code class="docutils literal notranslate"><span class="pre">FunctionalCorrector.correct_image()</span></code></a></li>
@@ -879,6 +927,12 @@ are the x coordinate and return[:, 1] are the y coordinates</p>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector._evaluation_points"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector._evaluation_points</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector._size"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector._size</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector._evaluations"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector._evaluations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector._target_evaluation"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector._target_evaluation</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.normalized_values"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.normalized_values</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.normalized_target"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.normalized_target</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.evaluations"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.evaluations</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.evaluation_points"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.evaluation_points</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.correct_image"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.correct_image()</span></code></a></li>
@@ -944,7 +998,7 @@ are the x coordinate and return[:, 1] are the y coordinates</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.5.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
     <br/>
   </p>
 </div>

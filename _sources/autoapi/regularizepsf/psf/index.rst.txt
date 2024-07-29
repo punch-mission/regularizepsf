@@ -67,6 +67,18 @@ Module Contents
                         first two parameters must be x and y and must return an numpy array
 
 
+   .. py:attribute:: _f
+      :type:  Callable
+
+
+   .. py:attribute:: _signature
+      :type:  inspect.Signature
+
+
+   .. py:attribute:: _parameters
+      :type:  set[str]
+
+
    .. py:method:: __call__(x: numbers.Real | numpy.ndarray, y: numbers.Real | numpy.ndarray, **kwargs: Dict[str, Any]) -> numbers.Real | numpy.ndarray
 
       Evaluation of the point spread function
@@ -95,6 +107,26 @@ Module Contents
 
 
    Model for a PSF that varies over the field of view
+
+
+   .. py:attribute:: _vary_function
+
+
+   .. py:attribute:: _base_psf
+
+
+   .. py:attribute:: validate_at_call
+
+
+   .. py:attribute:: parameterization_signature
+
+
+   .. py:attribute:: origin_evaluation
+      :type:  dict[str, Any]
+
+
+   .. py:attribute:: _origin_parameters
+      :type:  set[str]
 
 
    .. py:method:: __call__(x: numbers.Real | numpy.ndarray, y: numbers.Real | numpy.ndarray) -> numbers.Real | numpy.ndarray

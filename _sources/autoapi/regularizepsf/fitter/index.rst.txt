@@ -26,6 +26,12 @@ Module Contents
 
 .. py:class:: PatchCollectionABC(patches: dict[Any, numpy.ndarray], counts: Optional[dict[Any, int]] = None)
 
+   .. py:attribute:: patches
+
+
+   .. py:attribute:: counts
+
+
    .. py:method:: __len__() -> int
 
 
