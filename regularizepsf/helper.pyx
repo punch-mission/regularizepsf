@@ -8,11 +8,11 @@ ctypedef np.float_t DTYPE_t
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef _correct_image(np.ndarray[np.float, ndim=2] image,
-                     np.ndarray[np.complex, ndim=2] target_fft,
-                     np.ndarray[np.int, ndim=1] x,
-                     np.ndarray[np.int, ndim=1] y,
-                     np.ndarray[np.complex, ndim=3] values_fft,
+cpdef _correct_image(np.ndarray[double, ndim=2] image,
+                     np.ndarray[complex, ndim=2] target_fft,
+                     np.ndarray[long, ndim=1] x,
+                     np.ndarray[long, ndim=1] y,
+                     np.ndarray[complex, ndim=3] values_fft,
                      float alpha,
                      float epsilon):
     """Core Cython code to actually correct an image"""
