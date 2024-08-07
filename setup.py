@@ -37,7 +37,6 @@ setup(
     setup_requires=["cython"],
     extras_require={"test": ["pytest",
                              "pytest-cov",
-                             "pytest-runner",
                              "hypothesis",
                              "ruff",
                              "pytest-mpl",
