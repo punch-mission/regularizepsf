@@ -38,6 +38,7 @@ setup(
     extras_require={"test": ["pytest",
                              "pytest-cov",
                              "hypothesis",
+                             "coverage",
                              "ruff",
                              "pytest-mpl",
                              "pre-commit"]}
