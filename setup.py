@@ -1,13 +1,13 @@
 import numpy as np
 from Cython.Build import cythonize
-from setuptools import Extension, setup
+from setuptools import setup
 
 # with open("README.md", "r", encoding="utf-8") as fh:
 #     long_description = fh.read()
 
-ext_modules = [Extension("regularizepsf.helper",
-                         sources=["regularizepsf/helper.pyx"],
-                         include_dirs=[np.get_include()])]
+# ext_modules = [Extension("regularizepsf.helper",
+#                          sources=["regularizepsf/helper.pyx"],
+#                          include_dirs=[np.get_include()])]
 
 setup(
     # name="regularizepsf",
@@ -21,7 +21,10 @@ setup(
     # license="MIT",
     # author="J. Marcus Hughes",
     # author_email="hughes.jmb@gmail.com",
-    ext_modules=cythonize(ext_modules, annotate=True, compiler_directives={"language_level": 3}),
+    # ext_modules=cythonize(ext_modules, annotate=True, compiler_directives={"language_level": 3}),
+    ext_modules=cythonize("regularizepsf/helper.pyx"),
+    include_dirs=[np.get_include()]
+
     # install_requires=["numpy==1.26.4",
     #                   "dill",
     #                   "h5py",
