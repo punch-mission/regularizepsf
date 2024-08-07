@@ -1,10 +1,52 @@
 [build-system]
-requires = ["setuptools", "wheel", "numpy>=1.19.0, <2.0.0", "Cython>=0.29.21"]
+requires = ["setuptools", "wheel", "numpy", "Cython>=0.29.21"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["regularizepsf"]
+
+[project]
+name = "regularizepsf"
+version = "0.3.4"
+requires-python = ">3.10"
+description = "Point spread function modeling and regularization"
+dependencies = [
+      "numpy==1.26.4",
+      "dill",
+      "h5py",
+      "lmfit",
+      "sep",
+      "cython",
+      "astropy",
+      "scipy",
+      "scikit-image",
+      "matplotlib",
+      "setuptools"
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[project.optional-dependencies]
+test = [
+     "pytest",
+     "pytest-cov",
+     "hypothesis",
+     "coverage",
+     "ruff",
+     "pytest-mpl",
+]
+docs = [
+    "sphinx",
+    "pydata-sphinx-theme",
+    "sphinx-autoapi"
+]
+
+dev = ["regularizepsf[test, docs]", "pre-commit"]
+
 
 [tool.ruff]
 exclude = ['tests/*']
-line-length=120
+line-length = 120
 
 #[tool.ruff.lint]
 #select = ["NPY201"]
