@@ -37,7 +37,6 @@ jobs:
         ruff check .
     - name: Test with pytest
       run: |
-        pip install .
         coverage run -m pytest
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
