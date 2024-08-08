@@ -3,11 +3,11 @@ requires = ["setuptools", "wheel", "numpy", "Cython>=0.29.21"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-py-modules = ["regularizepsf"]
+packages = ["regularizepsf"]
 
 [project]
 name = "regularizepsf"
-version = "0.3.5"
+version = "0.3.6"
 requires-python = ">3.10"
 description = "Point spread function modeling and regularization"
 dependencies = [
