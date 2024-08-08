@@ -8,7 +8,7 @@ from collections import namedtuple
 
 import h5py
 import numpy as np
-import sep
+import sep_pjw as sep
 from astropy.io import fits
 from lmfit import Parameters, minimize
 from lmfit.minimizer import MinimizerResult
