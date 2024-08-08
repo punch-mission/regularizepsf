@@ -7,7 +7,7 @@ py-modules = ["regularizepsf"]
 
 [project]
 name = "regularizepsf"
-version = "0.3.4"
+version = "0.3.5"
 requires-python = ">3.10"
 description = "Point spread function modeling and regularization"
 dependencies = [
