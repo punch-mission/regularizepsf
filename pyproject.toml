@@ -63,3 +63,7 @@ line_length = 120
 multi_line_output = 3
 no_lines_before = "LOCALFOLDER"
 sections = "FUTURE, COMPATIBILITY, STDLIB, THIRDPARTY, FIRSTPARTY, LOCALFOLDER"
+
+[tool.cibuildwheel]
+# Disable building PyPy wheels on all platforms
+skip = "pp*"
