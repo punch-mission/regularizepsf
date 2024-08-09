@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Hughes"
+  given-names: "J. Marcus"
+  orcid: "https://orcid.org/0000-0003-3410-7650"
+title: "regularizepsf"
+version: 0.3.6
+doi: 10.5281/zenodo.7392170
+date-released: 2024-08-09
+url: "https://github.com/punch-mission/regularizepsf"
