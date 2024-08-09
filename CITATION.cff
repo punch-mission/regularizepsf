@@ -4,6 +4,14 @@ authors:
 - family-names: "Hughes"
   given-names: "J. Marcus"
   orcid: "https://orcid.org/0000-0003-3410-7650"
+- family-names: "Van Kooten"
+  given-names: "Sam"
+  orcid: "https://orcid.org/0000-0002-4472-8517"
+- family-names: "Varesano"
+  given-names: "Tania"
+  orcid: "https://orcid.org/0000-0003-0256-9295"
+- family-names: "Chapai"
+  given-names: "Suman"
 title: "regularizepsf"
 version: 0.3.6
 doi: 10.5281/zenodo.7392170
