@@ -15,8 +15,11 @@ authors:
 - family-names: "DeForest"
   given-names: "Craig"
   orcid: "https://orcid.org/0000-0002-7164-2786"
+- family-names: "Seaton"
+  given-names: "Daniel"
+  orcid: "https://orcid.org/0000-0002-0494-2025"
 title: "regularizepsf"
 version: 0.3.6
 doi: 10.5281/zenodo.7392170
-date-released: 2024-08-09
+date-released: 2024-08-08
 url: "https://github.com/punch-mission/regularizepsf"
