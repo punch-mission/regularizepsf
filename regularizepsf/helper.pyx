@@ -93,21 +93,10 @@ cpdef _regularize_array(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef _precalculate_ffts(np.ndarray[DTYPE_t, ndim=3] target_evaluation, np.ndarray[DTYPE_t, ndim=3] values):
+cpdef _precalculate_ffts(np.ndarray[DTYPE_t, ndim=3] values):
     cdef int size = values.shape[1]
     cdef int num_patches = values.shape[0]
-
-    cdef np.ndarray[np.complex128_t, ndim=3] psf_target_hat = np.empty((num_patches, size, size), dtype=complex)
     cdef np.ndarray[np.float_t, ndim=2] holder = np.empty((size, size), dtype=float)
-    for patch_i in range(num_patches):
-        for xx in range(size):
-            for yy in range(size):
-                holder[xx, yy] = target_evaluation[patch_i, xx, yy]
-        result = fft2(holder)
-        for xx in range(size):
-            for yy in range(size):
-                psf_target_hat[patch_i, xx, yy] = result[xx, yy]
-
     cdef np.ndarray[np.complex128_t, ndim=3] psf_i_hat = np.empty((num_patches, size, size), dtype=complex)
     for patch_i in range(num_patches):
         for xx in range(size):
@@ -117,4 +106,4 @@ cpdef _precalculate_ffts(np.ndarray[DTYPE_t, ndim=3] target_evaluation, np.ndarr
         for xx in range(size):
             for yy in range(size):
                 psf_i_hat[patch_i, xx, yy] = result[xx, yy]
-    return psf_target_hat, psf_i_hat
+    return psf_i_hat

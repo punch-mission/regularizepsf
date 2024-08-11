@@ -206,7 +206,7 @@ class ArrayCorrector(CorrectorABC):
     """A PSF corrector that is evaluated as array patches."""
 
     def __init__(self, evaluations: dict[Any, np.ndarray],
-                 target_evaluations: dict[Any, np.ndarray]) -> None:
+                 target_evaluations: np.ndarray | dict[Any, np.ndarray]) -> None:
         """Initialize an ArrayCorrector.
 
         Parameters
@@ -221,6 +221,8 @@ class ArrayCorrector(CorrectorABC):
 
         """
         self._evaluation_points: list[Any] = list(evaluations.keys())
+        if isinstance(target_evaluations, np.ndarray):
+            target_evaluations = {point: target_evaluations for point in self._evaluation_points}
 
         if not isinstance(evaluations[self._evaluation_points[0]], np.ndarray):
             msg = (
@@ -245,16 +247,20 @@ class ArrayCorrector(CorrectorABC):
                 raise EvaluatedModelInconsistentSizeError(msg)
 
         self._target_evaluations = target_evaluations
-        # if self._target_evaluation.shape != (self._size, self._size):
-        #     msg = "The target and evaluations must have the same shape."
-        #     raise EvaluatedModelInconsistentSizeError(msg)
+        for (x, y), evaluation in self._target_evaluations.items():
+            if evaluation.shape != (self._size, self._size):
+                msg = ("Expected target model to have shapes of "
+                       f"{(self._size, self._size)}."
+                       f"Found {evaluation.shape} at {(x, y)}.")
+                raise EvaluatedModelInconsistentSizeError(msg)
+
 
         normalized_values = np.array(
                 [v / v.sum() for v in self._evaluations.values()], dtype=float)
         normalized_target = np.array(
                 [v / v.sum() for v in self._target_evaluations.values()], dtype=float)
-        self.target_fft, self.psf_i_fft = _precalculate_ffts(
-                normalized_target, normalized_values)
+        self.psf_i_fft = _precalculate_ffts(normalized_values)
+        self.target_fft = _precalculate_ffts(normalized_target)
 
     @property
     def evaluations(self) -> dict[Any, np.ndarray]:
@@ -289,18 +295,24 @@ class ArrayCorrector(CorrectorABC):
             eval_grp = f.create_group("evaluations")
             for key, val in self._evaluations.items():
                 eval_grp.create_dataset(f"{key}", data=val)
-            f.create_dataset("target", data=self._target_evaluation)
+            eval_grp = f.create_group("target")
+            for key, val in self._target_evaluations.items():
+                eval_grp.create_dataset(f"{key}", data=val)
 
     @classmethod
     def load(cls, path: str) -> ArrayCorrector:
         with h5py.File(path, "r") as f:
-            target_evaluation = f["target"][:].copy()
+            target_evaluations = {}
+            for key, val in f["target"].items():
+                parsed_key = tuple(int(val) for val in key.replace("(", "").replace(")", "").split(","))
+                target_evaluations[parsed_key] = val[:].copy()
+
 
             evaluations = {}
             for key, val in f["evaluations"].items():
                 parsed_key = tuple(int(val) for val in key.replace("(", "").replace(")", "").split(","))
                 evaluations[parsed_key] = val[:].copy()
-        return cls(evaluations, target_evaluation)
+        return cls(evaluations, target_evaluations)
 
     def simulate_observation(self, image: np.ndarray) -> np.ndarray:
         psf_shape = (self._size, self._size)

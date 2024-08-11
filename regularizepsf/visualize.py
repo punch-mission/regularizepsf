@@ -313,9 +313,9 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
     extent = -np.inf
     for i in range(len(tks.evaluations)):
         psf_regularized_inverse = _regularize_array(
-                tks.psf_i_fft[i], alpha, epsilon, tks.target_fft)
+                tks.psf_i_fft[i], alpha, epsilon, tks.target_fft[i])
         transfer_kernel = np.fft.ifft2(
-                psf_regularized_inverse * tks.target_fft).real
+                psf_regularized_inverse * tks.target_fft[i]).real
         # For some reason, the transfer kernel we get straddles the corners of
         # the image, rather than being centered. We must be picking up a phase
         # shift in Fourier space.

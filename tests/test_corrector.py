@@ -50,25 +50,27 @@ def padded_100by100_image_psf_10_with_pattern():
 
 def test_create_array_corrector():
     example = ArrayCorrector({(0, 0): np.zeros((10, 10))},
-                             np.zeros((10, 10)))
+                             {(0, 0): np.zeros((10, 10))})
     assert isinstance(example, ArrayCorrector)
     assert example._evaluation_points == [(0, 0)]
 
 
 def test_nonimage_array_corrector_errors():
     with pytest.raises(InvalidSizeError):
-        example = ArrayCorrector({(0, 0): np.zeros(10)}, np.zeros(10))
+        example = ArrayCorrector({(0, 0): np.zeros(10)},
+                             {(0, 0): np.zeros(10)})
+        assert isinstance(example, ArrayCorrector)
 
 
 def test_noneven_array_corrector_errors():
     with pytest.raises(InvalidSizeError):
-        example = ArrayCorrector({(0, 0): np.zeros((11, 11))}, np.zeros((11, 11)))
+        example = ArrayCorrector({(0, 0): np.zeros((11, 11))}, {(0, 0): np.zeros((11, 11))})
 
 
 def test_array_corrector_with_different_size_evaluations_errors():
     with pytest.raises(EvaluatedModelInconsistentSizeError):
         example = ArrayCorrector({(0, 0): np.zeros((10, 10)), (1, 1): np.zeros((20, 20))},
-                                 np.zeros((20, 20)))
+                                            np.zeros((20, 20)))
 
 
 def test_array_corrector_with_different_size_than_target_errors():
@@ -180,7 +182,7 @@ def test_save_load_array_corrector(tmp_path):
     assert os.path.isfile(fname)
     loaded = example.load(fname)
     assert isinstance(loaded, ArrayCorrector)
-    assert np.all(loaded._target_evaluation == np.ones((100, 100)))
+    assert np.all(loaded._target_evaluations[(0, 0)] == np.ones((100, 100)))
     assert np.all(loaded._evaluations[(0,0)] == np.ones((100, 100)))
 
 
