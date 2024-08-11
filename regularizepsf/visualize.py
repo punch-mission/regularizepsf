@@ -1,6 +1,6 @@
+"""Visualization tools for PSFs."""
 import copy
 import itertools
-from typing import Optional
 
 import matplotlib as mpl
 import matplotlib.colors
@@ -13,10 +13,9 @@ from regularizepsf.helper import _regularize_array
 
 
 def visualize_patch_counts(patch_collection: PatchCollectionABC,
-                           ax: Optional[mpl.axes.Axes] = None,
+                           ax: mpl.axes.Axes | None = None,
                            label_pixel_bounds: bool = False) -> mpl.axes.Axes:
-    """
-    Utility to visualize the number of stars identified within each patch
+    """Visualize the number of stars identified within each patch.
 
     Parameters
     ----------
@@ -29,9 +28,11 @@ def visualize_patch_counts(patch_collection: PatchCollectionABC,
     label_pixel_bounds : bool
         If True, the axes of the plot will be labeled with the pixel range
         spanned by each patch.
+
     """
     if patch_collection.counts is None or not len(patch_collection.counts):
-        raise ValueError("This PatchCollection does not have any counts")
+        msg = "This PatchCollection does not have any counts"
+        raise ValueError(msg)
 
     if ax is None:
         fig = plt.figure()
@@ -92,17 +93,16 @@ _colormap = _generate_colormap()
 
 def visualize_PSFs(  # noqa: N802, C901
         psfs: ArrayCorrector,
-        corrected: Optional[PatchCollectionABC] = None,
+        corrected: PatchCollectionABC | None = None,
         all_patches: bool = False,
         region_size: int = 0,
         label_pixel_bounds: bool = False,
-        fig: Optional[mpl.figure.Figure] = None,
+        fig: mpl.figure.Figure | None = None,
         fig_scale: float = 1,
         colorbar_label: str = "Normalized brightness",
         axis_border_color: str = "white",
-        imshow_args: Optional[dict] = None) -> mpl.figure.Figure:
-    """
-    Utility to visualize estimated PSFs.
+        imshow_args: dict | None = None) -> mpl.figure.Figure:
+    """Visualize estimated PSFs.
 
     Accepts an `ArrayCorrector`, which contains the estimated PSFs across the
     image.
@@ -149,6 +149,7 @@ def visualize_PSFs(  # noqa: N802, C901
     -------
     fig : matplotlib.figure.Figure
         The generated figure
+
     """
     # Special-case vmin/vmax, and pass them to our PowerNorm
     imshow_args = {} if imshow_args is None else imshow_args
@@ -161,7 +162,7 @@ def visualize_PSFs(  # noqa: N802, C901
     imshow_args_default = {
         "origin": "lower",
         "cmap": _colormap,
-        "norm": mpl.colors.PowerNorm(gamma=1/2.2, vmin=vmin, vmax=vmax)
+        "norm": mpl.colors.PowerNorm(gamma=1/2.2, vmin=vmin, vmax=vmax),
     }
     imshow_args = imshow_args_default | imshow_args
 
@@ -253,13 +254,12 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
                    all_patches: bool = False,
                    region_size: int = 0,
                    label_pixel_bounds: bool = False,
-                   fig: Optional[mpl.figure.Figure] = None,
+                   fig: mpl.figure.Figure | None = None,
                    fig_scale: float = 1,
                    colorbar_label: str = "Transfer kernel amplitude",
                    axis_border_color: str = "black",
-                   imshow_args: Optional[dict] = None) -> mpl.figure.Figure:
-    """
-    Utility to compute and visualize transfer kernels.
+                   imshow_args: dict | None = None) -> mpl.figure.Figure:
+    """Compute and visualize transfer kernels.
 
     Accepts an `ArrayCorrector`, which contains the estimated PSFs across the
     image. These PSFs, and the target PSF, will be used to compute each
@@ -303,6 +303,7 @@ def visualize_transfer_kernels(psfs: ArrayCorrector,
     -------
     fig : matplotlib.figure.Figure
         The generated figure
+
     """
     imshow_args = {} if imshow_args is None else imshow_args
 

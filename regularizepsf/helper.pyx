@@ -8,16 +8,10 @@ ctypedef np.float_t DTYPE_t
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef _correct_image(np.ndarray[double, ndim=2] image,
-                     np.ndarray[complex, ndim=2] target_fft,
-                     np.ndarray[long, ndim=1] x,
-                     np.ndarray[long, ndim=1] y,
-                     np.ndarray[complex, ndim=3] values_fft,
-                     float alpha,
-                     float epsilon):
+cpdef _correct_image(image, source_fft, target_fft, x, y, alpha, epsilon):
     """Core Cython code to actually correct an image"""
     cdef int num_evaluations = x.shape[0]
-    cdef int size = values_fft.shape[1]
+    cdef int size = source_fft.shape[1]
     cdef int i = 0, j=0, xx = 0, yy = 0
     cdef int this_x, this_y, this_x_prime, this_y_prime
     cdef np.ndarray[np.float_t, ndim=2] img_i = np.empty((size, size), dtype=float)
@@ -52,8 +46,8 @@ cpdef _correct_image(np.ndarray[double, ndim=2] image,
         for xx in range(size):
             for yy in range(size):
                 psf_i_hat_norm[xx, yy] = _regularize_value(
-                        values_fft[i, xx, yy], alpha, epsilon, target_fft[xx, yy])
-                temp[xx, yy] = img_i_hat[xx, yy] * psf_i_hat_norm[xx, yy] * target_fft[xx, yy]
+                        source_fft[i, xx, yy], alpha, epsilon, target_fft[i, xx, yy])
+                temp[xx, yy] = img_i_hat[xx, yy] * psf_i_hat_norm[xx, yy] * target_fft[i, xx, yy]
         corrected_i = np.real(ifft2(temp))
 
         # add the corrected_i to the array
@@ -99,13 +93,22 @@ cpdef _regularize_array(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef _precalculate_ffts(np.ndarray[DTYPE_t, ndim=2] target_evaluation, np.ndarray[DTYPE_t, ndim=3] values):
+cpdef _precalculate_ffts(np.ndarray[DTYPE_t, ndim=3] target_evaluation, np.ndarray[DTYPE_t, ndim=3] values):
     cdef int size = values.shape[1]
     cdef int num_patches = values.shape[0]
-    cdef np.ndarray[np.complex128_t, ndim=2] psf_target_hat = fft2(target_evaluation)
-    cdef np.ndarray[np.complex128_t, ndim=3] psf_i_hat = np.empty((num_patches, size, size), dtype=complex)
-    cdef np.ndarray[np.float_t, ndim=2] holder = np.empty((size, size), dtype=float)
 
+    cdef np.ndarray[np.complex128_t, ndim=3] psf_target_hat = np.empty((num_patches, size, size), dtype=complex)
+    cdef np.ndarray[np.float_t, ndim=2] holder = np.empty((size, size), dtype=float)
+    for patch_i in range(num_patches):
+        for xx in range(size):
+            for yy in range(size):
+                holder[xx, yy] = target_evaluation[patch_i, xx, yy]
+        result = fft2(holder)
+        for xx in range(size):
+            for yy in range(size):
+                psf_target_hat[patch_i, xx, yy] = result[xx, yy]
+
+    cdef np.ndarray[np.complex128_t, ndim=3] psf_i_hat = np.empty((num_patches, size, size), dtype=complex)
     for patch_i in range(num_patches):
         for xx in range(size):
             for yy in range(size):

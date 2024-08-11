@@ -2,19 +2,22 @@ from __future__ import annotations
 
 import abc
 import inspect
-from typing import Any, Dict, List, Callable, cast
-from numbers import Real
+from typing import TYPE_CHECKING, Any, cast
 from functools import partial
 
-import numpy as np
-
 from regularizepsf.exceptions import PSFParameterValidationError, VariedPSFParameterMismatchError
+
+if TYPE_CHECKING:
+    from numbers import Real
+    from collections.abc import Callable
+
+    import numpy as np
 
 
 class PointSpreadFunctionABC(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __call__(self, x: Real | np.ndarary, y: Real | np.ndarray) -> Real | np.ndarray:
-        """Evaluation of the point spread function
+        """Evaluation of the point spread function.
 
         Parameters
         ----------
@@ -27,25 +30,27 @@ class PointSpreadFunctionABC(metaclass=abc.ABCMeta):
         -------
         real number or `np.ndarray`
             the value of the point spread function at (x,y)
+
         """
 
     @property
     @abc.abstractmethod
-    def parameters(self) -> List:
+    def parameters(self) -> list:
         """Varying parameters of the model."""
 
 
 class SimplePSF(PointSpreadFunctionABC):
-    """Model for a simple PSF"""
+    """Model for a simple PSF."""
 
     def __init__(self, function: Callable) -> None:
-        """Creates a PSF object
+        """Creates a PSF object.
 
         Parameters
         ----------
         function
             Python function representing the PSF,
                 first two parameters must be x and y and must return an numpy array
+
         """
         self._f: Callable = function
         self._signature: inspect.Signature = inspect.signature(function)
@@ -68,7 +73,7 @@ class SimplePSF(PointSpreadFunctionABC):
     def __call__(self,
                  x: Real | np.ndarray,
                  y: Real | np.ndarray,
-                 **kwargs: Dict[str, Any]) -> Real | np.ndarray:
+                 **kwargs: dict[str, Any]) -> Real | np.ndarray:
         return self._f(x, y, **kwargs)
 
     @property
@@ -76,15 +81,16 @@ class SimplePSF(PointSpreadFunctionABC):
         return self._parameters
 
 
-def simple_psf(arg: Any=None) -> SimplePSF:
+def simple_psf(arg: Any = None) -> SimplePSF:
     if callable(arg):
         return SimplePSF(arg)
     else:
-        raise TypeError("psf decorator must have no arguments.")
+        msg = "psf decorator must have no arguments."
+        raise TypeError(msg)
 
 
 class VariedPSF(PointSpreadFunctionABC):
-    """Model for a PSF that varies over the field of view"""
+    """Model for a PSF that varies over the field of view."""
 
     def __init__(self,
                  vary_function: Callable,
@@ -131,13 +137,14 @@ class VariedPSF(PointSpreadFunctionABC):
         return self._base_psf(x, y, **variance)
 
     @property
-    def parameters(self) -> List:
+    def parameters(self) -> list:
         return self._base_psf.parameters
 
 
 def _varied_psf(base_psf: SimplePSF) -> VariedPSF:
     if base_psf is None:
-        raise TypeError("A base_psf must be provided to the varied_psf decorator.")
+        msg = "A base_psf must be provided to the varied_psf decorator."
+        raise TypeError(msg)
 
     def inner(__fn: Callable=None, *, check_at_call: bool = True) -> Callable:  # noqa: RUF013
         if __fn:
@@ -151,10 +158,15 @@ def _varied_psf(base_psf: SimplePSF) -> VariedPSF:
 def varied_psf(base_psf: SimplePSF = None) -> VariedPSF:
     if isinstance(base_psf, SimplePSF):
         return cast(VariedPSF, _varied_psf(base_psf))
+    elif callable(base_psf):
+        msg = (
+            "varied_psf decorator must be called"
+                        "with an argument for the base_psf."
+        )
+        raise TypeError(msg)
     else:
-        if callable(base_psf):
-            raise TypeError("varied_psf decorator must be called"
-                            "with an argument for the base_psf.")
-        else:
-            raise TypeError("varied_psf decorator expects exactly"
-                            "one argument of type PSF.")
+        msg = (
+            "varied_psf decorator expects exactly"
+                        "one argument of type PSF."
+        )
+        raise TypeError(msg)
