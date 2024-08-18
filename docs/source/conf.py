@@ -42,7 +42,7 @@ html_theme_options = {
             "url": "https://github.com/punch-mission/regularizepsf",
             "icon": "fa-brands fa-github",
             "type": "fontawesome",
-        }
+        },
     ],
     "show_nav_level": 1,
     "show_toc_level": 3,
@@ -57,4 +57,4 @@ html_context = {
 
 
 autoapi_dirs = ["../../regularizepsf"]
-autoapi_python_class_content = 'both'
+autoapi_python_class_content = "both"

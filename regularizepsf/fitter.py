@@ -2,26 +2,31 @@ from __future__ import annotations
 
 import abc
 import warnings
-from typing import Any, Dict, List, Tuple, Optional, Generator
-from numbers import Real
+from typing import TYPE_CHECKING, Any
 from collections import namedtuple
+from collections.abc import Generator
 
 import h5py
 import numpy as np
 import sep_pjw as sep
 from astropy.io import fits
 from lmfit import Parameters, minimize
-from lmfit.minimizer import MinimizerResult
 from scipy.interpolate import RectBivariateSpline
 from skimage.transform import downscale_local_mean
 
 from regularizepsf.corrector import ArrayCorrector, calculate_covering
 from regularizepsf.exceptions import InvalidSizeError
-from regularizepsf.psf import PointSpreadFunctionABC, SimplePSF
+
+if TYPE_CHECKING:
+    from numbers import Real
+
+    from lmfit.minimizer import MinimizerResult
+
+    from regularizepsf.psf import PointSpreadFunctionABC, SimplePSF
 
 
 class PatchCollectionABC(metaclass=abc.ABCMeta):
-    def __init__(self, patches: dict[Any, np.ndarray], counts: Optional[dict[Any, int]] = None) -> None:
+    def __init__(self, patches: dict[Any, np.ndarray], counts: dict[Any, int] | None = None) -> None:
         self.patches = patches
         self.counts = counts
         if patches:
@@ -41,7 +46,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
                 coordinates: list,
                 size: int) -> PatchCollectionABC:
         """Construct a PatchCollection from a set of images
-        using the specified coordinates and patch size
+        using the specified coordinates and patch size.
 
         Parameters
         ----------
@@ -57,10 +62,11 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         -------
         np.ndarray
             the square patches extracted into a PatchCollection
+
         """
 
     def __getitem__(self, identifier: Any) -> np.ndarray:
-        """Access a patch with square brackets
+        """Access a patch with square brackets.
 
         Parameters
         ----------
@@ -72,6 +78,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         -------
         np.ndarray
             a patch's data
+
         """
         if identifier in self.patches:
             return self.patches[identifier]
@@ -80,7 +87,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
             raise IndexError(msg)
 
     def __contains__(self, identifier: Any) -> bool:
-        """Determines if a patch is in the collection
+        """Determines if a patch is in the collection.
 
         Parameters
         ----------
@@ -93,14 +100,15 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         bool
             True if patch with specified identifier is in the collection,
                 False otherwise
+
         """
         return identifier in self.patches
 
     def add(self,
             identifier: Any,
             patch: np.ndarray,
-            count: Optional[int] = None) -> None:
-        """Add a new patch to the collection
+            count: int | None = None) -> None:
+        """Add a new patch to the collection.
 
         Parameters
         ----------
@@ -115,6 +123,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         Returns
         -------
         None
+
         """
         if identifier in self.patches:
             # TODO: improve warning
@@ -136,7 +145,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
                 size: int,
                 mode: str) -> PatchCollectionABC:
         """Construct a new PatchCollection where patches
-        lying inside a new grid are averaged together
+        lying inside a new grid are averaged together.
 
         Parameters
         ----------
@@ -153,15 +162,14 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         -------
         PatchCollectionABC
             a PatchCollection where data is sampled at the new grid
+
         """
 
     @abc.abstractmethod
     def fit(self,
             base_psf: SimplePSF,
             is_varied: bool = False) -> PointSpreadFunctionABC:
-        """
-
-        Parameters
+        """Parameters
         ----------
         base_psf
         is_varied
@@ -173,7 +181,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def save(self, path: str) -> None:
-        """Save the PatchCollection to a file
+        """Save the PatchCollection to a file.
 
         Parameters
         ----------
@@ -183,13 +191,14 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         Returns
         -------
         None
+
         """
 
 
     @classmethod
     @abc.abstractmethod
     def load(cls, path: str) -> PatchCollectionABC:
-        """Load a PatchCollection from a file
+        """Load a PatchCollection from a file.
 
         Parameters
         ----------
@@ -200,24 +209,25 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         -------
         PatchCollectionABC
             the new patch collection
+
         """
 
-    def keys(self) -> List:
-        """Gets identifiers for all patches"""
+    def keys(self) -> list:
+        """Get identifiers for all patches."""
         return self.patches.keys()
 
-    def values(self) -> List:
-        """Gets values of all patches"""
+    def values(self) -> list:
+        """Get values of all patches."""
         return self.patches.values()
 
-    def items(self) -> Dict:
-        """A dictionary like iterator over the patches"""
+    def items(self) -> dict:
+        """Get a dictionary like iterator over the patches."""
         return self.patches.items()
 
     def _fit_lmfit(self,
                    base_psf: SimplePSF,
                    initial_guesses: dict[str, Real]) -> dict[Any, MinimizerResult]:
-        """Fit a patch using lmfit
+        """Fit a patch using lmfit.
 
         Parameters
         ----------
@@ -230,6 +240,7 @@ class PatchCollectionABC(metaclass=abc.ABCMeta):
         -------
         dict
             keys are the identifiers, values are the `MinimizerResults` from lmfit
+
         """
         initial = Parameters()
         for parameter in base_psf.parameters:
@@ -251,8 +262,8 @@ CoordinateIdentifier = namedtuple("CoordinateIdentifier", "image_index, x, y")
 
 
 class CoordinatePatchCollection(PatchCollectionABC):
-    """A representation of a PatchCollection that operates
-    on pixel coordinates from a set of images"""
+    """A representation of a PatchCollection that operates on pixel coordinates from a set of images."""
+
     @classmethod
     def extract(cls, images: list[np.ndarray],
                 coordinates: list[CoordinateIdentifier],
@@ -280,10 +291,9 @@ class CoordinatePatchCollection(PatchCollectionABC):
                                average_mode: str = "median",
                                percentile: float = 10,
                                star_threshold: int = 3,
-                               star_mask: Optional[list[str] | np.ndarray | Generator] = None,
+                               star_mask: list[str] | np.ndarray | Generator | None = None,
                                hdu_choice: int=0) -> CoordinatePatchCollection:
-        """Loads a series of images, finds stars in each,
-            and builds a CoordinatePatchCollection with averaged stars
+        """Load a series of images, finds stars in each and build a CoordinatePatchCollection with averaged stars.
 
         Parameters
         ----------
@@ -325,28 +335,30 @@ class CoordinatePatchCollection(PatchCollectionABC):
             An averaged star model built from the provided images
 
         Notes
-        ------
+        -----
         Using an `interpolation_scale` other than 1
             for large images can dramatically slow down the execution.
+
         """
         if isinstance(images, Generator):
             data_iterator = images
         elif isinstance(images, np.ndarray):
             if len(images.shape) == 3:
                 def generator() -> np.ndarray:
-                    for image in images:
-                        yield image
+                    yield from images
                 data_iterator = generator()
             else:
-                raise ValueError("Image data array must be 3D")
-        elif isinstance(images, List) and isinstance(images[0], str):
+                msg = "Image data array must be 3D"
+                raise ValueError(msg)
+        elif isinstance(images, list) and isinstance(images[0], str):
             def generator() -> np.ndarray:
                 for image_path in images:
                     with fits.open(image_path) as hdul:
                         yield hdul[hdu_choice].data.astype(float)
             data_iterator = generator()
         else:
-            raise TypeError("Unsupported type for `images`")
+            msg = "Unsupported type for `images`"
+            raise TypeError(msg)
 
         if star_mask is None:
             def generator() -> None:
@@ -358,19 +370,20 @@ class CoordinatePatchCollection(PatchCollectionABC):
         elif isinstance(star_mask, np.ndarray):
             if len(star_mask.shape) == 3:
                 def generator() -> np.ndarray:
-                    for mask in star_mask:
-                        yield mask
+                    yield from star_mask
                 star_mask_iterator = generator()
             else:
-                raise ValueError("Star mask array must be 3D")
-        elif isinstance(star_mask, List) and isinstance(star_mask[0], str):
+                msg = "Star mask array must be 3D"
+                raise ValueError(msg)
+        elif isinstance(star_mask, list) and isinstance(star_mask[0], str):
             def generator() -> np.ndarray:
                 for mask_path in star_mask:
                     with fits.open(mask_path) as hdul:
                         yield hdul[hdu_choice].data.astype(bool)
             star_mask_iterator = generator()
         else:
-            raise ValueError("Unsupported type for `star_mask`")
+            msg = "Unsupported type for `star_mask`"
+            raise ValueError(msg)
 
         # the output collection to return
         this_collection = cls({})
@@ -380,7 +393,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
         image_shape = None
 
         # for each image do the magic
-        for i, (image, star_mask) in enumerate(zip(data_iterator, star_mask_iterator)):
+        for i, (image, star_mask) in enumerate(zip(data_iterator, star_mask_iterator, strict=False)):
             if image_shape is None:
                 image_shape = image.shape
             elif image.shape != image_shape:
@@ -411,7 +424,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
             coordinates = [CoordinateIdentifier(i,
                                                 int(round(y - psf_size * interpolation_scale / 2)),
                                                 int(round(x - psf_size * interpolation_scale / 2)))
-                           for x, y in zip(image_star_coords["x"], image_star_coords["y"])]
+                           for x, y in zip(image_star_coords["x"], image_star_coords["y"], strict=False)]
 
             # pad in case someone selects a region on the edge of the image
             padding_shape = ((psf_size * interpolation_scale, psf_size * interpolation_scale),
@@ -436,7 +449,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
                                            mode=average_mode, percentile=percentile)
 
         if interpolation_scale != 1:
-            for coordinate, _ in averaged.items():
+            for coordinate in averaged:
                 averaged.patches[coordinate] = downscale_local_mean(averaged.patches[coordinate],
                                                                     (interpolation_scale, interpolation_scale))
 
@@ -524,32 +537,40 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
     @staticmethod
     def _validate_average_mode(mode: str, percentile: float) -> None:
-        """Determine if the average_mode is a valid kind"""
+        """Determine if the average_mode is a valid kind."""
         valid_modes = ["median", "mean", "percentile"]
         if mode not in valid_modes:
             msg = f"Found a mode of {mode} but it must be in the list {valid_modes}."
             raise ValueError(msg)
         if mode == "percentile" and not (0 <= percentile <= 100):
-            raise ValueError("`percentile` must be between 0 and 100, inclusive")
+            msg = "`percentile` must be between 0 and 100, inclusive"
+            raise ValueError(msg)
 
-    def _calculate_pad_shape(self, size: int) -> Tuple[int, int]:
+    def _calculate_pad_shape(self, size: int) -> tuple[int, int]:
         pad_amount = size - self.size
         if pad_amount < 0:
-            raise InvalidSizeError(f"The average window size (found {size})"
+            msg = (
+                f"The average window size (found {size})"
                                    "must be larger than the existing patch size"
-                                   f"(found {self.size}).")
+                                   f"(found {self.size})."
+            )
+            raise InvalidSizeError(msg)
         if pad_amount % 2 != 0:
-            raise InvalidSizeError(f"The average window size (found {size})"
+            msg = (
+                f"The average window size (found {size})"
                                    "must be the same parity as the existing patch size"
-                                   f"(found {self.size}).")
+                                   f"(found {self.size})."
+            )
+            raise InvalidSizeError(msg)
         return ((pad_amount//2, pad_amount//2), (pad_amount//2, pad_amount//2))
 
     def fit(self, base_psf: SimplePSF,
             is_varied: bool = False) -> PointSpreadFunctionABC:
-        raise NotImplementedError("TODO")
+        msg = "TODO"
+        raise NotImplementedError(msg)
 
     def to_array_corrector(self, target_evaluation: np.array) -> ArrayCorrector:
-        """Converts a patch collection that has been averaged into an ArrayCorrector
+        """Convert a patch collection that has been averaged into an ArrayCorrector.
 
         Parameters
         ----------
@@ -560,6 +581,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
         -------
         ArrayCorrector
             An array corrector that can be used to correct PSFs
+
         """
         evaluation_dictionary = {}
         for identifier, patch in self.patches.items():
@@ -570,7 +592,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
         return ArrayCorrector(evaluation_dictionary, target_evaluation)
 
     def save(self, path: str) -> None:
-        """Save the CoordinatePatchCollection to a file
+        """Save the CoordinatePatchCollection to a file.
 
         Parameters
         ----------
@@ -580,6 +602,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
         Returns
         -------
         None
+
         """
         with h5py.File(path, "w") as f:
             patch_grp = f.create_group("patches")
@@ -588,7 +611,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
 
     @classmethod
     def load(cls, path: str) -> PatchCollectionABC:
-        """Load a PatchCollection from a file
+        """Load a PatchCollection from a file.
 
         Parameters
         ----------
@@ -599,6 +622,7 @@ class CoordinatePatchCollection(PatchCollectionABC):
         -------
         PatchCollectionABC
             the new patch collection
+
         """
         patches = {}
         with h5py.File(path, "r") as f:
