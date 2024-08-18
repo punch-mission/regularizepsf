@@ -38,6 +38,10 @@ class PointSpreadFunctionABC(metaclass=abc.ABCMeta):
     def parameters(self) -> list:
         """Varying parameters of the model."""
 
+    @abc.abstractmethod
+    def evaluate_at(self, x: int, y: int) -> SimplePSF:
+        """Evaluate a PSF at a given point, convert a varied PSF to a simple PSF."""
+
 
 class SimplePSF(PointSpreadFunctionABC):
     """Model for a simple PSF."""
@@ -79,6 +83,9 @@ class SimplePSF(PointSpreadFunctionABC):
     @property
     def parameters(self) -> set[str]:
         return self._parameters
+
+    def evaluate_at(self, x: int, y: int) -> SimplePSF:
+        return self
 
 
 def simple_psf(arg: Any = None) -> SimplePSF:
@@ -139,6 +146,10 @@ class VariedPSF(PointSpreadFunctionABC):
     @property
     def parameters(self) -> list:
         return self._base_psf.parameters
+
+    def evaluate_at(self, x: int, y: int) -> SimplePSF:
+        variance = self._vary_function(x, y)
+        return simple_psf(partial(self._base_psf._f, **variance))
 
 
 def _varied_psf(base_psf: SimplePSF) -> VariedPSF:
