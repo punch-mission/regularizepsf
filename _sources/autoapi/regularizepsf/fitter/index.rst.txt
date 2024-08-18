@@ -24,7 +24,7 @@ Classes
 Module Contents
 ---------------
 
-.. py:class:: PatchCollectionABC(patches: dict[Any, numpy.ndarray], counts: Optional[dict[Any, int]] = None)
+.. py:class:: PatchCollectionABC(patches: dict[Any, numpy.ndarray], counts: dict[Any, int] | None = None)
 
    .. py:attribute:: patches
 
@@ -42,7 +42,7 @@ Module Contents
 
 
       Construct a PatchCollection from a set of images
-      using the specified coordinates and patch size
+      using the specified coordinates and patch size.
 
       :param images: the images loaded
       :type images: list of np.ndarrays
@@ -60,7 +60,7 @@ Module Contents
 
    .. py:method:: __getitem__(identifier: Any) -> numpy.ndarray
 
-      Access a patch with square brackets
+      Access a patch with square brackets.
 
       :param identifier: identifier for a given patch, specifically implemented
                          for each PatchCollection
@@ -73,7 +73,7 @@ Module Contents
 
    .. py:method:: __contains__(identifier: Any) -> bool
 
-      Determines if a patch is in the collection
+      Determines if a patch is in the collection.
 
       :param identifier:
                          identifier for a given patch,
@@ -88,9 +88,9 @@ Module Contents
 
 
 
-   .. py:method:: add(identifier: Any, patch: numpy.ndarray, count: Optional[int] = None) -> None
+   .. py:method:: add(identifier: Any, patch: numpy.ndarray, count: int | None = None) -> None
 
-      Add a new patch to the collection
+      Add a new patch to the collection.
 
       :param identifier:
                          identifier for a given patch,
@@ -110,7 +110,7 @@ Module Contents
 
 
       Construct a new PatchCollection where patches
-      lying inside a new grid are averaged together
+      lying inside a new grid are averaged together.
 
       :param corners: an Nx2 `np.ndarray` of the lower left corners of the new patch grid
       :type corners: np.ndarray
@@ -139,7 +139,7 @@ Module Contents
       :abstractmethod:
 
 
-      Save the PatchCollection to a file
+      Save the PatchCollection to a file.
 
       :param path: where to save the patch collection
       :type path: str
@@ -154,7 +154,7 @@ Module Contents
       :abstractmethod:
 
 
-      Load a PatchCollection from a file
+      Load a PatchCollection from a file.
 
       :param path: file path to load from
       :type path: str
@@ -164,27 +164,27 @@ Module Contents
 
 
 
-   .. py:method:: keys() -> List
+   .. py:method:: keys() -> list
 
-      Gets identifiers for all patches
-
-
-
-   .. py:method:: values() -> List
-
-      Gets values of all patches
+      Get identifiers for all patches.
 
 
 
-   .. py:method:: items() -> Dict
+   .. py:method:: values() -> list
 
-      A dictionary like iterator over the patches
+      Get values of all patches.
+
+
+
+   .. py:method:: items() -> dict
+
+      Get a dictionary like iterator over the patches.
 
 
 
    .. py:method:: _fit_lmfit(base_psf: regularizepsf.psf.SimplePSF, initial_guesses: dict[str, numbers.Real]) -> dict[Any, lmfit.minimizer.MinimizerResult]
 
-      Fit a patch using lmfit
+      Fit a patch using lmfit.
 
       :param base_psf: the PSF model to use in fitting
       :type base_psf: SimplePSF
@@ -198,13 +198,12 @@ Module Contents
 
 .. py:data:: CoordinateIdentifier
 
-.. py:class:: CoordinatePatchCollection(patches: dict[Any, numpy.ndarray], counts: Optional[dict[Any, int]] = None)
+.. py:class:: CoordinatePatchCollection(patches: dict[Any, numpy.ndarray], counts: dict[Any, int] | None = None)
 
    Bases: :py:obj:`PatchCollectionABC`
 
 
-   A representation of a PatchCollection that operates
-   on pixel coordinates from a set of images
+   A representation of a PatchCollection that operates on pixel coordinates from a set of images.
 
 
    .. py:method:: extract(images: list[numpy.ndarray], coordinates: list[CoordinateIdentifier], size: int) -> PatchCollectionABC
@@ -212,7 +211,7 @@ Module Contents
 
 
       Construct a PatchCollection from a set of images
-      using the specified coordinates and patch size
+      using the specified coordinates and patch size.
 
       :param images: the images loaded
       :type images: list of np.ndarrays
@@ -228,12 +227,11 @@ Module Contents
 
 
 
-   .. py:method:: find_stars_and_average(images: list[str] | numpy.ndarray | Generator, psf_size: int, patch_size: int, interpolation_scale: int = 1, average_mode: str = 'median', percentile: float = 10, star_threshold: int = 3, star_mask: Optional[list[str] | numpy.ndarray | Generator] = None, hdu_choice: int = 0) -> CoordinatePatchCollection
+   .. py:method:: find_stars_and_average(images: list[str] | numpy.ndarray | collections.abc.Generator, psf_size: int, patch_size: int, interpolation_scale: int = 1, average_mode: str = 'median', percentile: float = 10, star_threshold: int = 3, star_mask: list[str] | numpy.ndarray | collections.abc.Generator | None = None, hdu_choice: int = 0) -> CoordinatePatchCollection
       :classmethod:
 
 
-      Loads a series of images, finds stars in each,
-          and builds a CoordinatePatchCollection with averaged stars
+      Load a series of images, finds stars in each and build a CoordinatePatchCollection with averaged stars.
 
       :param images: The images to be processed. Can be a list of FITS filenames, a
                      numpy array of shape (n_images, ny, nx), or a Generator that yields
@@ -283,7 +281,7 @@ Module Contents
    .. py:method:: average(corners: numpy.ndarray, patch_size: int, psf_size: int, mode: str = 'median', percentile: float = 10) -> PatchCollectionABC
 
       Construct a new PatchCollection where patches
-      lying inside a new grid are averaged together
+      lying inside a new grid are averaged together.
 
       :param corners: an Nx2 `np.ndarray` of the lower left corners of the new patch grid
       :type corners: np.ndarray
@@ -303,16 +301,14 @@ Module Contents
       :staticmethod:
 
 
-      Determine if the average_mode is a valid kind
+      Determine if the average_mode is a valid kind.
 
 
 
-   .. py:method:: _calculate_pad_shape(size: int) -> Tuple[int, int]
+   .. py:method:: _calculate_pad_shape(size: int) -> tuple[int, int]
 
 
    .. py:method:: fit(base_psf: regularizepsf.psf.SimplePSF, is_varied: bool = False) -> regularizepsf.psf.PointSpreadFunctionABC
-      :abstractmethod:
-
 
       :param base_psf:
       :param is_varied:
@@ -321,7 +317,7 @@ Module Contents
 
    .. py:method:: to_array_corrector(target_evaluation: numpy.array) -> regularizepsf.corrector.ArrayCorrector
 
-      Converts a patch collection that has been averaged into an ArrayCorrector
+      Convert a patch collection that has been averaged into an ArrayCorrector.
 
       :param target_evaluation: the evaluation of the Target PSF
       :type target_evaluation: np.ndarray
@@ -333,7 +329,7 @@ Module Contents
 
    .. py:method:: save(path: str) -> None
 
-      Save the CoordinatePatchCollection to a file
+      Save the CoordinatePatchCollection to a file.
 
       :param path: where to save the patch collection
       :type path: str
@@ -346,7 +342,7 @@ Module Contents
       :classmethod:
 
 
-      Load a PatchCollection from a file
+      Load a PatchCollection from a file.
 
       :param path: file path to load from
       :type path: str

@@ -46,7 +46,7 @@ Module Contents
       :abstractmethod:
 
 
-      Loads a model from the path
+      Loads a model from the path.
 
       :param path: where to load the model from, suggested extension is ".psf"
       :type path: str or `pathlib.Path`
@@ -57,7 +57,7 @@ Module Contents
       :abstractmethod:
 
 
-      PSF correct an image according to the model
+      PSF correct an image according to the model.
 
       :param image: image to be corrected
       :type image: 2D float np.ndarray
@@ -79,7 +79,7 @@ Module Contents
       :abstractmethod:
 
 
-      Simulates on a star field what an observation using this PSF looks like
+      Simulates on a star field what an observation using this PSF looks like.
 
       :param image: image of point source stars to simluate PSF for
       :type image: 2D float np.ndarray
@@ -89,7 +89,7 @@ Module Contents
 
 
 
-.. py:class:: FunctionalCorrector(psf: regularizepsf.psf.PointSpreadFunctionABC, target_model: regularizepsf.psf.SimplePSF | None)
+.. py:class:: FunctionalCorrector(psf: regularizepsf.psf.PointSpreadFunctionABC, target_model: regularizepsf.psf.PointSpreadFunctionABC | None)
 
    Bases: :py:obj:`CorrectorABC`
 
@@ -98,7 +98,7 @@ Module Contents
    For the actual correction, the functions must first
    be evaluated to an ArrayCorrector.
 
-   Initialize a FunctionalCorrector
+   Initialize a FunctionalCorrector.
 
    :param psf: the model describing the psf for each patch of the image
    :type psf: SimplePSF or VariedPSF
@@ -132,7 +132,7 @@ Module Contents
 
    .. py:method:: evaluate_to_array_form(x: numpy.ndarray, y: numpy.ndarray, size: int) -> ArrayCorrector
 
-      Evaluates a FunctionalCorrector to an ArrayCorrector
+      Evaluates a FunctionalCorrector to an ArrayCorrector.
 
       :param x: the first dimension coordinates to evaluate over
       :type x: np.ndarray
@@ -148,7 +148,7 @@ Module Contents
 
    .. py:method:: correct_image(image: numpy.ndarray, size: int, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
 
-      PSF correct an image according to the model
+      PSF correct an image according to the model.
 
       :param image: image to be corrected
       :type image: 2D float np.ndarray
@@ -167,8 +167,6 @@ Module Contents
 
 
    .. py:method:: save(path: str) -> None
-      :abstractmethod:
-
 
       Save the model to a file.
 
@@ -182,10 +180,8 @@ Module Contents
    .. py:method:: load(path: str) -> FunctionalCorrector
       :classmethod:
 
-      :abstractmethod:
 
-
-      Loads a model from the path
+      Loads a model from the path.
 
       :param path: where to load the model from, suggested extension is ".psf"
       :type path: str or `pathlib.Path`
@@ -194,7 +190,7 @@ Module Contents
 
    .. py:method:: simulate_observation(image: numpy.ndarray, size: int) -> numpy.ndarray
 
-      Simulates on a star field what an observation using this PSF looks like
+      Simulates on a star field what an observation using this PSF looks like.
 
       :param image: image of point source stars to simluate PSF for
       :type image: 2D float np.ndarray
@@ -206,15 +202,14 @@ Module Contents
 
 
 
-.. py:class:: ArrayCorrector(evaluations: dict[Any, numpy.ndarray], target_evaluation: numpy.ndarray)
+.. py:class:: ArrayCorrector(evaluations: dict[Any, numpy.ndarray], target_evaluations: numpy.ndarray | dict[Any, numpy.ndarray])
 
    Bases: :py:obj:`CorrectorABC`
 
 
-   A PSF corrector that is evaluated as array patches
+   A PSF corrector that is evaluated as array patches.
 
-
-   Initialize an ArrayCorrector
+   Initialize an ArrayCorrector.
 
    :param evaluations:
                        evaluated version of the PSF as they vary over the image,
@@ -222,8 +217,8 @@ Module Contents
                            pixel of each patch. values should be the `np.ndarray`
                            that corresponds to that patch
    :type evaluations: dict
-   :param target_evaluation: evaluated version of the target PSF
-   :type target_evaluation: np.ndarray
+   :param target_evaluations: evaluated version of the target PSF
+   :type target_evaluations: np.ndarray
 
 
    .. py:attribute:: _evaluation_points
@@ -237,13 +232,19 @@ Module Contents
       :type:  dict[Any, numpy.ndarray]
 
 
-   .. py:attribute:: _target_evaluation
+   .. py:attribute:: _target_evaluations
 
 
    .. py:attribute:: normalized_values
 
 
    .. py:attribute:: normalized_target
+
+
+   .. py:attribute:: psf_i_fft
+
+
+   .. py:attribute:: target_fft
 
 
    .. py:property:: evaluations
@@ -256,9 +257,9 @@ Module Contents
 
 
 
-   .. py:method:: correct_image(image: numpy.ndarray, size: Optional[int] = None, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
+   .. py:method:: correct_image(image: numpy.ndarray, size: int | None = None, alpha: float = 0.5, epsilon: float = 0.05) -> numpy.ndarray
 
-      PSF correct an image according to the model
+      PSF correct an image according to the model.
 
       :param image: image to be corrected
       :type image: 2D float np.ndarray
@@ -276,7 +277,7 @@ Module Contents
 
 
 
-   .. py:method:: __getitem__(xy: Tuple[int, int]) -> numpy.ndarray
+   .. py:method:: __getitem__(xy: tuple[int, int]) -> numpy.ndarray
 
 
    .. py:method:: save(path: str) -> None
@@ -294,7 +295,7 @@ Module Contents
       :classmethod:
 
 
-      Loads a model from the path
+      Loads a model from the path.
 
       :param path: where to load the model from, suggested extension is ".psf"
       :type path: str or `pathlib.Path`
@@ -303,7 +304,7 @@ Module Contents
 
    .. py:method:: simulate_observation(image: numpy.ndarray) -> numpy.ndarray
 
-      Simulates on a star field what an observation using this PSF looks like
+      Simulates on a star field what an observation using this PSF looks like.
 
       :param image: image of point source stars to simluate PSF for
       :type image: 2D float np.ndarray

@@ -466,7 +466,7 @@ document.write(`
 <td><p>A version of the PSF corrector that stores the model as a set of functions.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#regularizepsf.corrector.ArrayCorrector" title="regularizepsf.corrector.ArrayCorrector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayCorrector</span></code></a></p></td>
-<td><p>A PSF corrector that is evaluated as array patches</p></td>
+<td><p>A PSF corrector that is evaluated as array patches.</p></td>
 </tr>
 </tbody>
 </table>
@@ -509,7 +509,7 @@ document.write(`
 <dt class="field-odd">Abstractmethod<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
-<p>Loads a model from the path</p>
+<p>Loads a model from the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path</strong> (str or <cite>pathlib.Path</cite>) – where to load the model from, suggested extension is “.psf”</p>
@@ -520,7 +520,7 @@ document.write(`
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.CorrectorABC.correct_image">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">correct_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.CorrectorABC.correct_image" title="Link to this definition">#</a></dt>
-<dd><p>PSF correct an image according to the model</p>
+<dd><p>PSF correct an image according to the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -544,7 +544,7 @@ to attenuation, see notes</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.CorrectorABC.simulate_observation">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simulate_observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.CorrectorABC.simulate_observation" title="Link to this definition">#</a></dt>
-<dd><p>Simulates on a star field what an observation using this PSF looks like</p>
+<dd><p>Simulates on a star field what an observation using this PSF looks like.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>image</strong> (<em>2D float np.ndarray</em>) – image of point source stars to simluate PSF for</p>
@@ -562,12 +562,12 @@ to attenuation, see notes</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">FunctionalCorrector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../psf/index.html#regularizepsf.psf.PointSpreadFunctionABC" title="regularizepsf.psf.PointSpreadFunctionABC"><span class="pre">regularizepsf.psf.PointSpreadFunctionABC</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../psf/index.html#regularizepsf.psf.SimplePSF" title="regularizepsf.psf.SimplePSF"><span class="pre">regularizepsf.psf.SimplePSF</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">FunctionalCorrector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../psf/index.html#regularizepsf.psf.PointSpreadFunctionABC" title="regularizepsf.psf.PointSpreadFunctionABC"><span class="pre">regularizepsf.psf.PointSpreadFunctionABC</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../psf/index.html#regularizepsf.psf.PointSpreadFunctionABC" title="regularizepsf.psf.PointSpreadFunctionABC"><span class="pre">regularizepsf.psf.PointSpreadFunctionABC</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#regularizepsf.corrector.CorrectorABC" title="regularizepsf.corrector.CorrectorABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CorrectorABC</span></code></a></p>
 <p>A version of the PSF corrector that stores the model as a set of functions.
 For the actual correction, the functions must first
 be evaluated to an ArrayCorrector.</p>
-<p>Initialize a FunctionalCorrector</p>
+<p>Initialize a FunctionalCorrector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -608,7 +608,7 @@ be evaluated to an ArrayCorrector.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector.evaluate_to_array_form">
 <span class="sig-name descname"><span class="pre">evaluate_to_array_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#regularizepsf.corrector.ArrayCorrector" title="regularizepsf.corrector.ArrayCorrector"><span class="pre">ArrayCorrector</span></a></span></span><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector.evaluate_to_array_form" title="Link to this definition">#</a></dt>
-<dd><p>Evaluates a FunctionalCorrector to an ArrayCorrector</p>
+<dd><p>Evaluates a FunctionalCorrector to an ArrayCorrector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -629,7 +629,7 @@ be evaluated to an ArrayCorrector.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector.correct_image">
 <span class="sig-name descname"><span class="pre">correct_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector.correct_image" title="Link to this definition">#</a></dt>
-<dd><p>PSF correct an image according to the model</p>
+<dd><p>PSF correct an image according to the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -652,7 +652,7 @@ to attenuation, see notes</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector.save">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector.save" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector.save" title="Link to this definition">#</a></dt>
 <dd><p>Save the model to a file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -667,11 +667,7 @@ to attenuation, see notes</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector.load">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#regularizepsf.corrector.FunctionalCorrector" title="regularizepsf.corrector.FunctionalCorrector"><span class="pre">FunctionalCorrector</span></a></span></span><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector.load" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Abstractmethod<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>Loads a model from the path</p>
+<dd><p>Loads a model from the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path</strong> (str or <cite>pathlib.Path</cite>) – where to load the model from, suggested extension is “.psf”</p>
@@ -682,7 +678,7 @@ to attenuation, see notes</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.FunctionalCorrector.simulate_observation">
 <span class="sig-name descname"><span class="pre">simulate_observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.FunctionalCorrector.simulate_observation" title="Link to this definition">#</a></dt>
-<dd><p>Simulates on a star field what an observation using this PSF looks like</p>
+<dd><p>Simulates on a star field what an observation using this PSF looks like.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -703,10 +699,10 @@ to attenuation, see notes</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">ArrayCorrector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_evaluation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regularizepsf.corrector.</span></span><span class="sig-name descname"><span class="pre">ArrayCorrector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_evaluations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#regularizepsf.corrector.CorrectorABC" title="regularizepsf.corrector.CorrectorABC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CorrectorABC</span></code></a></p>
-<p>A PSF corrector that is evaluated as array patches</p>
-<p>Initialize an ArrayCorrector</p>
+<p>A PSF corrector that is evaluated as array patches.</p>
+<p>Initialize an ArrayCorrector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -717,7 +713,7 @@ that corresponds to that patch</p>
 </dd>
 </dl>
 </p></li>
-<li><p><strong>target_evaluation</strong> (<em>np.ndarray</em>) – evaluated version of the target PSF</p></li>
+<li><p><strong>target_evaluations</strong> (<em>np.ndarray</em>) – evaluated version of the target PSF</p></li>
 </ul>
 </dd>
 </dl>
@@ -737,8 +733,8 @@ that corresponds to that patch</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector._target_evaluation">
-<span class="sig-name descname"><span class="pre">_target_evaluation</span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector._target_evaluation" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector._target_evaluations">
+<span class="sig-name descname"><span class="pre">_target_evaluations</span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector._target_evaluations" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -749,6 +745,16 @@ that corresponds to that patch</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.normalized_target">
 <span class="sig-name descname"><span class="pre">normalized_target</span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.normalized_target" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.psf_i_fft">
+<span class="sig-name descname"><span class="pre">psf_i_fft</span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.psf_i_fft" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.target_fft">
+<span class="sig-name descname"><span class="pre">target_fft</span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.target_fft" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -764,7 +770,7 @@ that corresponds to that patch</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.correct_image">
 <span class="sig-name descname"><span class="pre">correct_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.correct_image" title="Link to this definition">#</a></dt>
-<dd><p>PSF correct an image according to the model</p>
+<dd><p>PSF correct an image according to the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -787,7 +793,7 @@ to attenuation, see notes</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.__getitem__">
-<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.__getitem__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.__getitem__" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -807,7 +813,7 @@ to attenuation, see notes</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.load">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#regularizepsf.corrector.ArrayCorrector" title="regularizepsf.corrector.ArrayCorrector"><span class="pre">ArrayCorrector</span></a></span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.load" title="Link to this definition">#</a></dt>
-<dd><p>Loads a model from the path</p>
+<dd><p>Loads a model from the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path</strong> (str or <cite>pathlib.Path</cite>) – where to load the model from, suggested extension is “.psf”</p>
@@ -818,7 +824,7 @@ to attenuation, see notes</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="regularizepsf.corrector.ArrayCorrector.simulate_observation">
 <span class="sig-name descname"><span class="pre">simulate_observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#regularizepsf.corrector.ArrayCorrector.simulate_observation" title="Link to this definition">#</a></dt>
-<dd><p>Simulates on a star field what an observation using this PSF looks like</p>
+<dd><p>Simulates on a star field what an observation using this PSF looks like.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>image</strong> (<em>2D float np.ndarray</em>) – image of point source stars to simluate PSF for</p>
@@ -930,9 +936,11 @@ are the x coordinate and return[:, 1] are the y coordinates</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector._evaluation_points"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector._evaluation_points</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector._size"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector._size</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector._evaluations"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector._evaluations</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector._target_evaluation"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector._target_evaluation</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector._target_evaluations"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector._target_evaluations</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.normalized_values"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.normalized_values</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.normalized_target"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.normalized_target</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.psf_i_fft"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.psf_i_fft</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.target_fft"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.target_fft</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.evaluations"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.evaluations</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.evaluation_points"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.evaluation_points</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#regularizepsf.corrector.ArrayCorrector.correct_image"><code class="docutils literal notranslate"><span class="pre">ArrayCorrector.correct_image()</span></code></a></li>

@@ -3,6 +3,11 @@ regularizepsf.visualize
 
 .. py:module:: regularizepsf.visualize
 
+.. autoapi-nested-parse::
+
+   Visualization tools for PSFs.
+
+
 
 Attributes
 ----------
@@ -26,9 +31,9 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: visualize_patch_counts(patch_collection: regularizepsf.fitter.PatchCollectionABC, ax: Optional[matplotlib.axes.Axes] = None, label_pixel_bounds: bool = False) -> matplotlib.axes.Axes
+.. py:function:: visualize_patch_counts(patch_collection: regularizepsf.fitter.PatchCollectionABC, ax: matplotlib.axes.Axes | None = None, label_pixel_bounds: bool = False) -> matplotlib.axes.Axes
 
-   Utility to visualize the number of stars identified within each patch
+   Visualize the number of stars identified within each patch.
 
    :param patch_collection: A patch collection, such as that returned by
                             `CoordinatePatchCollection.find_stars_and_average`.
@@ -45,9 +50,9 @@ Module Contents
 
 .. py:data:: _colormap
 
-.. py:function:: visualize_PSFs(psfs: regularizepsf.corrector.ArrayCorrector, corrected: Optional[regularizepsf.fitter.PatchCollectionABC] = None, all_patches: bool = False, region_size: int = 0, label_pixel_bounds: bool = False, fig: Optional[matplotlib.figure.Figure] = None, fig_scale: float = 1, colorbar_label: str = 'Normalized brightness', axis_border_color: str = 'white', imshow_args: Optional[dict] = None) -> matplotlib.figure.Figure
+.. py:function:: visualize_PSFs(psfs: regularizepsf.corrector.ArrayCorrector, corrected: regularizepsf.fitter.PatchCollectionABC | None = None, all_patches: bool = False, region_size: int = 0, label_pixel_bounds: bool = False, fig: matplotlib.figure.Figure | None = None, fig_scale: float = 1, colorbar_label: str = 'Normalized brightness', axis_border_color: str = 'white', imshow_args: dict | None = None) -> matplotlib.figure.Figure
 
-   Utility to visualize estimated PSFs.
+   Visualize estimated PSFs.
 
    Accepts an `ArrayCorrector`, which contains the estimated PSFs across the
    image.
@@ -92,9 +97,9 @@ Module Contents
    :rtype: matplotlib.figure.Figure
 
 
-.. py:function:: visualize_transfer_kernels(psfs: regularizepsf.corrector.ArrayCorrector, alpha: float, epsilon: float, all_patches: bool = False, region_size: int = 0, label_pixel_bounds: bool = False, fig: Optional[matplotlib.figure.Figure] = None, fig_scale: float = 1, colorbar_label: str = 'Transfer kernel amplitude', axis_border_color: str = 'black', imshow_args: Optional[dict] = None) -> matplotlib.figure.Figure
+.. py:function:: visualize_transfer_kernels(psfs: regularizepsf.corrector.ArrayCorrector, alpha: float, epsilon: float, all_patches: bool = False, region_size: int = 0, label_pixel_bounds: bool = False, fig: matplotlib.figure.Figure | None = None, fig_scale: float = 1, colorbar_label: str = 'Transfer kernel amplitude', axis_border_color: str = 'black', imshow_args: dict | None = None) -> matplotlib.figure.Figure
 
-   Utility to compute and visualize transfer kernels.
+   Compute and visualize transfer kernels.
 
    Accepts an `ArrayCorrector`, which contains the estimated PSFs across the
    image. These PSFs, and the target PSF, will be used to compute each
