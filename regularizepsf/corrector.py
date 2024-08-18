@@ -95,7 +95,7 @@ class FunctionalCorrector(CorrectorABC):
     """
 
     def __init__(self, psf: PointSpreadFunctionABC,
-                 target_model: SimplePSF | None) -> None:
+                 target_model: PointSpreadFunctionABC | None) -> None:
         """Initialize a FunctionalCorrector.
 
         Parameters
@@ -146,25 +146,26 @@ class FunctionalCorrector(CorrectorABC):
             msg = f"size must be even. Found size={size}."
             raise InvalidSizeError(msg)
 
-        image_x, image_y = np.meshgrid(np.arange(size), np.arange(size))
-        evaluations = {}
+        psf_x, psf_y = np.meshgrid(np.arange(size), np.arange(size))
+        source_evaluations = {}
         for xx in x:
             for yy in y:
-                evaluations[(xx, yy)] = self._psf(image_x, image_y)
+                source_evaluations[(xx, yy)] = self._psf.evaluate_at(xx, yy)(psf_x, psf_y)
 
-        # target_evaluation = self._target_model(image_x, image_y) if self._target_model else np.ones((size, size))
-        target_evaluation = {}
+        target_evaluations = {}
         for xx in x:
             for yy in y:
-                target_evaluation[(xx, yy)] = self._target_model(image_x, image_y) if self._target_model else np.ones((size, size))
-        return ArrayCorrector(evaluations, target_evaluation)
+                target_evaluations[(xx, yy)] = self._target_model.evaluate_at(xx, yy)(psf_x, psf_y) \
+                   if self._target_model else np.ones((size, size))
+
+        return ArrayCorrector(source_evaluations, target_evaluations)
 
     def correct_image(self, image: np.ndarray, size: int,
                       alpha: float = 0.5, epsilon: float = 0.05) -> np.ndarray:
         corners = calculate_covering(image.shape, size)
         array_corrector = self.evaluate_to_array_form(corners[:, 0],
                                                       corners[:, 1], size)
-        return array_corrector.correct_image(image,
+        return array_corrector.correct_image(image.astype(float),
                                              size=size,
                                              alpha=alpha,
                                              epsilon=epsilon)
@@ -281,7 +282,7 @@ class ArrayCorrector(CorrectorABC):
         x = np.array([x for x, _ in self._evaluations], dtype=int)
         y = np.array([y for _, y in self._evaluations], dtype=int)
 
-        return _correct_image(image, self.psf_i_fft, self.target_fft, x, y, alpha, epsilon)
+        return _correct_image(image.astype(float), self.psf_i_fft, self.target_fft, x, y, alpha, epsilon)
 
     def __getitem__(self, xy: tuple[int, int]) -> np.ndarray:
         if xy in self._evaluation_points:
