@@ -1,53 +1,29 @@
+"""Representations of point spread functions."""
+
 from __future__ import annotations
 
-import abc
 import inspect
 from typing import TYPE_CHECKING, Any, cast
 from functools import partial
 
-from regularizepsf.exceptions import PSFParameterValidationError, VariedPSFParameterMismatchError
+import h5py
+import numpy as np
+import scipy.fft
+
+from regularizepsf.exceptions import IncorrectShapeError, InvalidCoordinateError, InvalidFunctionError
+from regularizepsf.util import IndexedCube
 
 if TYPE_CHECKING:
+    import pathlib
     from numbers import Real
     from collections.abc import Callable
 
-    import numpy as np
 
-
-class PointSpreadFunctionABC(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def __call__(self, x: Real | np.ndarary, y: Real | np.ndarray) -> Real | np.ndarray:
-        """Evaluation of the point spread function.
-
-        Parameters
-        ----------
-        x : real number or `np.ndarray`
-            first dimension coordinate to evaluate at
-        y : real number or `np.ndarray`
-            second dimension coordinate to evaluate at
-
-        Returns
-        -------
-        real number or `np.ndarray`
-            the value of the point spread function at (x,y)
-
-        """
-
-    @property
-    @abc.abstractmethod
-    def parameters(self) -> list:
-        """Varying parameters of the model."""
-
-    @abc.abstractmethod
-    def evaluate_at(self, x: int, y: int) -> SimplePSF:
-        """Evaluate a PSF at a given point, convert a varied PSF to a simple PSF."""
-
-
-class SimplePSF(PointSpreadFunctionABC):
+class SimpleFunctionalPSF:
     """Model for a simple PSF."""
 
     def __init__(self, function: Callable) -> None:
-        """Creates a PSF object.
+        """Create a PSF object.
 
         Parameters
         ----------
@@ -60,71 +36,93 @@ class SimplePSF(PointSpreadFunctionABC):
         self._signature: inspect.Signature = inspect.signature(function)
         self._parameters: set[str] = set()
 
-        if len(self._signature.parameters) < 2:
-            msg = "x and y must be the first two arguments in your model equation."
-            raise PSFParameterValidationError(msg)
+        if len(self._signature.parameters) < 2:  # noqa: PLR2004
+            msg = "row and col must be the first two arguments in your model equation."
+            raise InvalidFunctionError(msg)
 
         for i, variable in enumerate(self._signature.parameters):
-            if i == 0 and variable != "x":
-                msg = "x must be the first arguments in your model equation."
-                raise PSFParameterValidationError(msg)
-            elif i == 1 and variable != "y":
-                msg = "y must be the second arguments in your model equation"
-                raise PSFParameterValidationError(msg)
-            if i >= 2:
+            if i == 0 and variable != "row":
+                msg = "row must be the first arguments in your model equation."
+                raise InvalidFunctionError(msg)
+            if i == 1 and variable != "col":
+                msg = "col must be the second arguments in your model equation"
+                raise InvalidFunctionError(msg)
+            if i >= 2:  # noqa: PLR2004
                 self._parameters.add(variable)
 
     def __call__(self,
-                 x: Real | np.ndarray,
-                 y: Real | np.ndarray,
+                 row: Real | np.ndarray,
+                 col: Real | np.ndarray,
                  **kwargs: dict[str, Any]) -> Real | np.ndarray:
-        return self._f(x, y, **kwargs)
+        """Get the PSF value at (row, col)."""
+        return self._f(row, col, **kwargs)
 
     @property
     def parameters(self) -> set[str]:
+        """Get the parameters of this PSF."""
         return self._parameters
 
-    def evaluate_at(self, x: int, y: int) -> SimplePSF:
-        return self
+    def as_array_psf(self, coordinates: list[tuple[int, int]], size: int, **kwargs) -> ArrayPSF:  # noqa: ANN003
+        """Convert FunctionalPSF to an ArrayPSF."""
+        rr, cc = np.meshgrid(np.arange(size), np.arange(size))
+        evaluation = self(rr, cc, **kwargs)
+        values = [evaluation for _ in coordinates]
+        return ArrayPSF(IndexedCube(coordinates, np.stack(values)))
 
+    @property
+    def f(self) -> Callable:
+        """Retrieve the PSF functional form for calling."""
+        return self._f
 
-def simple_psf(arg: Any = None) -> SimplePSF:
+def simple_functional_psf(arg: Any = None) -> SimpleFunctionalPSF:
+    """Decorate a SimpleFunctionalPSF."""
     if callable(arg):
-        return SimplePSF(arg)
-    else:
-        msg = "psf decorator must have no arguments."
-        raise TypeError(msg)
+        return SimpleFunctionalPSF(arg)
+    msg = "psf decorator must have no arguments."
+    raise TypeError(msg)
 
 
-class VariedPSF(PointSpreadFunctionABC):
+class VariedFunctionalPSF:
     """Model for a PSF that varies over the field of view."""
 
     def __init__(self,
                  vary_function: Callable,
-                 base_psf: SimplePSF,
+                 base_psf: SimpleFunctionalPSF,
                  validate_at_call: bool = True) -> None:
+        """Create a VariedFunctionalPSF object.
+
+        Parameters
+        ----------
+        vary_function : Callable
+            function used to vary the parameters of the base_psf
+        base_psf : Callable
+            base form of the PSF
+        validate_at_call : bool
+            whether to check if parameters are valid at each call, turning off may be faster but is risky
+
+        """
         self._vary_function = vary_function
         self._base_psf = base_psf
         self.validate_at_call = validate_at_call
 
         self.parameterization_signature = inspect.signature(vary_function)
-        if len(self.parameterization_signature.parameters) < 2:
+        if len(self.parameterization_signature.parameters) < 2:  # noqa: PLR2004
             msg = f"Found {len(self.parameterization_signature.parameters)}"
-            raise PSFParameterValidationError(msg)
+            raise InvalidFunctionError(msg)
 
-        if len(self.parameterization_signature.parameters) > 2:
+        if len(self.parameterization_signature.parameters) > 2:  # noqa: PLR2004
             msg = ("Found function requiring"
                    f"{len(self.parameterization_signature.parameters)}"
-                   "arguments. Expected 2, only `x` and `y`.")
-            raise PSFParameterValidationError(msg)
+                   "arguments. Expected 2, only `row` and `col`.")
+            raise InvalidFunctionError(msg)
 
         for i, variable in enumerate(self.parameterization_signature.parameters):
-            if i == 0 and variable != "x":
-                msg = "x must be the first argument in your parameterization equation."
-                raise PSFParameterValidationError(msg)
-            elif i == 1 and variable != "y":
-                msg = "y must be the second argument in your parameterization equation"
-                raise PSFParameterValidationError(msg)
+            if i == 0 and variable != "row":
+                msg = "row must be the first argument in your parameterization equation."
+                raise InvalidFunctionError(msg)
+            if i == 1 and variable != "col":
+                msg = "col must be the second argument in your parameterization equation"
+                raise InvalidFunctionError(msg)
 
         # check the parameters at the origin
         origin_evaluation: dict[str, Any] = vary_function(0, 0)
@@ -133,51 +131,190 @@ class VariedPSF(PointSpreadFunctionABC):
             msg = (f"The base PSF model has parameters {self._base_psf.parameters} "
                    f"while the varied psf supplies {self._origin_parameters}"
                    "at the origin. These must match.")
-            raise VariedPSFParameterMismatchError(msg)
+            raise InvalidFunctionError(msg)
 
-    def __call__(self, x: Real | np.ndarray, y: Real | np.ndarray) -> Real | np.ndarray:
-        variance = self._vary_function(x, y)
+    def __call__(self, row: Real | np.ndarray, col: Real | np.ndarray) -> Real | np.ndarray:
+        """Get the PSF value at (row, col)."""
+        variance = self._vary_function(row, col)
         if self.validate_at_call and set(variance.keys()) != self.parameters:
-                msg = (f"At (x, y) the varying parameters were {set(variance.keys())}"
+                msg = (f"At (row, col) the varying parameters were {set(variance.keys())}"
                        f" when the parameters were expected as {self.parameters}.")
-                raise VariedPSFParameterMismatchError(msg)
-        return self._base_psf(x, y, **variance)
+                raise InvalidFunctionError(msg)
+        return self._base_psf(row, col, **variance)
 
     @property
-    def parameters(self) -> list:
+    def parameters(self) -> set[str]:
+        """Get the parameters of this PSF."""
         return self._base_psf.parameters
 
-    def evaluate_at(self, x: int, y: int) -> SimplePSF:
-        variance = self._vary_function(x, y)
-        return simple_psf(partial(self._base_psf._f, **variance))
+    def simplify(self, row: int, col: int) -> SimpleFunctionalPSF:
+        """Simplify this VariedFunctionalPSF to a SimpleFunctionalPSF by evaluating at (row, col)."""
+        variance = self._vary_function(row, col)
+        return simple_functional_psf(partial(self._base_psf.f, **variance))
 
+    def as_array_psf(self, coordinates: list[tuple[int, int]], size: int, **kwargs) -> ArrayPSF:  # noqa: ANN003
+        """Convert FunctionalPSF to an ArrayPSF."""
+        values = []
+        rr, cc = np.meshgrid(np.arange(size), np.arange(size))
+        for row, col in coordinates:
+            values.append(self.simplify(row, col)(rr, cc, **kwargs))
+        return ArrayPSF(IndexedCube(coordinates, np.stack(values)))
 
-def _varied_psf(base_psf: SimplePSF) -> VariedPSF:
+def _varied_functional_psf(base_psf: SimpleFunctionalPSF) -> VariedFunctionalPSF:
     if base_psf is None:
         msg = "A base_psf must be provided to the varied_psf decorator."
         raise TypeError(msg)
 
     def inner(__fn: Callable=None, *, check_at_call: bool = True) -> Callable:  # noqa: RUF013
         if __fn:
-            return VariedPSF(__fn, base_psf, validate_at_call=check_at_call)
-        else:
-            return partial(inner, check_at_call=check_at_call)
+            return VariedFunctionalPSF(__fn, base_psf, validate_at_call=check_at_call)
+        return partial(inner, check_at_call=check_at_call)
 
     return inner
 
 
-def varied_psf(base_psf: SimplePSF = None) -> VariedPSF:
-    if isinstance(base_psf, SimplePSF):
-        return cast(VariedPSF, _varied_psf(base_psf))
-    elif callable(base_psf):
+def varied_functional_psf(base_psf: SimpleFunctionalPSF = None) -> VariedFunctionalPSF:
+    """Decorate to create a VariedFunctionalPSF."""
+    if isinstance(base_psf, SimpleFunctionalPSF):
+        return cast(VariedFunctionalPSF, _varied_functional_psf(base_psf))
+    if callable(base_psf):
         msg = (
             "varied_psf decorator must be called"
                         "with an argument for the base_psf."
         )
         raise TypeError(msg)
-    else:
-        msg = (
-            "varied_psf decorator expects exactly"
-                        "one argument of type PSF."
-        )
-        raise TypeError(msg)
+    msg = (
+        "varied_psf decorator expects exactly"
+                    "one argument of type PSF."
+    )
+    raise TypeError(msg)
+
+class ArrayPSF:
+    """A PSF represented as a set of arrays."""
+
+    def __init__(self,
+                 values_cube: IndexedCube,
+                 fft_cube: IndexedCube | None = None,
+                 workers: int | None = None) -> None:
+        """Initialize an ArrayPSF model.
+
+        Parameters
+        ----------
+        values_cube : IndexedCube
+            PSF model where keys are upper left coordinates of array patches in the image
+        fft_cube : IndexedCube
+            fft of the model
+        workers: int | None
+            Maximum number of workers to use for parallel computation of FFT.
+            If negative, the value wraps around from os.cpu_count(). See scipy.fft.fft for more details.
+            Only used if fft_cube is None.
+
+        """
+        self._values_cube = values_cube
+        self._fft_cube = fft_cube
+        self._workers = workers
+
+        if self._fft_cube is None:
+            self._fft_cube = IndexedCube(values_cube.coordinates, scipy.fft.fft2(values_cube.values,
+                                                                                 workers=self._workers))
+
+        if self._fft_cube.sample_shape != self._values_cube.sample_shape:
+            msg = (f"Values cube and FFT cube have different sample shapes: "
+                   f"{self._values_cube.sample_shape} != {self._fft_cube.sample_shape}.")
+            raise IncorrectShapeError(msg)
+
+        if len(self._fft_cube) != len(self._values_cube):
+            msg = (f"Values cube and FFT cube have different sample counts: "
+                   f"{len(self._values_cube)} != {len(self._fft_cube)}.")
+            raise IncorrectShapeError(msg)
+
+        if self._values_cube.coordinates != self._fft_cube.coordinates:
+            msg = "Values cube and FFT cube have different coordinates"
+            raise InvalidCoordinateError(msg)
+
+
+    @property
+    def coordinates(self) -> list[tuple[int, int]]:
+        """Get the keys of the PSF model, i.e., where it is evaluated as an array."""
+        return self._values_cube.coordinates
+
+    @property
+    def values(self) -> np.ndarray:
+        """Get the model values."""
+        return self._values_cube.values
+
+    @property
+    def fft_evaluations(self) -> np.ndarray:
+        """Get the model values."""
+        return self._fft_cube.values
+
+    def __getitem__(self, coord: tuple[int,int]) -> np.ndarray:
+        """Evaluate the PSF model at specific coordinates."""
+        return self._values_cube[coord]
+
+
+    def fft_at(self, coord: tuple[int,int]) -> np.ndarray:
+        """Retrieve the FFT evaluation at a coordinate."""
+        return self._fft_cube[coord]
+
+
+    def save(self, path: pathlib.Path) -> None:
+        """Save the PSF model to a file.
+
+        Parameters
+        ----------
+        path : pathlib.Path
+            where to save the PSF model
+
+        Returns
+        -------
+        None
+
+        """
+        with h5py.File(path, "w") as f:
+            f.create_dataset("coordinates", data=self.coordinates)
+            f.create_dataset("values", data=self.values)
+            f.create_dataset("fft_evaluations", data=self.fft_evaluations)
+
+
+    @classmethod
+    def load(cls, path: pathlib.Path) -> ArrayPSF:
+        """Load the PSF model from a file.
+
+        Parameters
+        ----------
+        path : pathlib.Path
+            where to load the PSF model from
+
+        Returns
+        -------
+        ArrayPSF
+            loaded model
+
+        """
+        with h5py.File(path, "r") as f:
+            coordinates = [tuple(c) for c in f["coordinates"][:]]
+            values = f["values"][:]
+            fft_evaluations = f["fft_evaluations"][:]
+        values_cube = IndexedCube(coordinates, values)
+        fft_cube = IndexedCube(coordinates, fft_evaluations)
+        return cls(values_cube, fft_cube)
+
+    def visualize(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        """Visualize the PSF model."""
+
+    def __eq__(self, other: ArrayPSF) -> bool:
+        """Check equality between two ArrayPSFs."""
+        if not isinstance(other, ArrayPSF):
+            msg = "Can only compare ArrayPSF to other ArrayPSF."
+            raise TypeError(msg)
+        return self._values_cube == other._values_cube and self._fft_cube == other._fft_cube
+
+    @property
+    def sample_shape(self) -> tuple[int, int]:
+        """Get the sample shape for this PSF model."""
+        return self._values_cube.sample_shape
+
+    def __len__(self) -> int:
+        """Get the number of coordinates evaluated in this model."""
+        return len(self._values_cube)

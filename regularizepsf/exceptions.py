@@ -1,23 +1,16 @@
+"""Errors and warnings for regularizepsf."""
 
-class ValidationError(Exception):
-    pass
+class RegularizePSFError(Exception):
+    """Base class for regularizepsf exceptions."""
 
+class InvalidCoordinateError(RegularizePSFError):
+    """The key for this coordinate does not exist in the model."""
 
-class PSFParameterValidationError(ValidationError):
-    pass
+class IncorrectShapeError(RegularizePSFError):
+    """The shapes do not match for the model and the value."""
 
+class InvalidFunctionError(RegularizePSFError):
+    """Function for functional model has invalid parameters."""
 
-class InvalidSizeError(ValidationError):
-    pass
-
-
-class EvaluatedModelInconsistentSizeError(ValidationError):
-    pass
-
-
-class VariedPSFParameterMismatchError(ValidationError):
-    pass
-
-
-class UnevaluatedPointError(Exception):
-    pass
+class FunctionParameterMismatchError(RegularizePSFError):
+    """Function evaluated with nonexistent kwargs."""

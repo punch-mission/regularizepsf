@@ -1,9 +1,4 @@
-from regularizepsf.corrector import ArrayCorrector  # noqa: F401
-from regularizepsf.corrector import FunctionalCorrector  # noqa: F401
-from regularizepsf.corrector import calculate_covering  # noqa: F401
-from regularizepsf.fitter import CoordinatePatchCollection  # noqa: F401
-from regularizepsf.psf import simple_psf  # noqa: F401
-from regularizepsf.psf import varied_psf  # noqa: F401
-from regularizepsf.visualize import visualize_patch_counts  # noqa: F401
-from regularizepsf.visualize import visualize_PSFs  # noqa: F401
-from regularizepsf.visualize import visualize_transfer_kernels  # noqa: F401
+"""Global init."""
+import importlib.metadata
+
+__version__ = importlib.metadata.version("regularizepsf")
