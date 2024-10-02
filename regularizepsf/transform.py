@@ -115,14 +115,15 @@ class ArrayPSFTransform:
         apodization_window = np.broadcast_to(apodization_window,
                                              (len(self), self.psf_shape[0], self.psf_shape[1]))
 
-        patches = np.stack([padded_image[*slice_padded_image(coordinate)] for coordinate in self.coordinates])
+        patches = np.stack([padded_image[slice_padded_image(coordinate)[0], slice_padded_image(coordinate)[1]]
+                            for coordinate in self.coordinates])
         patches = scipy.fft.fft2(apodization_window * patches, workers=workers)
         patches = np.real(scipy.fft.ifft2(patches * self._transfer_kernel.values, workers=workers))
         patches = patches * apodization_window
 
         reconstructed_image = np.zeros_like(padded_image)
         for coordinate, patch in zip(self.coordinates, patches, strict=True):
-            reconstructed_image[*slice_padded_image(coordinate)] += patch
+            reconstructed_image[slice_padded_image(coordinate)[0], slice_padded_image(coordinate)[1]] += patch
 
         return reconstructed_image[2 *  self.psf_shape[0]:image.shape[0] + 2 *  self.psf_shape[0],
                2 *  self.psf_shape[1]:image.shape[1] + 2 * self.psf_shape[1]]
