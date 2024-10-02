@@ -4,7 +4,6 @@ version = "1.0.0"
 requires-python = ">3.10"
 description = "Point spread function modeling and regularization"
 dependencies = [
-      "dask",
       "numpy",
       "h5py",
       "sep-pjw",
