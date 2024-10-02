@@ -35,6 +35,18 @@ jobs:
     - name: Lint with ruff
       run: |
         ruff check .
+    - name: Run codespell on source code
+      uses: codespell-project/actions-codespell@v2
+      with:
+        skip: '*.fits'
+        ignore_words_file: .codespellignore
+        path: punchbowl
+    - name: Run codespell on documentation
+      uses: codespell-project/actions-codespell@v2
+      with:
+        skip: '*.fits'
+        ignore_words_file: .codespellignore
+        path: docs/source
     - name: Test with pytest
       run: |
         coverage run -m pytest
