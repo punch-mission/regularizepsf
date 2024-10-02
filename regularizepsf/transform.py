@@ -1,4 +1,5 @@
 """Tools to transform from one PSF to another."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -71,11 +72,10 @@ class ArrayPSFTransform:
 
         source_abs = abs(source.fft_evaluations)
         target_abs = abs(target.fft_evaluations)
-        numerator = source.fft_evaluations.conjugate() * source_abs**(alpha - 1)
-        denominator = source_abs**(alpha + 1) + (epsilon * target_abs)**(alpha + 1)
+        numerator = source.fft_evaluations.conjugate() * source_abs ** (alpha - 1)
+        denominator = source_abs ** (alpha + 1) + (epsilon * target_abs) ** (alpha + 1)
         cube = IndexedCube(source.coordinates, (numerator / denominator) * target.fft_evaluations)
         return ArrayPSFTransform(cube)
-
 
     def apply(self, image: np.ndarray, workers: int | None = None, pad_mode: str = "symmetric") -> np.ndarray:
         """Apply the PSFTransform to an image.
@@ -96,27 +96,34 @@ class ArrayPSFTransform:
             image with psf transformed
 
         """
-        padded_image = np.pad(image,
-                              ((2 * self.psf_shape[0], 2* self.psf_shape[0]),
-                               (2*self.psf_shape[1], 2*self.psf_shape[1])),
-                              mode=pad_mode)
+        padded_image = np.pad(
+            image,
+            ((2 * self.psf_shape[0], 2 * self.psf_shape[0]), (2 * self.psf_shape[1], 2 * self.psf_shape[1])),
+            mode=pad_mode,
+        )
 
         def slice_padded_image(coordinate: tuple[int, int]) -> tuple[slice, slice]:
             """Get the slice objects for a coordinate patch in the padded cube."""
-            row_slice =  slice(coordinate[0] + self.psf_shape[0] * 2,
-                                  coordinate[0] + self.psf_shape[0] + self.psf_shape[0] * 2)
-            col_slice = slice(coordinate[1] + self.psf_shape[1] * 2,
-                            coordinate[1] + self.psf_shape[1] + self.psf_shape[1] * 2)
+            row_slice = slice(
+                coordinate[0] + self.psf_shape[0] * 2, coordinate[0] + self.psf_shape[0] + self.psf_shape[0] * 2,
+            )
+            col_slice = slice(
+                coordinate[1] + self.psf_shape[1] * 2, coordinate[1] + self.psf_shape[1] + self.psf_shape[1] * 2,
+            )
             return row_slice, col_slice
 
         row_arr, col_arr = np.meshgrid(np.arange(self.psf_shape[0]), np.arange(self.psf_shape[1]))
-        apodization_window = (np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0]))
-                              * np.sin((col_arr + 0.5) * (np.pi / self.psf_shape[1])))
-        apodization_window = np.broadcast_to(apodization_window,
-                                             (len(self), self.psf_shape[0], self.psf_shape[1]))
+        apodization_window = np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0])) * np.sin(
+            (col_arr + 0.5) * (np.pi / self.psf_shape[1]),
+        )
+        apodization_window = np.broadcast_to(apodization_window, (len(self), self.psf_shape[0], self.psf_shape[1]))
 
-        patches = np.stack([padded_image[slice_padded_image(coordinate)[0], slice_padded_image(coordinate)[1]]
-                            for coordinate in self.coordinates])
+        patches = np.stack(
+            [
+                padded_image[slice_padded_image(coordinate)[0], slice_padded_image(coordinate)[1]]
+                for coordinate in self.coordinates
+            ],
+        )
         patches = scipy.fft.fft2(apodization_window * patches, workers=workers)
         patches = np.real(scipy.fft.ifft2(patches * self._transfer_kernel.values, workers=workers))
         patches = patches * apodization_window
@@ -125,8 +132,10 @@ class ArrayPSFTransform:
         for coordinate, patch in zip(self.coordinates, patches, strict=True):
             reconstructed_image[slice_padded_image(coordinate)[0], slice_padded_image(coordinate)[1]] += patch
 
-        return reconstructed_image[2 *  self.psf_shape[0]:image.shape[0] + 2 *  self.psf_shape[0],
-               2 *  self.psf_shape[1]:image.shape[1] + 2 * self.psf_shape[1]]
+        return reconstructed_image[
+            2 * self.psf_shape[0] : image.shape[0] + 2 * self.psf_shape[0],
+            2 * self.psf_shape[1] : image.shape[1] + 2 * self.psf_shape[1],
+        ]
 
     def visualize(self) -> None:
         """Visualize the PSFTransform.
@@ -153,7 +162,6 @@ class ArrayPSFTransform:
         with h5py.File(path, "w") as f:
             f.create_dataset("coordinates", data=self.coordinates)
             f.create_dataset("transfer_kernel", data=self._transfer_kernel.values)
-
 
     @classmethod
     def load(cls, path: pathlib.Path) -> ArrayPSFTransform:

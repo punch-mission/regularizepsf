@@ -1,4 +1,5 @@
 """Utility functions for regularizepsf."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -55,9 +56,7 @@ def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
 class IndexedCube:
     """A stack of arrays with assigned coordinates as keys."""
 
-    def __init__(self,
-                 coordinates: list[tuple[int, int]],
-                 values: np.ndarray) -> None:
+    def __init__(self, coordinates: list[tuple[int, int]], values: np.ndarray) -> None:
         """Initialize an IndexedCube.
 
         Parameters
@@ -106,7 +105,6 @@ class IndexedCube:
             raise InvalidCoordinateError(msg)
         return self._values[self._index[coordinate]]
 
-
     def __setitem__(self, coordinate: tuple[int, int], value: np.ndarray) -> None:
         """Set the array associated with that coordinate.
 
@@ -151,7 +149,6 @@ class IndexedCube:
         """Retrieve values of the cube."""
         return self._values
 
-
     def __len__(self) -> int:
         """Return number of sample cube is indexed on.
 
@@ -168,6 +165,8 @@ class IndexedCube:
         if not isinstance(other, IndexedCube):
             msg = "Can only compare IndexedCube instances."
             raise TypeError(msg)
-        return (self.coordinates == other.coordinates
-                and self.sample_shape == other.sample_shape
-                and np.all(self.values == other.values))
+        return (
+            self.coordinates == other.coordinates
+            and self.sample_shape == other.sample_shape
+            and np.all(self.values == other.values)
+        )
