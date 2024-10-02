@@ -13,7 +13,7 @@ Setting up pre-commit
 
 The first time you develop code, you'll need to install the pre-commit. This checks that our style is consistent.
 It gets installed when you do ``pip install ".[test]"`` but then requires you to activate them by
-running ``pre-commit install``. Now everytime you commit, our checks will run first.
+running ``pre-commit install``. Now every time you commit, our checks will run first.
 
 Building the docs
 ------------------
