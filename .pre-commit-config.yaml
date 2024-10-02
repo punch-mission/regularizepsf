@@ -11,6 +11,12 @@ repos:
     hooks:
       - id: isort
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|sunpy/extern)$"
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.1.0
+    hooks:
+      - id: codespell
+        files: ^.*\.(py|c|h|md|rst|yml)$
+        args: [ "--ignore-words", ".codespellignore" ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:

@@ -21,9 +21,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -r ./docs/requirements.txt
-        pip install ".[test]"
-        python setup.py build_ext --inplace
+        pip install ".[docs]"
 
     # Build the book
     - name: Sphinx build
