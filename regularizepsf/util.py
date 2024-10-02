@@ -168,5 +168,5 @@ class IndexedCube:
         return (
             self.coordinates == other.coordinates
             and self.sample_shape == other.sample_shape
-            and np.all(self.values == other.values)
+            and np.allclose(self.values, other.values)
         )
