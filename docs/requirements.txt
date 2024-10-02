@@ -1,0 +1,17 @@
+numpy
+h5py
+sep-pjw
+astropy
+scipy
+scikit-image
+matplotlib
+pytest
+pytest-cov
+hypothesis
+coverage
+ruff
+pytest-mpl
+pre-commit
+sphinx
+pydata-sphinx-theme
+sphinx-autoapi
