@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "numpy", "Cython>=0.29.21"]
+requires = ["setuptools", "wheel", "numpy", "Cython>=0.29.21", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -7,7 +7,7 @@ packages = ["regularizepsf"]
 
 [project]
 name = "regularizepsf"
-version = "0.4.1"
+dynamic = ["version"]
 requires-python = ">3.10"
 description = "Point spread function modeling and regularization"
 dependencies = [
@@ -40,9 +40,9 @@ docs = [
     "pydata-sphinx-theme",
     "sphinx-autoapi"
 ]
-
 dev = ["regularizepsf[test, docs]", "pre-commit"]
 
+[tool.setuptools_scm]
 
 [tool.ruff]
 exclude = ['tests/*']
