@@ -19,7 +19,7 @@ author = "J. Marcus Hughes and the PUNCH Science Operations Center"
 
 release: str = get_version("regularizepsf")
 version: str = release
-_version = = Version(release))
+_version = Version(release))
 elif _version.is_devrelease:
     version = release = f"{_version.base_version}.dev{_version.dev}"
 # -- General configuration ---------------------------------------------------
