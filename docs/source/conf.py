@@ -13,9 +13,10 @@ sys.path.insert(0, os.path.abspath("../.."))
 
 
 project = "regularizepsf"
-copyright = "2023, J. Marcus Hughes and the PUNCH Science Operations Center"
+copyright = "YYYY, J. Marcus Hughes and the PUNCH Science Operations Center"
 author = "J. Marcus Hughes and the PUNCH Science Operations Center"
 release: str = get_version("regularizepsf")
+version: str = ".".join(release.split('.')[:2])
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
