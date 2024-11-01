@@ -7,6 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
 import sys
+from importlib.metadata import version as get_version
 
 sys.path.insert(0, os.path.abspath("../.."))
 
@@ -14,7 +15,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 project = "regularizepsf"
 copyright = "2023, J. Marcus Hughes and the PUNCH Science Operations Center"
 author = "J. Marcus Hughes and the PUNCH Science Operations Center"
-release = "0.4.0"
+release: str = get_version("regularizepsf")
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
