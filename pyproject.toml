@@ -36,6 +36,7 @@ test = [
      "pytest-mpl",
 ]
 docs = [
+    "packaging",
     "sphinx",
     "pydata-sphinx-theme",
     "sphinx-autoapi"
