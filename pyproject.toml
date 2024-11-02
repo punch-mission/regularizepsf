@@ -1,12 +1,22 @@
+[build-system]
+requires = ["setuptools", "wheel", "numpy", "Cython>=0.29.21", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["regularizepsf"]
+
 [project]
 name = "regularizepsf"
-version = "1.0.0"
+dynamic = ["version"]
 requires-python = ">3.10"
 description = "Point spread function modeling and regularization"
 dependencies = [
       "numpy",
+      "dill",
       "h5py",
+      "lmfit",
       "sep-pjw",
+      "cython",
       "astropy",
       "scipy",
       "scikit-image",
@@ -26,18 +36,23 @@ test = [
      "pytest-mpl",
 ]
 docs = [
+    "packaging",
     "sphinx",
     "pydata-sphinx-theme",
     "sphinx-autoapi"
 ]
-
 dev = ["regularizepsf[test, docs]", "pre-commit"]
 
+[tool.setuptools_scm]
+
 [tool.ruff]
-exclude = ['tests/*', 'docs/*']
+exclude = ['tests/*']
 line-length = 120
-lint.select = ["ALL"]
-lint.ignore = [ "FBT001", "FBT002", "ANN101", "ANN102", "ANN401", "FIX002", "TD", "PD011", "I001"]
+# lint.select = ["ALL"]
+lint.ignore = [ "FBT001", "FBT002", "ANN401"]
+
+#[tool.ruff.lint]
+#select = ["NPY201"]
 
 [tool.isort]
 balanced_wrapping = true
