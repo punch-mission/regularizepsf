@@ -166,7 +166,7 @@ class ArrayPSFBuilder:
               interpolation_scale: int = 1,
               star_threshold: int = 3,
               average_method: str = 'median',
-              percentile: float = 50) -> ArrayPSF:
+              percentile: float = 50) -> (ArrayPSF, dict):
         """Build the PSF model.
 
         Parameters
@@ -176,8 +176,8 @@ class ArrayPSFBuilder:
 
         Returns
         -------
-        ArrayPSF
-            an array PSF
+        (ArrayPSF, dict)
+            an array PSF and the counts of stars in each component
 
         """
         data_iterator = _convert_to_generator(images, hdu_choice=hdu_choice)
@@ -222,4 +222,4 @@ class ArrayPSFBuilder:
             values_coords.append(coordinate)
             values_array[i, :, :] = this_patch
 
-        return ArrayPSF(IndexedCube(values_coords, values_array))
+        return ArrayPSF(IndexedCube(values_coords, values_array)), counts

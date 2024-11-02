@@ -7,11 +7,13 @@ from typing import TYPE_CHECKING, Any, cast
 from functools import partial
 
 import h5py
+import matplotlib as mpl
 import numpy as np
 import scipy.fft
 
 from regularizepsf.exceptions import IncorrectShapeError, InvalidCoordinateError, InvalidFunctionError
 from regularizepsf.util import IndexedCube
+from regularizepsf.visualize import KERNEL_IMSHOW_ARGS_DEFAULT, PSF_IMSHOW_ARGS_DEFAULT, visualize_grid
 
 if TYPE_CHECKING:
     import pathlib
@@ -297,8 +299,33 @@ class ArrayPSF:
         fft_cube = IndexedCube(coordinates, fft_evaluations)
         return cls(values_cube, fft_cube)
 
-    def visualize(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+    def visualize_psfs(self,
+                  fig: mpl.figure.Figure | None = None,
+                  fig_scale: int = 1,
+                  all_patches: bool = False, imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
         """Visualize the PSF model."""
+        imshow_args = PSF_IMSHOW_ARGS_DEFAULT if imshow_args is None else imshow_args
+        visualize_grid(self._values_cube, fig=fig, fig_scale=fig_scale, all_patches=all_patches,
+                       colorbar_label="Normalized brightness",
+                       imshow_args=imshow_args)
+
+    def visualize_kernels(self,
+                  fig: mpl.figure.Figure | None = None,
+                  fig_scale: int = 1,
+                  all_patches: bool = False, imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+        """Visualize the transfer kernels."""
+        imshow_args = KERNEL_IMSHOW_ARGS_DEFAULT if imshow_args is None else imshow_args
+
+        extent = np.max(np.abs(self._fft_cube.values))
+        if 'vmin' not in imshow_args:
+            imshow_args['vmin'] = extent
+        if 'vmax' not in imshow_args:
+            imshow_args['vmax'] = extent
+
+        return visualize_grid(
+            self._fft_cube, all_patches=all_patches, fig=fig,
+            fig_scale=fig_scale, colorbar_label="Transfer kernel amplitude",
+            imshow_args=imshow_args)
 
     def __eq__(self, other: ArrayPSF) -> bool:
         """Check equality between two ArrayPSFs."""

@@ -46,7 +46,7 @@ def test_averaging():
 def test_find_stars_and_average_path(method):
     img_path = str(TEST_DIR / "data/compressed_dash.fits")
     builder = ArrayPSFBuilder(32)
-    example = builder.build([img_path], average_method=method, hdu_choice=1)
+    example, _ = builder.build([img_path], average_method=method, hdu_choice=1)
     assert isinstance(example, ArrayPSF)
     assert example.sample_shape == (32, 32)
 
@@ -61,7 +61,7 @@ def test_find_stars_and_average_array(method):
     mask[:, :800, :800] = 0
 
     builder = ArrayPSFBuilder(32)
-    example = builder.build(image_array, mask, average_method=method)
+    example, _ = builder.build(image_array, mask, average_method=method)
     assert isinstance(example, ArrayPSF)
     assert example.sample_shape == (32, 32)
 
@@ -75,6 +75,6 @@ def test_find_stars_and_average_generator(method):
         yield image_array[0]
 
     builder = ArrayPSFBuilder(32)
-    example = builder.build(generator(), average_method=method)
+    example, _ = builder.build(generator(), average_method=method)
     assert isinstance(example, ArrayPSF)
     assert example.sample_shape == (32, 32)
