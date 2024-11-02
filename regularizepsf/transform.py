@@ -5,12 +5,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import h5py
+import matplotlib as mpl
 import numpy as np
 import scipy
 from astropy.io import fits
 
 from regularizepsf.exceptions import InvalidCoordinateError
 from regularizepsf.util import IndexedCube
+from regularizepsf.visualize import KERNEL_IMSHOW_ARGS_DEFAULT, visualize_grid
 
 if TYPE_CHECKING:
     import pathlib
@@ -138,14 +140,25 @@ class ArrayPSFTransform:
             2 * self.psf_shape[1] : image.shape[1] + 2 * self.psf_shape[1],
         ]
 
-    def visualize(self) -> None:
-        """Visualize the PSFTransform.
+    def visualize(self,
+                          fig: mpl.figure.Figure | None = None,
+                          fig_scale: int = 1,
+                          all_patches: bool = False, imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+        """Visualize the transfer kernels."""
+        imshow_args = KERNEL_IMSHOW_ARGS_DEFAULT if imshow_args is None else imshow_args
 
-        Returns
-        -------
-        None
+        arr = np.abs(np.fft.fftshift(np.fft.ifft2(self._transfer_kernel.values)))
+        extent = np.max(np.abs(arr))
+        if 'vmin' not in imshow_args:
+            imshow_args['vmin'] = -extent
+        if 'vmax' not in imshow_args:
+            imshow_args['vmax'] = extent
 
-        """
+        return visualize_grid(
+            IndexedCube(self._transfer_kernel.coordinates, arr),
+            all_patches=all_patches, fig=fig,
+            fig_scale=fig_scale, colorbar_label="Transfer kernel amplitude",
+            imshow_args=imshow_args)
 
     def save(self, path: pathlib.Path) -> None:
         """Save a PSFTransform to a file. Supports h5 and FITS.
@@ -173,6 +186,7 @@ class ArrayPSFTransform:
                                             name="transfer_imag", quantize_level=32)]).writeto(path)
         else:
             raise NotImplementedError(f"Unsupported file type {path.suffix}. Change to .h5 or .fits.")
+
     @classmethod
     def load(cls, path: pathlib.Path) -> ArrayPSFTransform:
         """Load a PSFTransform object. Supports h5 and FITS.

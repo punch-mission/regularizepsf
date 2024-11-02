@@ -337,21 +337,23 @@ class ArrayPSF:
                        colorbar_label="Normalized brightness",
                        imshow_args=imshow_args)
 
-    def visualize_kernels(self,
+    def visualize_ffts(self,
                   fig: mpl.figure.Figure | None = None,
                   fig_scale: int = 1,
                   all_patches: bool = False, imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
-        """Visualize the transfer kernels."""
+        """Visualize the fft of the PSF."""
         imshow_args = KERNEL_IMSHOW_ARGS_DEFAULT if imshow_args is None else imshow_args
 
-        extent = np.max(np.abs(self._fft_cube.values))
+        arr = np.abs(np.fft.fftshift(np.fft.ifft2(self._fft_cube.values)))
+        extent = np.max(np.abs(arr))
         if 'vmin' not in imshow_args:
-            imshow_args['vmin'] = extent
+            imshow_args['vmin'] = -extent
         if 'vmax' not in imshow_args:
             imshow_args['vmax'] = extent
 
         return visualize_grid(
-            self._fft_cube, all_patches=all_patches, fig=fig,
+            IndexedCube(self._fft_cube.coordinates, arr),
+            all_patches=all_patches, fig=fig,
             fig_scale=fig_scale, colorbar_label="Transfer kernel amplitude",
             imshow_args=imshow_args)
 
