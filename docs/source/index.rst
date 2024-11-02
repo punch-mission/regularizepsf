@@ -19,8 +19,7 @@ with the target PSF (d). The panels are gamma-corrected to highlight the periphe
    :caption: Contents:
 
    concepts
-   examples
-   visualization
+   example.ipynb
    help
    cite
    development
