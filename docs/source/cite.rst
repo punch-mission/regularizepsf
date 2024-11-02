@@ -19,4 +19,4 @@ To cite `the associated paper <https://iopscience.iop.org/article/10.3847/1538-3
 
 
 If you use this software, please also cite the package with the specific version used.
-`Zenodo always has the most up-to-date citation. <https://zenodo.org/records/10066960>`
+`Zenodo always has the most up-to-date citation. <https://zenodo.org/records/10066960>`_
