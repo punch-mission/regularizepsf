@@ -281,8 +281,8 @@ class ArrayPSF:
             fits.HDUList([fits.PrimaryHDU(),
                           fits.CompImageHDU(np.array(self.coordinates), name="coordinates"),
                           fits.CompImageHDU(self.values, name="values"),
-                          fits.CompImageHDU(self.fft_evaluations.real, name="fft_real"),
-                          fits.CompImageHDU(self.fft_evaluations.imag, name="fft_imag")
+                          fits.CompImageHDU(self.fft_evaluations.real, name="fft_real", quantize_level=32),
+                          fits.CompImageHDU(self.fft_evaluations.imag, name="fft_imag", quantize_level=32),
                           ]).writeto(path)
         else:
             raise NotImplementedError(f"Unsupported file type {path.suffix}. Change to .h5 or .fits.")
@@ -310,7 +310,7 @@ class ArrayPSF:
             values_cube = IndexedCube(coordinates, values)
             fft_cube = IndexedCube(coordinates, fft_evaluations)
         elif path.suffix == ".fits":
-            with fits.open(path, "r") as hdul:
+            with fits.open(path) as hdul:
                 coordinates_index = hdul.index_of("coordinates")
                 coordinates = [tuple(c) for c in hdul[coordinates_index].data]
 

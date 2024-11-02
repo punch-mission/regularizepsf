@@ -8,6 +8,24 @@ from regularizepsf.util import IndexedCube, calculate_covering
 from tests.helper import make_gaussian
 
 
+@pytest.mark.parametrize("extension", ["fits", "h5"])
+def test_transform_saves_and_loads(tmp_path, extension):
+    """Can save and reload an ArrayPSF"""
+    coordinates = [(0, 0), (1, 1), (2, 2)]
+    gauss = make_gaussian(128, fwhm=3)
+    values = np.stack([gauss for _ in coordinates])
+
+    source = ArrayPSF(IndexedCube(coordinates, values))
+    target = ArrayPSF(IndexedCube(coordinates, values))
+    transform = ArrayPSFTransform.construct(source, target, 1.0, 0.1)
+
+    path = tmp_path / f"transform.{extension}"
+
+    transform.save(path)
+    reloaded = ArrayPSFTransform.load(path)
+
+    assert transform == reloaded
+
 def test_transform_apply():
     """Test that applying an identity transform does not change the values."""
     size = 256

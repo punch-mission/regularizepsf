@@ -167,8 +167,10 @@ class ArrayPSFTransform:
         elif path.suffix == ".fits":
             fits.HDUList([fits.PrimaryHDU(),
                           fits.CompImageHDU(np.array(self.coordinates), name="coordinates"),
-                          fits.CompImageHDU(self._transfer_kernel.values.real, name="transfer_real"),
-                          fits.CompImageHDU(self._transfer_kernel.values.imag, name="transfer_imag")]).writeto(path)
+                          fits.CompImageHDU(self._transfer_kernel.values.real,
+                                            name="transfer_real", quantize_level=32),
+                          fits.CompImageHDU(self._transfer_kernel.values.imag,
+                                            name="transfer_imag", quantize_level=32)]).writeto(path)
         else:
             raise NotImplementedError(f"Unsupported file type {path.suffix}. Change to .h5 or .fits.")
     @classmethod
