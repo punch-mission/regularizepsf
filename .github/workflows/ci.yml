@@ -38,13 +38,13 @@ jobs:
     - name: Run codespell on source code
       uses: codespell-project/actions-codespell@v2
       with:
-        skip: '*.fits'
+        skip: '*.fits, *.ipynb'
         ignore_words_file: .codespellignore
         path: punchbowl
     - name: Run codespell on documentation
       uses: codespell-project/actions-codespell@v2
       with:
-        skip: '*.fits'
+        skip: '*.fits, *.ipynb'
         ignore_words_file: .codespellignore
         path: docs/source
     - name: Test with pytest
