@@ -66,7 +66,7 @@ class ArrayPSFTransform:
             corresponding ArrayPSFTransform instance
 
         """
-        if source.coordinates != target.coordinates:
+        if np.any(np.array(source.coordinates) != np.array(target.coordinates)):
             msg = "Source PSF coordinates do not match target PSF coordinates."
             raise InvalidCoordinateError(msg)
 

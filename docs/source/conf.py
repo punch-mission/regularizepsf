@@ -27,7 +27,9 @@ if _version.is_devrelease:
 
 extensions = ["autoapi.extension",
               "sphinx.ext.autodoc",
-              "sphinx.ext.napoleon"]
+              "sphinx.ext.napoleon",
+              "nbsphinx",
+              "IPython.sphinxext.ipython_console_highlighting"]
 
 templates_path = ["_templates"]
 exclude_patterns = []

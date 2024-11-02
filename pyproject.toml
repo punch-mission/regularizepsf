@@ -35,7 +35,9 @@ docs = [
     "packaging",
     "sphinx",
     "pydata-sphinx-theme",
-    "sphinx-autoapi"
+    "sphinx-autoapi",
+    "nbsphinx",
+    "ipython",
 ]
 dev = ["regularizepsf[test, docs]", "pre-commit"]
 

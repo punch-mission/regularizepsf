@@ -30,11 +30,4 @@ Running tests
 -------------
 To run the tests for this package, run ``pytest`` in the repository base directory.
 
-This repository includes tests for the plotting utilities which compare generated plots to reference images saved in
-``tests/baseline``.
-To include these image-comparison tests, run ``pytest --mpl``.
-To update these reference images, run ``pytest --mpl --mpl-generate-path=tests/baseline``.
-
-If the image-comparison tests are failing,
-run ``pytest --mpl --mpl-generate-summary=html`` to generate a summary page showing the generated and reference images.
-The location of the generated file will be shown at the end of ``pytest``'s command-line output.
+Tests are automatically run for pull requests.

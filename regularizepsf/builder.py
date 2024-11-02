@@ -68,8 +68,7 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
                      (psf_size * interpolation_scale, psf_size * interpolation_scale))
     padded_image = np.pad(image_background_removed,
                           padding_shape,
-                          mode="constant",
-                          constant_values=np.median(image))
+                          mode="reflect")
 
     patches = {}
     for coordinate in coordinates:
@@ -82,8 +81,8 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
     return patches
 
 def _find_matches(coordinate, x_bounds, y_bounds, psf_size):
-    center_x = coordinate[0] + psf_size // 2
-    center_y = coordinate[1] + psf_size // 2
+    center_x = coordinate[1] + psf_size // 2
+    center_y = coordinate[2] + psf_size // 2
     x_matches = (x_bounds[:, 0] <= center_x) * (center_x < x_bounds[:, 1])
     y_matches = (y_bounds[:, 0] <= center_y) * (center_y < y_bounds[:, 1])
     match_indices = np.where(x_matches * y_matches)[0]
@@ -97,6 +96,7 @@ def _average_patches_by_mean(patches, corners, x_bounds, y_bounds, psf_size):
     counts = {tuple(corner): 0 for corner in corners}
 
     for coordinate, patch in patches.items():
+        patch = patch / patch[psf_size // 2, psf_size // 2]  # normalize so the star brightness is always 1
         match_indices = _find_matches(coordinate, x_bounds, y_bounds, psf_size)
 
         for match_index in match_indices:
@@ -121,6 +121,7 @@ def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_siz
     counts = {tuple(corner): 0 for corner in corners}
 
     for coordinate, patch in patches.items():
+        patch = patch / patch[psf_size // 2, psf_size // 2]  # normalize so the star brightness is always 1
         match_indices = _find_matches(coordinate, x_bounds, y_bounds, psf_size)
 
         for match_index in match_indices:

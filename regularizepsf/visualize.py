@@ -59,14 +59,14 @@ def visualize_patch_counts(counts: dict[tuple[int, int], int],
     dc = columns[1] - columns[0]
 
     # Build an array containing all the patch counts
-    counts = np.empty((len(rows), len(columns)))
+    counts_arr = np.empty((len(rows), len(columns)))
     for k, count in counts.items():
-        r, c = k.x, k.y
+        r, c = k[0], k[1]
         r = int((r - rows.min()) / dr)
         c = int((c - columns.min()) / dc)
-        counts[r, c] = count
+        counts_arr[r, c] = count
 
-    m = ax.imshow(counts, origin="lower")
+    m = ax.imshow(counts_arr, origin="lower")
     plt.colorbar(m).set_label("Number of stars found in patch")
 
     if label_pixel_bounds:

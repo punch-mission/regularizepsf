@@ -79,7 +79,7 @@ class IndexedCube:
         self._coordinates = coordinates
         self._values = values
 
-        self._index = {coordinate: i for i, coordinate in enumerate(self._coordinates)}
+        self._index = {tuple(coordinate): i for i, coordinate in enumerate(self._coordinates)}
 
     @property
     def sample_shape(self) -> tuple[int, int]:

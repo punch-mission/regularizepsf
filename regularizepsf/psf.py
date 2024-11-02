@@ -231,7 +231,7 @@ class ArrayPSF:
             )
             raise IncorrectShapeError(msg)
 
-        if self._values_cube.coordinates != self._fft_cube.coordinates:
+        if np.any(np.array(self._values_cube.coordinates) != np.array(self._fft_cube.coordinates)):
             msg = "Values cube and FFT cube have different coordinates"
             raise InvalidCoordinateError(msg)
 
