@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import h5py
 import numpy as np
 import scipy
+from astropy.io import fits
 
 from regularizepsf.exceptions import InvalidCoordinateError
 from regularizepsf.util import IndexedCube
@@ -147,7 +148,7 @@ class ArrayPSFTransform:
         """
 
     def save(self, path: pathlib.Path) -> None:
-        """Save a PSFTransform to a file.
+        """Save a PSFTransform to a file. Supports h5 and FITS.
 
         Parameters
         ----------
@@ -159,13 +160,20 @@ class ArrayPSFTransform:
         None
 
         """
-        with h5py.File(path, "w") as f:
-            f.create_dataset("coordinates", data=self.coordinates)
-            f.create_dataset("transfer_kernel", data=self._transfer_kernel.values)
-
+        if path.suffix == ".h5":
+            with h5py.File(path, "w") as f:
+                f.create_dataset("coordinates", data=self.coordinates)
+                f.create_dataset("transfer_kernel", data=self._transfer_kernel.values)
+        elif path.suffix == ".fits":
+            fits.HDUList([fits.PrimaryHDU(),
+                          fits.CompImageHDU(np.array(self.coordinates), name="coordinates"),
+                          fits.CompImageHDU(self._transfer_kernel.values.real, name="transfer_real"),
+                          fits.CompImageHDU(self._transfer_kernel.values.imag, name="transfer_imag")]).writeto(path)
+        else:
+            raise NotImplementedError(f"Unsupported file type {path.suffix}. Change to .h5 or .fits.")
     @classmethod
     def load(cls, path: pathlib.Path) -> ArrayPSFTransform:
-        """Load a PSFTransform object.
+        """Load a PSFTransform object. Supports h5 and FITS.
 
         Parameters
         ----------
@@ -177,10 +185,22 @@ class ArrayPSFTransform:
         PSFTransform
 
         """
-        with h5py.File(path, "r") as f:
-            coordinates = [tuple(c) for c in f["coordinates"][:]]
-            transfer_kernel = f["transfer_kernel"][:]
-        kernel = IndexedCube(coordinates, transfer_kernel)
+        if path.suffix == ".h5":
+            with h5py.File(path, "r") as f:
+                coordinates = [tuple(c) for c in f["coordinates"][:]]
+                transfer_kernel = f["transfer_kernel"][:]
+            kernel = IndexedCube(coordinates, transfer_kernel)
+        elif path.suffix == ".fits":
+            with fits.open(path) as hdul:
+                coordinates_index = hdul.index_of("coordinates")
+                coordinates = [tuple(c) for c in hdul[coordinates_index].data]
+                transfer_real_index = hdul.index_of("transfer_real")
+                transfer_real = hdul[transfer_real_index].data
+                transfer_imag_index = hdul.index_of("transfer_imag")
+                transfer_imag = hdul[transfer_imag_index].data
+                kernel = IndexedCube(coordinates, transfer_real + transfer_imag*1j)
+        else:
+            raise NotImplementedError(f"Unsupported file type {path.suffix}. Change to .h5 or .fits.")
         return cls(kernel)
 
     def __eq__(self, other: ArrayPSFTransform) -> bool:
