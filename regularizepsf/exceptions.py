@@ -19,3 +19,6 @@ class InvalidFunctionError(RegularizePSFError):
 
 class FunctionParameterMismatchError(RegularizePSFError):
     """Function evaluated with nonexistent kwargs."""
+
+class PSFBuilderError(RegularizePSFError):
+    """Something went wrong building the PSF model."""
