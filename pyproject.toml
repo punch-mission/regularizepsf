@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "numpy", "Cython>=0.29.21", "setuptools-scm>=8"]
+requires = ["setuptools", "wheel", "numpy", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -12,16 +12,12 @@ requires-python = ">3.10"
 description = "Point spread function modeling and regularization"
 dependencies = [
       "numpy",
-      "dill",
       "h5py",
-      "lmfit",
       "sep-pjw",
-      "cython",
       "astropy",
       "scipy",
       "scikit-image",
       "matplotlib",
-      "setuptools"
 ]
 readme = "README.md"
 license = {file = "LICENSE"}
