@@ -14,7 +14,8 @@ from regularizepsf.util import IndexedCube
 from tests.helper import make_gaussian
 
 
-def test_arraypsf_saves_and_loads(tmp_path):
+@pytest.mark.parametrize("extension", ["fits", "h5"])
+def test_arraypsf_saves_and_loads(tmp_path, extension):
     """Can save and reload an ArrayPSF"""
     coordinates = [(0, 0), (1, 1), (2, 2)]
     gauss = make_gaussian(128, fwhm=3)
@@ -22,7 +23,7 @@ def test_arraypsf_saves_and_loads(tmp_path):
 
     source = ArrayPSF(IndexedCube(coordinates, values))
 
-    path = tmp_path / "psf.h5"
+    path = tmp_path / f"psf.{extension}"
 
     source.save(path)
     reloaded = ArrayPSF.load(path)

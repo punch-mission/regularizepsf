@@ -10,6 +10,7 @@ import h5py
 import matplotlib as mpl
 import numpy as np
 import scipy.fft
+from astropy.io import fits
 
 from regularizepsf.exceptions import IncorrectShapeError, InvalidCoordinateError, InvalidFunctionError
 from regularizepsf.util import IndexedCube
@@ -259,7 +260,7 @@ class ArrayPSF:
         return self._fft_cube[coord]
 
     def save(self, path: pathlib.Path) -> None:
-        """Save the PSF model to a file.
+        """Save the PSF model to a file. Supports h5 and FITS.
 
         Parameters
         ----------
@@ -271,14 +272,24 @@ class ArrayPSF:
         None
 
         """
-        with h5py.File(path, "w") as f:
-            f.create_dataset("coordinates", data=self.coordinates)
-            f.create_dataset("values", data=self.values)
-            f.create_dataset("fft_evaluations", data=self.fft_evaluations)
+        if path.suffix == ".h5":
+            with h5py.File(path, "w") as f:
+                f.create_dataset("coordinates", data=self.coordinates)
+                f.create_dataset("values", data=self.values)
+                f.create_dataset("fft_evaluations", data=self.fft_evaluations)
+        elif path.suffix == ".fits":
+            fits.HDUList([fits.PrimaryHDU(),
+                          fits.CompImageHDU(np.array(self.coordinates), name="coordinates"),
+                          fits.CompImageHDU(self.values, name="values"),
+                          fits.CompImageHDU(self.fft_evaluations.real, name="fft_real", quantize_level=32),
+                          fits.CompImageHDU(self.fft_evaluations.imag, name="fft_imag", quantize_level=32),
+                          ]).writeto(path)
+        else:
+            raise NotImplementedError(f"Unsupported file type {path.suffix}. Change to .h5 or .fits.")
 
     @classmethod
     def load(cls, path: pathlib.Path) -> ArrayPSF:
-        """Load the PSF model from a file.
+        """Load the PSF model from a file. Supports h5 and FITS.
 
         Parameters
         ----------
@@ -291,12 +302,29 @@ class ArrayPSF:
             loaded model
 
         """
-        with h5py.File(path, "r") as f:
-            coordinates = [tuple(c) for c in f["coordinates"][:]]
-            values = f["values"][:]
-            fft_evaluations = f["fft_evaluations"][:]
-        values_cube = IndexedCube(coordinates, values)
-        fft_cube = IndexedCube(coordinates, fft_evaluations)
+        if path.suffix == ".h5":
+            with h5py.File(path, "r") as f:
+                coordinates = [tuple(c) for c in f["coordinates"][:]]
+                values = f["values"][:]
+                fft_evaluations = f["fft_evaluations"][:]
+            values_cube = IndexedCube(coordinates, values)
+            fft_cube = IndexedCube(coordinates, fft_evaluations)
+        elif path.suffix == ".fits":
+            with fits.open(path) as hdul:
+                coordinates_index = hdul.index_of("coordinates")
+                coordinates = [tuple(c) for c in hdul[coordinates_index].data]
+
+                values_index = hdul.index_of("values")
+                values = hdul[values_index].data
+                values_cube = IndexedCube(coordinates, values)
+
+                fft_real_index = hdul.index_of("fft_real")
+                fft_real = hdul[fft_real_index].data
+                fft_imag_index = hdul.index_of("fft_imag")
+                fft_imag = hdul[fft_imag_index].data
+                fft_cube = IndexedCube(coordinates, fft_real + fft_imag*1j)
+        else:
+            raise NotImplementedError(f"Unsupported file type {path.suffix}. Change to .h5 or .fits.")
         return cls(values_cube, fft_cube)
 
     def visualize_psfs(self,
