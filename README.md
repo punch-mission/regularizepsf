@@ -13,12 +13,12 @@ the initial image with the target PSF (d). The panels are gamma-corrected to hig
 
 ## Getting started
 
-`pip install regularizepsf` and then follow along with the [documentation](https://punch-mission.github.io/regularizepsf/concepts.html).
+`pip install regularizepsf` and then follow along with the [documentation](https://regularizepsf.readthedocs.io/en/latest/index.html).
 
 ## Contributing
 We encourage all contributions. If you have a problem with the code or would like to see a new feature, please open an issue. Or you can submit a pull request.
 
-If you're contributing code please see [this package's development guide](https://punch-mission.github.io/regularizepsf/development.html).
+If you're contributing code please see [this package's development guide](https://regularizepsf.readthedocs.io/en/latest/development.html).
 
 ## License
 See [LICENSE file](LICENSE)
