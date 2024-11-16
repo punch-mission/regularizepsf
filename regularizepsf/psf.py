@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pathlib
 import inspect
 from typing import TYPE_CHECKING, Any, cast
 from functools import partial
@@ -17,7 +18,6 @@ from regularizepsf.util import IndexedCube
 from regularizepsf.visualize import KERNEL_IMSHOW_ARGS_DEFAULT, PSF_IMSHOW_ARGS_DEFAULT, visualize_grid
 
 if TYPE_CHECKING:
-    import pathlib
     from numbers import Real
     from collections.abc import Callable
 
