@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pathlib
 from typing import TYPE_CHECKING
 
 import h5py
@@ -15,7 +16,6 @@ from regularizepsf.util import IndexedCube
 from regularizepsf.visualize import KERNEL_IMSHOW_ARGS_DEFAULT, visualize_grid
 
 if TYPE_CHECKING:
-    import pathlib
 
     from regularizepsf.psf import ArrayPSF
 
