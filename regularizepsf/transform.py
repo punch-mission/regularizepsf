@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pathlib
 from typing import TYPE_CHECKING
 
 import h5py
@@ -15,7 +16,6 @@ from regularizepsf.util import IndexedCube
 from regularizepsf.visualize import KERNEL_IMSHOW_ARGS_DEFAULT, visualize_grid
 
 if TYPE_CHECKING:
-    import pathlib
 
     from regularizepsf.psf import ArrayPSF
 
@@ -173,6 +173,7 @@ class ArrayPSFTransform:
         None
 
         """
+        path = pathlib.Path(path)
         if path.suffix == ".h5":
             with h5py.File(path, "w") as f:
                 f.create_dataset("coordinates", data=self.coordinates)
@@ -201,6 +202,7 @@ class ArrayPSFTransform:
         PSFTransform
 
         """
+        path = pathlib.Path(path)
         if path.suffix == ".h5":
             with h5py.File(path, "r") as f:
                 coordinates = [tuple(c) for c in f["coordinates"][:]]

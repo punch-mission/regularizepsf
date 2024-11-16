@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import inspect
+import pathlib
 from typing import TYPE_CHECKING, Any, cast
 from functools import partial
 
@@ -17,7 +18,6 @@ from regularizepsf.util import IndexedCube
 from regularizepsf.visualize import KERNEL_IMSHOW_ARGS_DEFAULT, PSF_IMSHOW_ARGS_DEFAULT, visualize_grid
 
 if TYPE_CHECKING:
-    import pathlib
     from numbers import Real
     from collections.abc import Callable
 
@@ -272,6 +272,7 @@ class ArrayPSF:
         None
 
         """
+        path = pathlib.Path(path)
         if path.suffix == ".h5":
             with h5py.File(path, "w") as f:
                 f.create_dataset("coordinates", data=self.coordinates)
@@ -302,6 +303,7 @@ class ArrayPSF:
             loaded model
 
         """
+        path = pathlib.Path(path)
         if path.suffix == ".h5":
             with h5py.File(path, "r") as f:
                 coordinates = [tuple(c) for c in f["coordinates"][:]]
