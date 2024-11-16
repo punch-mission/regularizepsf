@@ -272,6 +272,7 @@ class ArrayPSF:
         None
 
         """
+        path = pathlib.Path(path)
         if path.suffix == ".h5":
             with h5py.File(path, "w") as f:
                 f.create_dataset("coordinates", data=self.coordinates)
@@ -302,6 +303,7 @@ class ArrayPSF:
             loaded model
 
         """
+        path = pathlib.Path(path)
         if path.suffix == ".h5":
             with h5py.File(path, "r") as f:
                 coordinates = [tuple(c) for c in f["coordinates"][:]]
