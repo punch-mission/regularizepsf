@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import pathlib
 import inspect
+import pathlib
 from typing import TYPE_CHECKING, Any, cast
 from functools import partial
 
