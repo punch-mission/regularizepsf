@@ -49,7 +49,7 @@ jobs:
         path: docs/source
     - name: Test with pytest
       run: |
-        coverage run -m pytest
+        pytest --cov=regularizepsf/
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       env:
