@@ -2,6 +2,10 @@
 
 [This is available in GitHub](https://github.com/punch-mission/regularizepsf/releases?page=1)
 
+## Latest: unreleased
+
+* specify codecov path by @jmbhughes in https://github.com/punch-mission/regularizepsf/pull/234
+
 ## Version 1.0.2: Nov 16, 2024
 
 - fix broken doc links by @jmbhughes in #228
