@@ -61,7 +61,7 @@
 - Reverts required Python version to 3.9 instead of 3.10.
 - revert-python-bump by @jmbhughes in #165
 
-## Verision 0.3.1: Apr 2, 2024
+## Version 0.3.1: Apr 2, 2024
 
 - switching docs to Sphinx by @jmbhughes in #110
 - Update docs and readme by @github-actions in #111
