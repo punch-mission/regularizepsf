@@ -23,6 +23,11 @@ def _convert_to_generator(images:  list[pathlib.Path] | np.ndarray | Generator,
             def generator() -> np.ndarray:
                 yield from images
             data_iterator = generator()
+        elif len(images.shape) == 2:
+            def generator() -> np.ndarray:
+                while True:
+                    yield images
+            data_iterator = generator()
         else:
             msg = "Image data array must be 3D"
             raise IncorrectShapeError(msg)
