@@ -5,6 +5,7 @@
 ## Latest: unreleased
 
 * specify codecov path by @jmbhughes in https://github.com/punch-mission/regularizepsf/pull/234
+* allow a single star mask by @svank in https://github.com/punch-mission/regularizepsf/pull/236
 
 ## Version 1.0.2: Nov 16, 2024
 
