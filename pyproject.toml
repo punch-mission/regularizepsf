@@ -13,11 +13,11 @@ description = "Point spread function modeling and regularization"
 dependencies = [
       "numpy",
       "h5py",
-      "sep-pjw",
+      "sep",
       "astropy",
       "scipy",
       "scikit-image",
-      "matplotlib",
+      "matplotlib"
 ]
 readme = "README.md"
 license = {file = "LICENSE"}

@@ -4,7 +4,7 @@ import pathlib
 from collections.abc import Generator
 
 import numpy as np
-import sep_pjw as sep
+import sep
 from astropy.io import fits
 from scipy.interpolate import RectBivariateSpline
 from skimage.transform import downscale_local_mean
