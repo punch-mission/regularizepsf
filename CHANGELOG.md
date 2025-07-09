@@ -6,6 +6,7 @@
 
 * specify codecov path by @jmbhughes in https://github.com/punch-mission/regularizepsf/pull/234
 * allow a single star mask by @svank in https://github.com/punch-mission/regularizepsf/pull/236
+* handle saturation carefully when applying a transform by @jmbhughes in https://github.com/punch-mission/regularizepsf/pull/242
 
 ## Version 1.0.2: Nov 16, 2024
 
