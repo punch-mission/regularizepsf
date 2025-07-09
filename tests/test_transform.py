@@ -49,6 +49,30 @@ def test_transform_apply():
     assert np.allclose(image, out, atol=1E-3)
 
 
+def test_transform_apply_with_saturation():
+    """Test that applying with a saturation threshold preserves values."""
+    size = 256
+    gauss = make_gaussian(size, fwhm=3)
+    dtype = np.float32
+
+    covering = [tuple(t) for t in calculate_covering((2048, 2048), size)]
+    values = np.stack([np.zeros((size, size), dtype=dtype) for _ in covering])
+    values[:] = gauss / np.sum(gauss)
+
+    cube = IndexedCube(covering, values)
+    source = ArrayPSF(cube, workers=None)
+
+    t = ArrayPSFTransform.construct(source, source, 3.0, 0.1)
+
+    image = np.zeros((2048, 2048), dtype=dtype)
+    image[500:1000, 200:400] = 5
+    image[800, 800] = 100
+
+    out = t.apply(image, saturation_threshold=10)
+
+    assert np.allclose(image, out, atol=1E-3)
+    assert out[800, 800] == 100
+
 def test_transform_with_mismatch_coordinates_errors():
     source_coordinates = [(0, 0), (1, 1), (2, 2)]
     target_coordinates = [(0, 0), (1, 1), (0.5, 0.5)]
