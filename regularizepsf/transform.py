@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import math
 import pathlib
 from typing import TYPE_CHECKING
-import math
 
 import h5py
 import matplotlib as mpl
