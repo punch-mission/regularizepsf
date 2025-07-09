@@ -135,7 +135,7 @@ class ArrayPSFTransform:
             for i, j in zip(*np.where(saturation_mask)):
                 neighborhood_slice = (slice(i-neighborhood_width//2, i + neighborhood_width//2),
                                       slice(j-neighborhood_width//2, j + neighborhood_width//2))
-                neighborhood_sum = np.nansum(padded_image[*neighborhood_slice])
+                neighborhood_sum = np.nansum(padded_image[neighborhood_slice[0], neighborhood_slice[1]])
                 neighborhood_count = np.sum(np.isfinite(padded_image[neighborhood_slice]))
                 padded_image[i, j] = neighborhood_sum / neighborhood_count
 
