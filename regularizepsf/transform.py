@@ -125,19 +125,17 @@ class ArrayPSFTransform:
         # save the image before filling the saturated values, so they can be restored
         raw_padded_image = padded_image.copy()
 
-        # fill each saturated value with the average of the neighborhood around it
+        # pixels are saturated if they exceed a threshold value
         saturation_mask = padded_image > saturation_threshold
-        saturation_mask = binary_dilation(saturation_mask, iterations=saturation_dilation)
-        padded_image[saturation_mask] = np.nan
 
         # if there are any saturated pixels fill them with their neighborhood average
         if np.any(saturation_mask):
+            saturation_mask = binary_dilation(saturation_mask, iterations=saturation_dilation)
+            padded_image[saturation_mask] = np.nan
             for i, j in zip(*np.where(saturation_mask)):
                 neighborhood_slice = (slice(i-neighborhood_width//2, i + neighborhood_width//2),
                                       slice(j-neighborhood_width//2, j + neighborhood_width//2))
-                neighborhood_sum = np.nansum(padded_image[neighborhood_slice[0], neighborhood_slice[1]])
-                neighborhood_count = np.sum(np.isfinite(padded_image[neighborhood_slice]))
-                padded_image[i, j] = neighborhood_sum / neighborhood_count
+                padded_image[i, j] = np.nanmean(padded_image[neighborhood_slice])
 
         # begin slicing and conducting the PSF correction
         def slice_padded_image(coordinate: tuple[int, int]) -> tuple[slice, slice]:
