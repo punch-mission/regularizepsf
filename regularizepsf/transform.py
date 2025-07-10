@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import pathlib
 from typing import TYPE_CHECKING
 
@@ -10,6 +11,7 @@ import matplotlib as mpl
 import numpy as np
 import scipy
 from astropy.io import fits
+from scipy.ndimage import binary_dilation
 
 from regularizepsf.exceptions import InvalidCoordinateError
 from regularizepsf.util import IndexedCube
@@ -80,7 +82,13 @@ class ArrayPSFTransform:
         cube = IndexedCube(source.coordinates, (numerator / denominator) * target.fft_evaluations)
         return ArrayPSFTransform(cube)
 
-    def apply(self, image: np.ndarray, workers: int | None = None, pad_mode: str = "symmetric") -> np.ndarray:
+    def apply(self,
+              image: np.ndarray,
+              workers: int | None = None,
+              pad_mode: str = "symmetric",
+              saturation_threshold: float = math.inf,
+              saturation_dilation: int = 1,
+              neighborhood_width: int = 7) -> np.ndarray:
         """Apply the PSFTransform to an image.
 
         Parameters
@@ -92,19 +100,44 @@ class ArrayPSFTransform:
             If negative, the value wraps around from os.cpu_count(). See scipy.fft.fft for more details.
         pad_mode: str
             how to pad the image when computing ffts, see np.pad for more details.
-
+        saturation_threshold: float
+            pixels brighter than this threshold are filled with their neighborhood average before PSF correction
+            and then refilled with the raw value after correction to avoid producing artifacts
+        saturation_dilation: int
+            a nonnegative number of times to morphologically dilate the saturation mask before application
+        neighborhood_width: int
+            an odd positive number indicating the size of the neighborhood used for filling saturated pixels
         Returns
         -------
         np.ndarray
             image with psf transformed
 
         """
+        # we don't want to mutate the data and we expect it to be a float
+        image = image.copy().astype(float)
+
         padded_image = np.pad(
             image,
             ((2 * self.psf_shape[0], 2 * self.psf_shape[0]), (2 * self.psf_shape[1], 2 * self.psf_shape[1])),
             mode=pad_mode,
         )
 
+        # save the image before filling the saturated values, so they can be restored
+        raw_padded_image = padded_image.copy()
+
+        # pixels are saturated if they exceed a threshold value
+        saturation_mask = padded_image > saturation_threshold
+
+        # if there are any saturated pixels fill them with their neighborhood average
+        if np.any(saturation_mask):
+            saturation_mask = binary_dilation(saturation_mask, iterations=saturation_dilation)
+            padded_image[saturation_mask] = np.nan
+            for i, j in zip(*np.where(saturation_mask)):
+                neighborhood_slice = (slice(i-neighborhood_width//2, i + neighborhood_width//2),
+                                      slice(j-neighborhood_width//2, j + neighborhood_width//2))
+                padded_image[i, j] = np.nanmean(padded_image[neighborhood_slice])
+
+        # begin slicing and conducting the PSF correction
         def slice_padded_image(coordinate: tuple[int, int]) -> tuple[slice, slice]:
             """Get the slice objects for a coordinate patch in the padded cube."""
             row_slice = slice(
@@ -134,6 +167,9 @@ class ArrayPSFTransform:
         reconstructed_image = np.zeros_like(padded_image)
         for coordinate, patch in zip(self.coordinates, patches, strict=True):
             reconstructed_image[slice_padded_image(coordinate)[0], slice_padded_image(coordinate)[1]] += patch
+
+        # restore the saturated values to their value before correction was applied
+        reconstructed_image[saturation_mask] = raw_padded_image[saturation_mask]
 
         return reconstructed_image[
             2 * self.psf_shape[0] : image.shape[0] + 2 * self.psf_shape[0],
