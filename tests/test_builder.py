@@ -94,4 +94,3 @@ def test_find_stars_and_average_generator(method):
     example, _ = builder.build(generator(), average_method=method)
     assert isinstance(example, ArrayPSF)
     assert example.sample_shape == (32, 32)
-
