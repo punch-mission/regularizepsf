@@ -17,7 +17,8 @@ dependencies = [
       "astropy",
       "scipy",
       "scikit-image",
-      "matplotlib"
+      "matplotlib",
+      "photutils>=2.0.2",
 ]
 readme = "README.md"
 license = {file = "LICENSE"}

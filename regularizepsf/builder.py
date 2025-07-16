@@ -55,7 +55,8 @@ def _scale_image(image, interpolation_scale):
                                      1 + (image.shape[1] - 1) * interpolation_scale))
     return image
 
-def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_size, i):
+def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_size, i,
+                  saturation_threshold: float = np.inf, mask: np.ndarray | None = None):
     background = sep.Background(image)
     image_background_removed = image - background
     image_star_coords = sep.extract(image_background_removed,
@@ -74,6 +75,12 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
     padded_image = np.pad(image_background_removed,
                           padding_shape,
                           mode="reflect")
+    # the mask indicates which pixel should be ignored in the calculation
+    # since we're padding the image, the padded region should not be regarded and thus is set to 1
+    if mask is not None:
+        padded_mask = np.pad(mask, padding_shape, mode="constant", constant_values=1)
+    else:  # if no mask is provided, we create an empty mask
+        padded_mask = np.zeros_like(padded_image, dtype=bool)
 
     patches = {}
     for coordinate in coordinates:
@@ -81,7 +88,15 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
                              coordinate[1] + 2 * interpolation_scale * psf_size,
                 coordinate[2] + interpolation_scale * psf_size:
                 coordinate[2] + 2 * interpolation_scale * psf_size]
-        patches[coordinate] = patch
+        mask_patch = padded_mask[coordinate[1] + interpolation_scale * psf_size:
+                             coordinate[1] + 2 * interpolation_scale * psf_size,
+                            coordinate[2] + interpolation_scale * psf_size:
+                            coordinate[2] + 2 * interpolation_scale * psf_size]
+
+        # we do not add patches that have saturated pixels
+        if np.all(patch < saturation_threshold):
+            patch[mask_patch] = np.nan
+            patches[coordinate] = patch
 
     return patches
 
@@ -152,6 +167,12 @@ def _average_patches(patches, corners, method='mean', percentile: float=None):
     else:
         raise PSFBuilderError(f"Unknown method {method}.")
 
+    # we cannot allow any nans to propagate forward so we fill them with 0 to indicate no response
+    for corner in averages:
+        filled_corner = averages[corner].copy()
+        filled_corner[np.isnan(filled_corner)] = 0
+        averages[corner] = filled_corner
+
     return averages, counts
 
 class ArrayPSFBuilder:
@@ -172,7 +193,9 @@ class ArrayPSFBuilder:
               interpolation_scale: int = 1,
               star_threshold: int = 3,
               average_method: str = 'median',
-              percentile: float = 50) -> (ArrayPSF, dict):
+              percentile: float = 50,
+              saturation_threshold: float = np.inf,
+              mask: np.ndarray| None = None) -> (ArrayPSF, dict):
         """Build the PSF model.
 
         Parameters
@@ -212,7 +235,8 @@ class ArrayPSFBuilder:
                 image = _scale_image(image, interpolation_scale=1)
 
             # find stars using SEP
-            patches.update(_find_patches(image, star_threshold, star_mask, interpolation_scale, self.psf_size, i))
+            patches.update(_find_patches(image, star_threshold, star_mask, interpolation_scale, self.psf_size, i,
+                                         saturation_threshold, mask))
 
         corners = calculate_covering((image_shape[0] * interpolation_scale,
                                       image_shape[1] * interpolation_scale),
@@ -226,6 +250,6 @@ class ArrayPSFBuilder:
             if interpolation_scale != 1:
                 this_patch = downscale_local_mean(this_patch,(interpolation_scale, interpolation_scale))
             values_coords.append(coordinate)
-            values_array[i, :, :] = this_patch
+            values_array[i, :, :] = this_patch / np.nansum(this_patch)
 
         return ArrayPSF(IndexedCube(values_coords, values_array)), counts
