@@ -77,7 +77,7 @@ def test_find_stars_and_average_array_with_mask_and_saturation(method):
 
     builder = ArrayPSFBuilder(32)
     example, _ = builder.build(image_array, mask, average_method=method,
-                               image_mask=mask,
+                               image_mask=mask[0],
                                saturation_threshold=1_000_000)
     assert isinstance(example, ArrayPSF)
     assert example.sample_shape == (32, 32)

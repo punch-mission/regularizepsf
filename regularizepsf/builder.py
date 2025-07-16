@@ -78,7 +78,7 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
     # the mask indicates which pixel should be ignored in the calculation
     # since we're padding the image, the padded region should not be regarded and thus is set to 1
     if image_mask is not None:
-        padded_mask = np.pad(image_mask, padding_shape)
+        padded_mask = np.pad(image_mask, padding_shape, mode='reflect')
     else:  # if no mask is provided, we create an empty mask
         padded_mask = np.zeros_like(padded_image, dtype=bool)
 
