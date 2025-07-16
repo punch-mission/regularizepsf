@@ -56,7 +56,7 @@ def _scale_image(image, interpolation_scale):
     return image
 
 def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_size, i,
-                  saturation_threshold: float = np.inf, mask: np.ndarray | None = None):
+                  saturation_threshold: float = np.inf, image_mask: np.ndarray | None = None):
     background = sep.Background(image)
     image_background_removed = image - background
     image_star_coords = sep.extract(image_background_removed,
@@ -77,8 +77,8 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
                           mode="reflect")
     # the mask indicates which pixel should be ignored in the calculation
     # since we're padding the image, the padded region should not be regarded and thus is set to 1
-    if mask is not None:
-        padded_mask = np.pad(mask, padding_shape, mode="constant", constant_values=1)
+    if image_mask is not None:
+        padded_mask = np.pad(image_mask, padding_shape)
     else:  # if no mask is provided, we create an empty mask
         padded_mask = np.zeros_like(padded_image, dtype=bool)
 
@@ -97,7 +97,6 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
         if np.all(patch < saturation_threshold):
             patch[mask_patch] = np.nan
             patches[coordinate] = patch
-
     return patches
 
 def _find_matches(coordinate, x_bounds, y_bounds, psf_size):
@@ -150,6 +149,10 @@ def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_siz
             counts[match_corner] += 1
 
     averages = {(corner[0], corner[1]): percentile_method(stack[corner]) for corner in stack}
+
+    # if there were no patches at all, it will be filled with a np.nan instead of an array... we handle that carefully
+    averages = {corner: patch if isinstance(patch, np.ndarray) else np.zeros((psf_size, psf_size)) + np.nan
+                for corner, patch in averages.items()}
     return averages, counts
 
 def _average_patches(patches, corners, method='mean', percentile: float=None):
@@ -167,11 +170,11 @@ def _average_patches(patches, corners, method='mean', percentile: float=None):
     else:
         raise PSFBuilderError(f"Unknown method {method}.")
 
-    # we cannot allow any nans to propagate forward so we fill them with 0 to indicate no response
-    for corner in averages:
-        filled_corner = averages[corner].copy()
-        filled_corner[np.isnan(filled_corner)] = 0
-        averages[corner] = filled_corner
+    # we cannot allow any nans to propagate forward, so we fill them with 0 to indicate no response
+    for corner, patch in averages.items():
+        modified_patch = patch.copy()
+        modified_patch[np.isnan(modified_patch)] = 0
+        averages[corner] = modified_patch
 
     return averages, counts
 
@@ -188,14 +191,14 @@ class ArrayPSFBuilder:
 
     def build(self,
               images: list[str] | list[pathlib.Path] | np.ndarray | Generator,
-              star_masks: list[str] | list[pathlib.Path] | np.ndarray | Generator | None = None,
+              sep_mask: list[str] | list[pathlib.Path] | np.ndarray | Generator | None = None,
               hdu_choice: int | None = 0,
               interpolation_scale: int = 1,
               star_threshold: int = 3,
               average_method: str = 'median',
               percentile: float = 50,
               saturation_threshold: float = np.inf,
-              mask: np.ndarray| None = None) -> (ArrayPSF, dict):
+              image_mask: np.ndarray | None = None) -> (ArrayPSF, dict):
         """Build the PSF model.
 
         Parameters
@@ -211,13 +214,13 @@ class ArrayPSFBuilder:
         """
         data_iterator = _convert_to_generator(images, hdu_choice=hdu_choice)
 
-        if star_masks is None:
+        if sep_mask is None:
             def generator() -> None:
                 while True:
                     yield None
             mask_iterator = generator()
         else:
-            mask_iterator = _convert_to_generator(star_masks, hdu_choice=hdu_choice)
+            mask_iterator = _convert_to_generator(sep_mask, hdu_choice=hdu_choice)
 
         # We'll store the first image's shape, and then make sure the others match.
         image_shape = None
@@ -236,7 +239,7 @@ class ArrayPSFBuilder:
 
             # find stars using SEP
             patches.update(_find_patches(image, star_threshold, star_mask, interpolation_scale, self.psf_size, i,
-                                         saturation_threshold, mask))
+                                         saturation_threshold, image_mask))
 
         corners = calculate_covering((image_shape[0] * interpolation_scale,
                                       image_shape[1] * interpolation_scale),
