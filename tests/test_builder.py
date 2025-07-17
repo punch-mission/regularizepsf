@@ -65,6 +65,22 @@ def test_find_stars_and_average_array(method):
     assert isinstance(example, ArrayPSF)
     assert example.sample_shape == (32, 32)
 
+@pytest.mark.parametrize("method", ["mean", "median", "percentile"])
+def test_find_stars_and_average_array_with_mask_and_saturation(method):
+    img_path = str(TEST_DIR / "data/compressed_dash.fits")
+    image_array = fits.getdata(img_path).astype(float)
+    image_array = image_array.reshape((1, *image_array.shape))
+
+    # Use a mask to only process part of the image, to speed up this test
+    mask = np.ones_like(image_array, dtype=bool)
+    mask[:, :800, :800] = 0
+
+    builder = ArrayPSFBuilder(32)
+    example, _ = builder.build(image_array, mask, average_method=method,
+                               image_mask=mask[0],
+                               saturation_threshold=1_000_000)
+    assert isinstance(example, ArrayPSF)
+    assert example.sample_shape == (32, 32)
 
 @pytest.mark.parametrize("method", ["mean", "median", "percentile"])
 def test_find_stars_and_average_generator(method):
