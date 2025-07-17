@@ -1,8 +1,8 @@
-# Changelog
+5# Changelog
 
 [This is available in GitHub](https://github.com/punch-mission/regularizepsf/releases?page=1)
 
-## Latest: unreleased
+## Version 1.1.0: Jul 17, 2025
 
 * specify codecov path by @jmbhughes in https://github.com/punch-mission/regularizepsf/pull/234
 * allow a single star mask by @svank in https://github.com/punch-mission/regularizepsf/pull/236
