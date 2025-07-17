@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 
 
 project = "regularizepsf"
-copyright = "2024, J. Marcus Hughes and the PUNCH Science Operations Center"
+copyright = "2025, J. Marcus Hughes and the PUNCH Science Operations Center"
 author = "J. Marcus Hughes and the PUNCH Science Operations Center"
 
 release: str = get_version("regularizepsf")
