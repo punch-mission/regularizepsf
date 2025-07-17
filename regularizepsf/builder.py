@@ -75,8 +75,8 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
     padded_image = np.pad(image_background_removed,
                           padding_shape,
                           mode="reflect")
+
     # the mask indicates which pixel should be ignored in the calculation
-    # since we're padding the image, the padded region should not be regarded and thus is set to 1
     if image_mask is not None:
         padded_mask = np.pad(image_mask, padding_shape, mode='reflect')
     else:  # if no mask is provided, we create an empty mask
@@ -151,7 +151,7 @@ def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_siz
     averages = {(corner[0], corner[1]): percentile_method(stack[corner]) for corner in stack}
 
     # if there were no patches at all, it will be filled with a np.nan instead of an array... we handle that carefully
-    averages = {corner: patch if isinstance(patch, np.ndarray) else np.zeros((psf_size, psf_size)) + np.nan
+    averages = {corner: patch if isinstance(patch, np.ndarray) else np.full((psf_size, psf_size), np.nan)
                 for corner, patch in averages.items()}
     return averages, counts
 
