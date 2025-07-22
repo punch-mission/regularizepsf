@@ -2,6 +2,10 @@
 
 [This is available in GitHub](https://github.com/punch-mission/regularizepsf/releases?page=1)
 
+## Latest -- Unreleased
+
+* adds docs button to view source in https://github.com/punch-mission/regularizepsf/pull/245
+
 ## Version 1.1.0: Jul 17, 2025
 
 * specify codecov path by @jmbhughes in https://github.com/punch-mission/regularizepsf/pull/234

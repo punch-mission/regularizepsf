@@ -28,6 +28,7 @@ if _version.is_devrelease:
 extensions = ["autoapi.extension",
               "sphinx.ext.autodoc",
               "sphinx.ext.napoleon",
+              "sphinx.ext.viewcode",
               "nbsphinx",
               "IPython.sphinxext.ipython_console_highlighting"]
 
