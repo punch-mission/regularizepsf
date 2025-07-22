@@ -2,7 +2,7 @@
 
 [This is available in GitHub](https://github.com/punch-mission/regularizepsf/releases?page=1)
 
-## Latest -- Unreleased 
+## Latest -- Unreleased
 
 * adds docs button to view source in https://github.com/punch-mission/regularizepsf/pull/245
 
