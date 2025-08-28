@@ -68,3 +68,55 @@ sections = "FUTURE, COMPATIBILITY, STDLIB, THIRDPARTY, FIRSTPARTY, LOCALFOLDER"
 [tool.cibuildwheel]
 # Disable building PyPy wheels on all platforms
 skip = "pp*"
+
+[tool.gilesbot]
+[tool.gilesbot.pull_requests]
+enabled = true
+
+[tool.gilesbot.towncrier_changelog]
+enabled = true
+changelog_skip_label = "no-changelog-entry-needed" # default is none
+changelog_noop_label = "skip-changelog-checks"
+whatsnew_label = "whatsnew-needed"
+
+[tool.towncrier]
+package = "regularizepsf"
+filename = "CHANGELOG.rst"
+directory = "changelog/"
+issue_format = "`#{issue} <https://github.com/punch-mission/regularizepsf/pull/{issue}>`__"
+title_format = "{version} ({project_date})"
+
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Breaking Changes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "deprecation"
+name = "Deprecations"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "removal"
+name = "Removals"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "New Features"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bug Fixes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "doc"
+name = "Documentation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "trivial"
+name = "Internal Changes"
+showcontent = true
