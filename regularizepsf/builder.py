@@ -199,7 +199,7 @@ class ArrayPSFBuilder:
               percentile: float = 50,
               saturation_threshold: float = np.inf,
               image_mask: np.ndarray | None = None,
-              debug: bool = False) -> (ArrayPSF, dict):
+              return_patches: bool = False) -> (ArrayPSF, dict):
         """Build the PSF model.
 
         Parameters
@@ -256,7 +256,7 @@ class ArrayPSFBuilder:
             values_coords.append(coordinate)
             values_array[i, :, :] = this_patch / np.nansum(this_patch)
 
-        if debug:
+        if return_patches:
             return ArrayPSF(IndexedCube(values_coords, values_array)), counts, patches
         else:
             return ArrayPSF(IndexedCube(values_coords, values_array)), counts
