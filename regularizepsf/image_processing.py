@@ -54,7 +54,7 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
                                         err=background.globalrms,
                                         mask=star_mask)
     except:
-        return None
+        return {"x":[], "y":[]}
 
     coordinates = [(i,
                     int(round(x - psf_size * interpolation_scale / 2)),

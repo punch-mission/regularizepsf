@@ -18,6 +18,8 @@ from regularizepsf.util import IndexedCube, calculate_covering
 
 from scipy.ndimage import label
 
+from regularizepsf.image_processing import calculate_background
+
 
 def _convert_to_generator(images:  list[pathlib.Path] | np.ndarray | Generator,
                           hdu_choice: int | None = None) -> Generator:
@@ -232,17 +234,22 @@ class ArrayPSFBuilder:
             if interpolation_scale != 1:
                 this_patch = downscale_local_mean(this_patch,(interpolation_scale, interpolation_scale))
             values_coords.append(coordinate)
-            # TODO - this might be the spot... either fix the nansum here which is often negative, or isolate the center psf contribution
-            # TODO - should we also do any of the other postprocessing fixes here?
+
+            # TODO - Hacker zone.
+
+            this_background = calculate_background(this_patch)
+            this_patch -= this_background
+
             this_patch[this_patch <= 0] = np.nan
+
+            this_value = this_patch[this_patch.shape[0]//2, this_patch.shape[1]//2]
+            this_patch[this_patch <= 0.1 * this_value] = np.nan
 
             patch_zeroed = np.copy(this_patch)
             patch_zeroed[~np.isfinite(patch_zeroed)] = 0
 
             patch_lab = label(patch_zeroed)[0]
             psf_core_mask = patch_lab == patch_lab[patch_lab.shape[0]//2,patch_lab.shape[1]//2]
-
-            # values_array[i, :, :] = this_patch / np.nansum(this_patch)
 
             fixed_patch = patch_zeroed * psf_core_mask
             fixed_patch = fixed_patch / np.nansum(fixed_patch)
