@@ -1,7 +1,9 @@
 """Functions for building PSF models from images."""
 
 import pathlib
+import multiprocessing
 from collections.abc import Generator
+from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 import sep
@@ -10,8 +12,11 @@ from scipy.interpolate import RectBivariateSpline
 from skimage.transform import downscale_local_mean
 
 from regularizepsf.exceptions import IncorrectShapeError, PSFBuilderError
+from regularizepsf.image_processing import process_single_image
 from regularizepsf.psf import ArrayPSF
 from regularizepsf.util import IndexedCube, calculate_covering
+
+from scipy.ndimage import label
 
 
 def _convert_to_generator(images:  list[pathlib.Path] | np.ndarray | Generator,
@@ -34,70 +39,15 @@ def _convert_to_generator(images:  list[pathlib.Path] | np.ndarray | Generator,
     elif isinstance(images, list) and (isinstance(images[0], str) or isinstance(images[0], pathlib.Path)):
         def generator() -> np.ndarray:
             for image_path in images:
-                with fits.open(image_path) as hdul:
-                    yield hdul[hdu_choice].data.astype(float)
+                yield image_path
+                # with fits.open(image_path) as hdul:
+                    # yield hdul[hdu_choice].data.astype(float)
         data_iterator = generator()
     else:
         msg = "Unsupported type for `images`"
         raise TypeError(msg)
 
     return data_iterator
-
-def _scale_image(image, interpolation_scale):
-    interpolator = RectBivariateSpline(np.arange(image.shape[0]),
-                                       np.arange(image.shape[1]),
-                                       image)
-    image = interpolator(np.linspace(0,
-                                     image.shape[0] - 1,
-                                     1 + (image.shape[0] - 1) * interpolation_scale),
-                         np.linspace(0,
-                                     image.shape[1] - 1,
-                                     1 + (image.shape[1] - 1) * interpolation_scale))
-    return image
-
-def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_size, i,
-                  saturation_threshold: float = np.inf, image_mask: np.ndarray | None = None):
-    background = sep.Background(image)
-    image_background_removed = image - background
-    image_star_coords = sep.extract(image_background_removed,
-                                    star_threshold,
-                                    err=background.globalrms,
-                                    mask=star_mask)
-
-    coordinates = [(i,
-                    int(round(x - psf_size * interpolation_scale / 2)),
-                    int(round(y - psf_size * interpolation_scale / 2)))
-                   for x, y in zip(image_star_coords["y"], image_star_coords["x"], strict=True)]
-
-    # pad in case someone selects a region on the edge of the image
-    padding_shape = ((psf_size * interpolation_scale, psf_size * interpolation_scale),
-                     (psf_size * interpolation_scale, psf_size * interpolation_scale))
-    padded_image = np.pad(image_background_removed,
-                          padding_shape,
-                          mode="reflect")
-
-    # the mask indicates which pixel should be ignored in the calculation
-    if image_mask is not None:
-        padded_mask = np.pad(image_mask, padding_shape, mode='reflect')
-    else:  # if no mask is provided, we create an empty mask
-        padded_mask = np.zeros_like(padded_image, dtype=bool)
-
-    patches = {}
-    for coordinate in coordinates:
-        patch = padded_image[coordinate[1] + interpolation_scale * psf_size:
-                             coordinate[1] + 2 * interpolation_scale * psf_size,
-                coordinate[2] + interpolation_scale * psf_size:
-                coordinate[2] + 2 * interpolation_scale * psf_size]
-        mask_patch = padded_mask[coordinate[1] + interpolation_scale * psf_size:
-                             coordinate[1] + 2 * interpolation_scale * psf_size,
-                            coordinate[2] + interpolation_scale * psf_size:
-                            coordinate[2] + 2 * interpolation_scale * psf_size]
-
-        # we do not add patches that have saturated pixels
-        if np.all(patch < saturation_threshold):
-            patch[mask_patch] = np.nan
-            patches[coordinate] = patch
-    return patches
 
 def _find_matches(coordinate, x_bounds, y_bounds, psf_size):
     center_x = coordinate[1] + psf_size // 2
@@ -178,6 +128,7 @@ def _average_patches(patches, corners, method='mean', percentile: float=None):
 
     return averages, counts
 
+
 class ArrayPSFBuilder:
     """A builder that will take a series of images and construct an ArrayPSF to represent their implicit PSF."""
 
@@ -193,18 +144,22 @@ class ArrayPSFBuilder:
               images: list[str] | list[pathlib.Path] | np.ndarray | Generator,
               sep_mask: list[str] | list[pathlib.Path] | np.ndarray | Generator | None = None,
               hdu_choice: int | None = 0,
+              num_workers: int | None = -1,
               interpolation_scale: int = 1,
               star_threshold: int = 3,
               average_method: str = 'median',
               percentile: float = 50,
               saturation_threshold: float = np.inf,
-              image_mask: np.ndarray | None = None) -> (ArrayPSF, dict):
+              image_mask: np.ndarray | None = None,
+              debug: bool = False) -> (ArrayPSF, dict):
         """Build the PSF model.
 
         Parameters
         ----------
         images :  list[pathlib.Path] | np.ndarray | Generator
             images to use
+        num_workers : int | None
+            Number of worker processes. -1 uses all available CPUs.
 
         Returns
         -------
@@ -222,24 +177,48 @@ class ArrayPSFBuilder:
         else:
             mask_iterator = _convert_to_generator(sep_mask, hdu_choice=hdu_choice)
 
-        # We'll store the first image's shape, and then make sure the others match.
-        image_shape = None
+        image_shape = (2048, 2048)
+        # TODO - think of a way to add this back with image iterator logic
+        # image_shape = None
+        # for i, (image, star_mask) in enumerate(zip(data_iterator, mask_iterator, strict=False)):
+        #     if image_shape is None:
+        #         image_shape = image.shape
+        #     elif image.shape != image_shape:
+        #         msg = ("Images must all be the same shape."
+        #                f"Found both {image_shape} and {image.shape}.")
+        #         raise PSFBuilderError(msg)
+
+        args = [
+            (i, image, star_mask, interpolation_scale, self.psf_size, 
+             star_threshold, saturation_threshold, image_mask, hdu_choice)
+            for i, (image, star_mask) in enumerate(zip(data_iterator, mask_iterator))
+        ]
+
+        with multiprocessing.Pool(processes = num_workers) as pool:
+            results = pool.map(process_single_image, args)
+
         patches = {}
-        for i, (image, star_mask) in enumerate(zip(data_iterator, mask_iterator, strict=False)):
-            if image_shape is None:
-                image_shape = image.shape
-            elif image.shape != image_shape:
-                msg = ("Images must all be the same shape."
-                       f"Found both {image_shape} and {image.shape}.")
-                raise PSFBuilderError(msg)
+        for result in results:
+            patches.update(result)
 
-            # if the image should be scaled then, do the scaling before anything else
-            if interpolation_scale != 1:
-                image = _scale_image(image, interpolation_scale=1)
+        # We'll store the first image's shape, and then make sure the others match.
+        # image_shape = None
+        # patches = {}
+        # for i, (image, star_mask) in enumerate(zip(data_iterator, mask_iterator, strict=False)):
+        #     if image_shape is None:
+        #         image_shape = image.shape
+        #     elif image.shape != image_shape:
+        #         msg = ("Images must all be the same shape."
+        #                f"Found both {image_shape} and {image.shape}.")
+        #         raise PSFBuilderError(msg)
 
-            # find stars using SEP
-            patches.update(_find_patches(image, star_threshold, star_mask, interpolation_scale, self.psf_size, i,
-                                         saturation_threshold, image_mask))
+            # # if the image should be scaled then, do the scaling before anything else
+            # if interpolation_scale != 1:
+            #     image = _scale_image(image, interpolation_scale=1)
+
+            # # find stars using SEP
+            # patches.update(_find_patches(image, star_threshold, star_mask, interpolation_scale, self.psf_size, i,
+            #                              saturation_threshold, image_mask))
 
         corners = calculate_covering((image_shape[0] * interpolation_scale,
                                       image_shape[1] * interpolation_scale),
@@ -253,6 +232,24 @@ class ArrayPSFBuilder:
             if interpolation_scale != 1:
                 this_patch = downscale_local_mean(this_patch,(interpolation_scale, interpolation_scale))
             values_coords.append(coordinate)
-            values_array[i, :, :] = this_patch / np.nansum(this_patch)
+            # TODO - this might be the spot... either fix the nansum here which is often negative, or isolate the center psf contribution
+            # TODO - should we also do any of the other postprocessing fixes here?
+            this_patch[this_patch <= 0] = np.nan
 
-        return ArrayPSF(IndexedCube(values_coords, values_array)), counts
+            patch_zeroed = np.copy(this_patch)
+            patch_zeroed[~np.isfinite(patch_zeroed)] = 0
+
+            patch_lab = label(patch_zeroed)[0]
+            psf_core_mask = patch_lab == patch_lab[patch_lab.shape[0]//2,patch_lab.shape[1]//2]
+
+            # values_array[i, :, :] = this_patch / np.nansum(this_patch)
+
+            fixed_patch = patch_zeroed * psf_core_mask
+            fixed_patch = fixed_patch / np.nansum(fixed_patch)
+
+            values_array[i,:,:] = fixed_patch
+
+        if debug:
+            return ArrayPSF(IndexedCube(values_coords, values_array)), counts, patches, averaged_patches
+        else:
+            return ArrayPSF(IndexedCube(values_coords, values_array)), counts
