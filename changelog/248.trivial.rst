@@ -1,1 +1,1 @@
-Update pre-commit. 
+Update pre-commit.
