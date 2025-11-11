@@ -1,13 +1,10 @@
 """Functions for building PSF models from images."""
 
-import multiprocessing
 import pathlib
+import multiprocessing
 from collections.abc import Generator
-from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
-import sep
-from astropy.io import fits
 from scipy.ndimage import binary_dilation, binary_erosion, label
 from skimage.transform import downscale_local_mean
 
@@ -192,7 +189,7 @@ class ArrayPSFBuilder:
         #         raise PSFBuilderError(msg)
 
         args = [
-            (i, image, star_mask, interpolation_scale, self.psf_size, 
+            (i, image, star_mask, interpolation_scale, self.psf_size,
              star_threshold, saturation_threshold, image_mask, hdu_choice,
              star_minimum, star_maximum, sqrt_compressed)
             for i, (image, star_mask) in enumerate(zip(data_iterator, mask_iterator))

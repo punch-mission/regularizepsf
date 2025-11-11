@@ -54,7 +54,7 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
                                         star_threshold,
                                         err=background.globalrms,
                                         mask=star_mask)
-    except:
+    except Exception:
         return {"x":[], "y":[]}
 
     coordinates = [(i,
@@ -85,7 +85,7 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
                              coordinate[1] + 2 * interpolation_scale * psf_size,
                             coordinate[2] + interpolation_scale * psf_size:
                             coordinate[2] + 2 * interpolation_scale * psf_size]
-        
+
         # Separately background subtract each patch
         background_patch = calculate_background(patch)
         patch_background_subtracted = patch - background_patch
@@ -106,20 +106,20 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
 
 def process_single_image(args):
     """Process a single image to extract patches.
-    
+
     Parameters
     ----------
     args : tuple
-        Tuple containing (i, image, star_mask, interpolation_scale, psf_size, 
+        Tuple containing (i, image, star_mask, interpolation_scale, psf_size,
         star_threshold, saturation_threshold, image_mask)
-    
+
     Returns
     -------
     dict
         Dictionary of patches found in the image
     """
     i, image_path, star_mask, interpolation_scale, psf_size, star_threshold, saturation_threshold, image_mask, hdu_choice, star_minimum, star_maximum, sqrt_compressed = args
-    
+
     if interpolation_scale != 1:
         image = _scale_image(image_path, interpolation_scale=interpolation_scale, hdu_choice=hdu_choice)
     else:
