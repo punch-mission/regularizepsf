@@ -1,24 +1,20 @@
 """Functions for building PSF models from images."""
 
-import pathlib
 import multiprocessing
+import pathlib
 from collections.abc import Generator
 from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 import sep
 from astropy.io import fits
-from scipy.interpolate import RectBivariateSpline
+from scipy.ndimage import binary_dilation, binary_erosion, label
 from skimage.transform import downscale_local_mean
 
 from regularizepsf.exceptions import IncorrectShapeError, PSFBuilderError
-from regularizepsf.image_processing import process_single_image
+from regularizepsf.image_processing import calculate_background, process_single_image
 from regularizepsf.psf import ArrayPSF
 from regularizepsf.util import IndexedCube, calculate_covering
-
-from scipy.ndimage import label
-
-from regularizepsf.image_processing import calculate_background
 
 
 def _convert_to_generator(images:  list[pathlib.Path] | np.ndarray | Generator,
@@ -92,6 +88,8 @@ def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_siz
     counts = {tuple(corner): 0 for corner in corners}
 
     for coordinate, patch in patches.items():
+        if not isinstance(patch, np.ndarray):
+            continue
         patch = patch / patch[psf_size // 2, psf_size // 2]  # normalize so the star brightness is always 1
         match_indices = _find_matches(coordinate, x_bounds, y_bounds, psf_size)
 
@@ -239,21 +237,24 @@ class ArrayPSFBuilder:
                 this_patch = downscale_local_mean(this_patch,(interpolation_scale, interpolation_scale))
             values_coords.append(coordinate)
 
-            # TODO - Hacker zone.
-
             this_background = calculate_background(this_patch)
             this_patch -= this_background
 
-            this_patch[this_patch <= 0] = np.nan
+            this_patch[this_patch == 0] = np.nan
 
             this_value = this_patch[this_patch.shape[0]//2, this_patch.shape[1]//2]
-            this_patch[this_patch <= 0.1 * this_value] = np.nan
+            this_value_mask = this_patch < (0.005 * this_value)
+            this_value_mask = binary_erosion(this_value_mask, border_value = 1)
+
+            this_patch[this_value_mask] = np.nan
 
             patch_zeroed = np.copy(this_patch)
             patch_zeroed[~np.isfinite(patch_zeroed)] = 0
 
             patch_lab = label(patch_zeroed)[0]
             psf_core_mask = patch_lab == patch_lab[patch_lab.shape[0]//2,patch_lab.shape[1]//2]
+
+            psf_core_mask = binary_dilation(psf_core_mask)
 
             fixed_patch = patch_zeroed * psf_core_mask
             fixed_patch = fixed_patch / np.nansum(fixed_patch)
