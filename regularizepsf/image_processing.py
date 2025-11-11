@@ -44,7 +44,8 @@ def _scale_image(image_path, interpolation_scale, hdu_choice):
 
 
 def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_size, i,
-                  saturation_threshold: float = np.inf, image_mask: np.ndarray | None = None):
+                  saturation_threshold: float = np.inf, image_mask: np.ndarray | None = None,
+                  star_minimum: float = 0, star_maximum: float = np.inf):
     background = sep.Background(image)
     image_background_removed = image - background
 
@@ -94,6 +95,12 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
         if np.all(patch_background_subtracted < saturation_threshold):
             patch_background_subtracted[mask_patch] = np.nan
             patches[coordinate] = patch_background_subtracted
+
+        # # we do not add patches that have central stars outside of our defined limits
+        center = (patch_background_subtracted.shape[1] // 2, patch_background_subtracted.shape[0] // 2)
+        if (patch_background_subtracted[center] < star_minimum) | (patch_background_subtracted[center] > star_maximum):
+            patch_background_subtracted[mask_patch] = np.nan
+            patches[coordinate] = patch_background_subtracted
     return patches
 
 
@@ -111,7 +118,7 @@ def process_single_image(args):
     dict
         Dictionary of patches found in the image
     """
-    i, image_path, star_mask, interpolation_scale, psf_size, star_threshold, saturation_threshold, image_mask, hdu_choice = args
+    i, image_path, star_mask, interpolation_scale, psf_size, star_threshold, saturation_threshold, image_mask, hdu_choice, star_minimum, star_maximum, sqrt_compressed = args
     
     if interpolation_scale != 1:
         image = _scale_image(image_path, interpolation_scale=interpolation_scale, hdu_choice=hdu_choice)
