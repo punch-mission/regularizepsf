@@ -196,13 +196,15 @@ class ArrayPSFTransform:
             fig_scale=fig_scale, colorbar_label="Transfer kernel amplitude",
             imshow_args=imshow_args)
 
-    def save(self, path: pathlib.Path) -> None:
+    def save(self, path: pathlib.Path, overwrite: bool = False) -> None:
         """Save a PSFTransform to a file. Supports h5 and FITS.
 
         Parameters
         ----------
         path : pathlib.Path
             where to save the PSFTransform
+        overwrite : bool
+            toggle to overwrite an existing file
 
         Returns
         -------
@@ -211,7 +213,8 @@ class ArrayPSFTransform:
         """
         path = pathlib.Path(path)
         if path.suffix == ".h5":
-            with h5py.File(path, "w") as f:
+            mode = "w" if overwrite else "w-"
+            with h5py.File(path, mode) as f:
                 f.create_dataset("coordinates", data=self.coordinates)
                 f.create_dataset("transfer_kernel", data=self._transfer_kernel.values)
         elif path.suffix == ".fits":
@@ -220,7 +223,7 @@ class ArrayPSFTransform:
                           fits.CompImageHDU(self._transfer_kernel.values.real,
                                             name="transfer_real", quantize_level=32),
                           fits.CompImageHDU(self._transfer_kernel.values.imag,
-                                            name="transfer_imag", quantize_level=32)]).writeto(path)
+                                            name="transfer_imag", quantize_level=32)]).writeto(path, overwrite=overwrite)
         else:
             raise NotImplementedError(f"Unsupported file type {path.suffix}. Change to .h5 or .fits.")
 
