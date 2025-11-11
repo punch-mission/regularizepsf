@@ -153,6 +153,9 @@ class ArrayPSFBuilder:
               percentile: float = 50,
               saturation_threshold: float = np.inf,
               image_mask: np.ndarray | None = None,
+              star_minimum: float = 0,
+              star_maximum: float = np.inf,
+              sqrt_compressed: bool = False,
               debug: bool = False) -> (ArrayPSF, dict):
         """Build the PSF model.
 
@@ -192,7 +195,8 @@ class ArrayPSFBuilder:
 
         args = [
             (i, image, star_mask, interpolation_scale, self.psf_size, 
-             star_threshold, saturation_threshold, image_mask, hdu_choice)
+             star_threshold, saturation_threshold, image_mask, hdu_choice,
+             star_minimum, star_maximum, sqrt_compressed)
             for i, (image, star_mask) in enumerate(zip(data_iterator, mask_iterator))
         ]
 

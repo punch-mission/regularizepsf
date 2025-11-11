@@ -124,10 +124,13 @@ def process_single_image(args):
         image = _scale_image(image_path, interpolation_scale=interpolation_scale, hdu_choice=hdu_choice)
     else:
         # Load the image directly when no scaling is needed
+        # TODO - Need to make this workable for non-PUNCH data
         with fits.open(image_path) as hdul:
             header = hdul[hdu_choice].header
-            scale = header['SCALE']
-            image = ((hdul[hdu_choice].data.astype(float))**2)/scale
+            if sqrt_compressed:
+                image = ((hdul[hdu_choice].data.astype(float))**2)/header['SCALE']
+            else:
+                image = hdul[hdu_choice].data.astype(float)
 
     return _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_size, i,
-                        saturation_threshold, image_mask)
+                        saturation_threshold, image_mask, star_minimum, star_maximum)
