@@ -154,7 +154,7 @@ class ArrayPSFBuilder:
               star_minimum: float = 0,
               star_maximum: float = np.inf,
               sqrt_compressed: bool = False,
-              debug: bool = False) -> (ArrayPSF, dict):
+              return_patches: bool = False) -> (ArrayPSF, dict):
         """Build the PSF model.
 
         Parameters
@@ -261,7 +261,7 @@ class ArrayPSFBuilder:
 
             values_array[i,:,:] = fixed_patch
 
-        if debug:
-            return ArrayPSF(IndexedCube(values_coords, values_array)), counts, patches, averaged_patches
+        if return_patches:
+            return ArrayPSF(IndexedCube(values_coords, values_array)), counts, patches
         else:
             return ArrayPSF(IndexedCube(values_coords, values_array)), counts
