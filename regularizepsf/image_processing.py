@@ -1,9 +1,13 @@
+import pathlib
+
 import numpy as np
 import scipy
 import sep
 from astropy.io import fits
 from scipy.interpolate import RectBivariateSpline
 from scipy.ndimage import binary_dilation, binary_erosion
+
+from regularizepsf.exceptions import InvalidDataError
 
 
 def calculate_background(patch: np.ndarray) -> np.ndarray:
@@ -28,9 +32,7 @@ def calculate_background(patch: np.ndarray) -> np.ndarray:
     return background
 
 
-def _scale_image(image_path, interpolation_scale, hdu_choice):
-    with fits.open(image_path) as hdul:
-        image = hdul[hdu_choice].data.astype(float)
+def _scale_image(image, interpolation_scale, hdu_choice):
     interpolator = RectBivariateSpline(np.arange(image.shape[0]),
                                        np.arange(image.shape[1]),
                                        image)
@@ -118,19 +120,22 @@ def process_single_image(args):
     dict
         Dictionary of patches found in the image
     """
-    i, image_path, star_mask, interpolation_scale, psf_size, star_threshold, saturation_threshold, image_mask, hdu_choice, star_minimum, star_maximum, sqrt_compressed = args
+    i, image, star_mask, interpolation_scale, psf_size, star_threshold, saturation_threshold, image_mask, hdu_choice, star_minimum, star_maximum, sqrt_compressed = args
 
-    if interpolation_scale != 1:
-        image = _scale_image(image_path, interpolation_scale=interpolation_scale, hdu_choice=hdu_choice)
-    else:
-        # Load the image directly when no scaling is needed
-        # TODO - Need to make this workable for non-PUNCH data
-        with fits.open(image_path) as hdul:
+    if isinstance(image, (str, pathlib.Path)):
+        with fits.open(image) as hdul:
             header = hdul[hdu_choice].header
             if sqrt_compressed:
-                image = ((hdul[hdu_choice].data.astype(float))**2)/header['SCALE']
+                data = ((hdul[hdu_choice].data.astype(float))**2)/header['SCALE']
             else:
-                image = hdul[hdu_choice].data.astype(float)
+                data = hdul[hdu_choice].data.astype(float)
+    elif isinstance(image, np.ndarray):
+        data = image
+    else:
+        raise InvalidDataError
 
-    return _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_size, i,
+    if interpolation_scale != 1:
+        data = _scale_image(data, interpolation_scale=interpolation_scale, hdu_choice=hdu_choice)
+
+    return _find_patches(data, star_threshold, star_mask, interpolation_scale, psf_size, i,
                         saturation_threshold, image_mask, star_minimum, star_maximum)

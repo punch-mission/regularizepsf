@@ -4,7 +4,8 @@ import numpy as np
 import pytest
 from astropy.io import fits
 
-from regularizepsf.builder import ArrayPSFBuilder, _average_patches, _find_patches
+from regularizepsf.builder import ArrayPSFBuilder, _average_patches
+from regularizepsf.image_processing import _find_patches
 from regularizepsf.psf import ArrayPSF
 
 TEST_DIR = pathlib.Path(__file__).parent.resolve()

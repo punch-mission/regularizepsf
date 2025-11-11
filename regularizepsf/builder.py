@@ -141,7 +141,7 @@ class ArrayPSFBuilder:
               images: list[str] | list[pathlib.Path] | np.ndarray | Generator,
               sep_mask: list[str] | list[pathlib.Path] | np.ndarray | Generator | None = None,
               hdu_choice: int | None = 0,
-              num_workers: int | None = -1,
+              num_workers: int | None = None,
               interpolation_scale: int = 1,
               star_threshold: int = 3,
               average_method: str = 'median',
@@ -159,7 +159,7 @@ class ArrayPSFBuilder:
         images :  list[pathlib.Path] | np.ndarray | Generator
             images to use
         num_workers : int | None
-            Number of worker processes. -1 uses all available CPUs.
+            Number of worker processes. None uses all available CPUs.
 
         Returns
         -------
