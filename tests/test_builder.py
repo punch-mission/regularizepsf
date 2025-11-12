@@ -5,7 +5,7 @@ import pytest
 from astropy.io import fits
 
 from regularizepsf.builder import ArrayPSFBuilder, _average_patches
-from regularizepsf.image_processing import _find_patches
+from regularizepsf.image_processing import _find_patches, process_single_image
 from regularizepsf.psf import ArrayPSF
 
 TEST_DIR = pathlib.Path(__file__).parent.resolve()
@@ -16,7 +16,28 @@ def test_find_patches():
     patches = _find_patches(image_array, 3, None, 1, 32, 50)
     for coord, patch in patches.items():
         assert coord[0] == 50
-        print(coord)
+        assert patch.shape == (32, 32)
+
+def test_process_single_image():
+    image = str(TEST_DIR / "data/compressed_dash.fits")
+    i = 50
+    star_mask = None
+    interpolation_scale = 1
+    psf_size = 32
+    star_threshold = 3
+    saturation_threshold = np.inf
+    image_mask = None
+    hdu_choice = 1
+    star_minimum = 0
+    star_maximum = np.inf
+    sqrt_compressed = False
+
+    args = i, image, star_mask, interpolation_scale, psf_size, star_threshold, saturation_threshold, image_mask, hdu_choice, star_minimum, star_maximum, sqrt_compressed
+
+    patches = process_single_image(args)
+
+    for coord, patch in patches.items():
+        assert coord[0] == 50
         assert patch.shape == (32, 32)
 
 def test_averaging():
