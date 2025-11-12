@@ -34,7 +34,7 @@ def test_process_single_image():
 
     args = i, image, star_mask, interpolation_scale, psf_size, star_threshold, saturation_threshold, image_mask, hdu_choice, star_minimum, star_maximum, sqrt_compressed
 
-    patches = process_single_image(args)
+    patches, _ = process_single_image(args)
 
     for coord, patch in patches.items():
         assert coord[0] == 50

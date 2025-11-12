@@ -35,8 +35,6 @@ def _convert_to_generator(images:  list[pathlib.Path] | np.ndarray | Generator,
         def generator() -> np.ndarray:
             for image_path in images:
                 yield image_path
-                # with fits.open(image_path) as hdul:
-                    # yield hdul[hdu_choice].data.astype(float)
         data_iterator = generator()
     else:
         msg = "Unsupported type for `images`"
@@ -177,17 +175,6 @@ class ArrayPSFBuilder:
         else:
             mask_iterator = _convert_to_generator(sep_mask, hdu_choice=hdu_choice)
 
-        image_shape = (2048, 2048)
-        # TODO - think of a way to add this back with image iterator logic
-        # image_shape = None
-        # for i, (image, star_mask) in enumerate(zip(data_iterator, mask_iterator, strict=False)):
-        #     if image_shape is None:
-        #         image_shape = image.shape
-        #     elif image.shape != image_shape:
-        #         msg = ("Images must all be the same shape."
-        #                f"Found both {image_shape} and {image.shape}.")
-        #         raise PSFBuilderError(msg)
-
         args = [
             (i, image, star_mask, interpolation_scale, self.psf_size,
              star_threshold, saturation_threshold, image_mask, hdu_choice,
@@ -199,27 +186,16 @@ class ArrayPSFBuilder:
             results = pool.map(process_single_image, args)
 
         patches = {}
-        for result in results:
-            patches.update(result)
+        image_shape = None
+        for patch, data_shape in results:
+            if image_shape is None:
+                image_shape = data_shape
+            elif image_shape != data_shape:
+                msg = ("Images must all be the same shape."
+                       f"Found both {image_shape} and {data_shape}.")
+                raise PSFBuilderError(msg)
 
-        # We'll store the first image's shape, and then make sure the others match.
-        # image_shape = None
-        # patches = {}
-        # for i, (image, star_mask) in enumerate(zip(data_iterator, mask_iterator, strict=False)):
-        #     if image_shape is None:
-        #         image_shape = image.shape
-        #     elif image.shape != image_shape:
-        #         msg = ("Images must all be the same shape."
-        #                f"Found both {image_shape} and {image.shape}.")
-        #         raise PSFBuilderError(msg)
-
-            # # if the image should be scaled then, do the scaling before anything else
-            # if interpolation_scale != 1:
-            #     image = _scale_image(image, interpolation_scale=1)
-
-            # # find stars using SEP
-            # patches.update(_find_patches(image, star_threshold, star_mask, interpolation_scale, self.psf_size, i,
-            #                              saturation_threshold, image_mask))
+            patches.update(patch)
 
         corners = calculate_covering((image_shape[0] * interpolation_scale,
                                       image_shape[1] * interpolation_scale),

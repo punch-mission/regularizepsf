@@ -138,4 +138,4 @@ def process_single_image(args):
         data = _scale_image(data, interpolation_scale=interpolation_scale, hdu_choice=hdu_choice)
 
     return _find_patches(data, star_threshold, star_mask, interpolation_scale, psf_size, i,
-                        saturation_threshold, image_mask, star_minimum, star_maximum)
+                        saturation_threshold, image_mask, star_minimum, star_maximum), data.shape
