@@ -147,20 +147,44 @@ class ArrayPSFBuilder:
               star_minimum: float = 0,
               star_maximum: float = np.inf,
               sqrt_compressed: bool = False,
-              return_patches: bool = False) -> (ArrayPSF, dict):
+              return_patches: bool = False) -> tuple[ArrayPSF, dict] | tuple[ArrayPSF, dict, dict]:
         """Build the PSF model.
 
         Parameters
         ----------
-        images :  list[pathlib.Path] | np.ndarray | Generator
-            images to use
+        images : list[str] | list[pathlib.Path] | np.ndarray | Generator
+            Input images to use for PSF characterization
+        sep_mask : list[str] | list[pathlib.Path] | np.ndarray | Generator | None
+            Mask to use with source extraction (sep)
+        hdu_choice : int | None
+            HDU index to use when loading FITS input files
         num_workers : int | None
-            Number of worker processes. None uses all available CPUs.
+            Number of worker processes for multithreaded image processing, with None using all available CPUs
+        interpolation_scale : int
+            Interpolation scale to apply to input images after loading
+        star_threshold : int
+            Minimum threshold value for star detection using sep
+        average_method : str
+            Method for patch averaging (mean, percentile, or median)
+        percentile : float
+            Percentile value when specifying the percentile patch averaging method
+        saturation_threshold : float
+            Pixel value above which stars are considered saturated
+        image_mask : np.ndarray | None
+            Mask of pixels to ignore for PSF characterization in input images
+        star_minimum : float
+            Minimum threshold of center star for patch inclusion, in units of input data
+        star_maximum : float
+            Maximum threshold of center star for patch inclusion, in units of input data
+        sqrt_compressed : bool
+            Toggle to indicate if input data has been square-root compressed, and requires decompression
+        return_patches : bool
+            Toggle to return computed patches alongside model output
 
         Returns
         -------
         (ArrayPSF, dict)
-            an array PSF and the counts of stars in each component
+            Array PSF and the counts of stars in each component
 
         """
         data_iterator = _convert_to_generator(images, hdu_choice=hdu_choice)
@@ -203,34 +227,34 @@ class ArrayPSFBuilder:
 
         values_coords = []
         values_array = np.zeros((len(averaged_patches), self.psf_size, self.psf_size))
-        for i, (coordinate, this_patch) in enumerate(averaged_patches.items()):
+        for i, (coordinate, patch) in enumerate(averaged_patches.items()):
             if interpolation_scale != 1:
-                this_patch = downscale_local_mean(this_patch,(interpolation_scale, interpolation_scale))
+                patch = downscale_local_mean(patch,(interpolation_scale, interpolation_scale))
             values_coords.append(coordinate)
 
-            this_background = calculate_background(this_patch)
-            this_patch -= this_background
+            patch_background = calculate_background(patch)
+            patch -= patch_background
 
-            this_patch[this_patch == 0] = np.nan
+            patch[patch == 0] = np.nan
 
-            this_value = this_patch[this_patch.shape[0]//2, this_patch.shape[1]//2]
-            this_value_mask = this_patch < (0.005 * this_value)
+            patch_central_value = patch[patch.shape[0]//2, patch.shape[1]//2]
+            this_value_mask = patch < (0.005 * patch_central_value)
             this_value_mask = binary_erosion(this_value_mask, border_value = 1)
 
-            this_patch[this_value_mask] = np.nan
+            patch[this_value_mask] = np.nan
 
-            patch_zeroed = np.copy(this_patch)
+            patch_zeroed = np.copy(patch)
             patch_zeroed[~np.isfinite(patch_zeroed)] = 0
 
-            patch_lab = label(patch_zeroed)[0]
-            psf_core_mask = patch_lab == patch_lab[patch_lab.shape[0]//2,patch_lab.shape[1]//2]
+            patch_labeled = label(patch_zeroed)[0]
+            psf_core_mask = patch_labeled == patch_labeled[patch_labeled.shape[0]//2,patch_labeled.shape[1]//2]
 
             psf_core_mask = binary_dilation(psf_core_mask)
 
-            fixed_patch = patch_zeroed * psf_core_mask
-            fixed_patch = fixed_patch / np.nansum(fixed_patch)
+            patch_corrected = patch_zeroed * psf_core_mask
+            patch_corrected = patch_corrected / np.nansum(patch_corrected)
 
-            values_array[i,:,:] = fixed_patch
+            values_array[i,:,:] = patch_corrected
 
         if return_patches:
             return ArrayPSF(IndexedCube(values_coords, values_array)), counts, patches

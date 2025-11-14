@@ -11,6 +11,20 @@ from regularizepsf.exceptions import InvalidDataError
 
 
 def calculate_background(patch: np.ndarray) -> np.ndarray:
+    """Fits a planar background to input patch data to use for central star isolation.
+    Patch boundaries are ignored, along with the central peak star.
+    Remaining pixels are fit to a plan with a least squares method, with values of zero marked as nans.
+
+    Parameters
+    ----------
+    patch : np.ndarray
+        Input patch array to use for background subtraction
+
+    Returns
+    -------
+    np.ndarray
+        Planar background fit array
+    """
     patch_y, patch_x = np.indices(patch.shape)
 
     mask = patch != 0
