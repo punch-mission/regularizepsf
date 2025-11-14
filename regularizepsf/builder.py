@@ -83,8 +83,6 @@ def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_siz
     counts = {tuple(corner): 0 for corner in corners}
 
     for coordinate, patch in patches.items():
-        if not isinstance(patch, np.ndarray):
-            continue
         patch = patch / patch[psf_size // 2, psf_size // 2]  # normalize so the star brightness is always 1
         match_indices = _find_matches(coordinate, x_bounds, y_bounds, psf_size)
 
