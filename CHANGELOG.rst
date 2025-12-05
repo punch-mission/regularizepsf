@@ -1,3 +1,19 @@
+Version 1.1.1: Dec 5, 2025
+==========================
+
+New Features
+------------
+
+- Adds debug mode to psf build function. (`#247 <https://github.com/punch-mission/regularizepsf/pull/247>`__)
+- Adds support for multiprocessing in PSF generation and patch cleanup changes. (`#249 <https://github.com/punch-mission/regularizepsf/pull/249>`__)
+
+
+Internal Changes
+----------------
+
+- Update pre-commit. (`#248 <https://github.com/punch-mission/regularizepsf/pull/248>`__)
+
+
 Version 1.1.0: Jul 17, 2025
 ===========================
 
