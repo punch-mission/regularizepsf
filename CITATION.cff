@@ -19,7 +19,7 @@ authors:
   given-names: "Daniel"
   orcid: "https://orcid.org/0000-0002-0494-2025"
 title: "regularizepsf"
-version: 1.1.0
+version: 1.1.1
 doi: 10.5281/zenodo.7392170
-date-released: 2024-11-02
+date-released: 2025-12-05
 url: "https://github.com/punch-mission/regularizepsf"
