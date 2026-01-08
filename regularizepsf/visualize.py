@@ -94,16 +94,16 @@ def visualize_grid(data: IndexedCube,
                    title: str | tuple[str, str] = "",
                    fig: mpl.figure.Figure | None = None,
                    fig_scale: int = 1,
-                   all_patches: bool = False,
+                   patch_stride: int = 1,
+                   edge_trim: int = 0,
                    imshow_args: dict | None = None,
                    colorbar_label: str  = "") -> None:  # noqa: ANN002, ANN003
     """Visualize the PSF model."""
     # Identify which patches we'll be plotting
     rows = np.unique(sorted(r for r, c in data.coordinates))
     columns = np.unique(sorted(c for r, c in data.coordinates))
-    if not all_patches:
-        rows = rows[1::2]
-        columns = columns[1::2]
+    rows = rows[::patch_stride]
+    columns = columns[::patch_stride]
 
     # Work out the size of the image
     # Each grid of patches will be 6 inches wide
@@ -136,7 +136,10 @@ def visualize_grid(data: IndexedCube,
 
     for i, j in itertools.product(range(len(rows)), range(len(columns))):
         ax = fig.add_subplot(gs[len(rows) - 1 - i, j])
-        im = ax.imshow(data[rows[i], columns[j]], **imshow_args)
+        image = data[rows[i], columns[j]]
+        if edge_trim:
+            image = image[edge_trim:-edge_trim, edge_trim:-edge_trim]
+        im = ax.imshow(image, **imshow_args)
         # Ensure there's a thin line between subplots
         ax.spines[:].set_color("white")
         ax.set_xticks([])
@@ -149,6 +152,8 @@ def visualize_grid(data: IndexedCube,
         for i, j in itertools.product(range(len(rows)), range(len(columns))):
             ax = fig.add_subplot(gs[len(rows) - 1 - i, j + len(columns) + 1])
             image = second_data[(rows[i], columns[j])]
+            if edge_trim:
+                image = image[edge_trim:-edge_trim, edge_trim:-edge_trim]
             im = ax.imshow(image, **imshow_args)
             ax.spines[:].set_color("white")
             ax.set_xticks([])

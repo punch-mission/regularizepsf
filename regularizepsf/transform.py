@@ -177,9 +177,11 @@ class ArrayPSFTransform:
         ]
 
     def visualize(self,
-                          fig: mpl.figure.Figure | None = None,
-                          fig_scale: int = 1,
-                          all_patches: bool = False, imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+                  fig: mpl.figure.Figure | None = None,
+                  fig_scale: int = 1,
+                  patch_stride: int = 1,
+                  edge_trim: int = 1,
+                  imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
         """Visualize the transfer kernels."""
         imshow_args = KERNEL_IMSHOW_ARGS_DEFAULT if imshow_args is None else imshow_args
 
@@ -192,8 +194,9 @@ class ArrayPSFTransform:
 
         return visualize_grid(
             IndexedCube(self._transfer_kernel.coordinates, arr),
-            all_patches=all_patches, fig=fig,
-            fig_scale=fig_scale, colorbar_label="Transfer kernel amplitude",
+            patch_stride=patch_stride,
+            edge_trim=edge_trim,
+            fig=fig, fig_scale=fig_scale, colorbar_label="Transfer kernel amplitude",
             imshow_args=imshow_args)
 
     def save(self, path: pathlib.Path, overwrite: bool = False) -> None:
