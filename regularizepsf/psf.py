@@ -332,17 +332,21 @@ class ArrayPSF:
     def visualize_psfs(self,
                   fig: mpl.figure.Figure | None = None,
                   fig_scale: int = 1,
-                  all_patches: bool = False, imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+                  edge_trim: int = 1,
+                  patch_stride: int = 1,
+                  imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
         """Visualize the PSF model."""
         imshow_args = PSF_IMSHOW_ARGS_DEFAULT if imshow_args is None else imshow_args
-        visualize_grid(self._values_cube, fig=fig, fig_scale=fig_scale, all_patches=all_patches,
-                       colorbar_label="Normalized brightness",
+        visualize_grid(self._values_cube, fig=fig, fig_scale=fig_scale, patch_stride=patch_stride,
+                       edge_trim=edge_trim, colorbar_label="Normalized brightness",
                        imshow_args=imshow_args)
 
     def visualize_ffts(self,
                   fig: mpl.figure.Figure | None = None,
                   fig_scale: int = 1,
-                  all_patches: bool = False, imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+                  edge_trim: int = 1,
+                  patch_stride: int = 1,
+                  imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
         """Visualize the fft of the PSF."""
         imshow_args = KERNEL_IMSHOW_ARGS_DEFAULT if imshow_args is None else imshow_args
 
@@ -355,7 +359,7 @@ class ArrayPSF:
 
         return visualize_grid(
             IndexedCube(self._fft_cube.coordinates, arr),
-            all_patches=all_patches, fig=fig,
+            patch_stride=patch_stride, edge_trim=edge_trim, fig=fig,
             fig_scale=fig_scale, colorbar_label="Transfer kernel amplitude",
             imshow_args=imshow_args)
 
