@@ -332,18 +332,58 @@ class ArrayPSF:
     def visualize_psfs(self,
                   fig: mpl.figure.Figure | None = None,
                   fig_scale: int = 1,
-                  all_patches: bool = False, imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
-        """Visualize the PSF model."""
+                  edge_trim: int = 1,
+                  patch_stride: int = 1,
+                  imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+        """Visualize the PSFs.
+
+        Parameters
+        ----------
+        fig : mp.figure.Figure
+            the figure to plot in
+        fig_scale : int
+            increasing this will make the figure higher resolution
+        edge_trim : int
+            how many pixels to drop on each side of the PSF for plotting
+        patch_stride : int
+            multiple of how many patches to skip when plotting, 1 means no skipping, 2 plots every other, 3 every third
+        imshow_args : dict
+            additional arguments for imshow
+
+        Returns
+        -------
+        None
+        """
         imshow_args = PSF_IMSHOW_ARGS_DEFAULT if imshow_args is None else imshow_args
-        visualize_grid(self._values_cube, fig=fig, fig_scale=fig_scale, all_patches=all_patches,
-                       colorbar_label="Normalized brightness",
+        visualize_grid(self._values_cube, fig=fig, fig_scale=fig_scale, patch_stride=patch_stride,
+                       edge_trim=edge_trim, colorbar_label="Normalized brightness",
                        imshow_args=imshow_args)
 
     def visualize_ffts(self,
                   fig: mpl.figure.Figure | None = None,
                   fig_scale: int = 1,
-                  all_patches: bool = False, imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
-        """Visualize the fft of the PSF."""
+                  edge_trim: int = 1,
+                  patch_stride: int = 1,
+                  imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+        """Visualize the FFT kernels.
+
+        Parameters
+        ----------
+        fig : mp.figure.Figure
+            the figure to plot in
+        fig_scale : int
+            increasing this will make the figure higher resolution
+        edge_trim : int
+            how many pixels to drop on each side of the PSF for plotting
+        patch_stride : int
+            multiple of how many patches to skip when plotting, 1 means no skipping, 2 plots every other, 3 every third
+        imshow_args : dict
+            additional arguments for imshow
+
+        Returns
+        -------
+        None
+        """
         imshow_args = KERNEL_IMSHOW_ARGS_DEFAULT if imshow_args is None else imshow_args
 
         arr = np.abs(np.fft.fftshift(np.fft.ifft2(self._fft_cube.values)))
@@ -355,7 +395,7 @@ class ArrayPSF:
 
         return visualize_grid(
             IndexedCube(self._fft_cube.coordinates, arr),
-            all_patches=all_patches, fig=fig,
+            patch_stride=patch_stride, edge_trim=edge_trim, fig=fig,
             fig_scale=fig_scale, colorbar_label="Transfer kernel amplitude",
             imshow_args=imshow_args)
 

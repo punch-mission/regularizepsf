@@ -177,10 +177,30 @@ class ArrayPSFTransform:
         ]
 
     def visualize(self,
-                          fig: mpl.figure.Figure | None = None,
-                          fig_scale: int = 1,
-                          all_patches: bool = False, imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
-        """Visualize the transfer kernels."""
+                  fig: mpl.figure.Figure | None = None,
+                  fig_scale: int = 1,
+                  patch_stride: int = 1,
+                  edge_trim: int = 1,
+                  imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+        """Visualize the transform kernels.
+
+        Parameters
+        ----------
+        fig : mp.figure.Figure
+            the figure to plot in
+        fig_scale : int
+            increasing this will make the figure higher resolution
+        edge_trim : int
+            how many pixels to drop on each side of the PSF for plotting
+        patch_stride : int
+            multiple of how many patches to skip when plotting, 1 means no skipping, 2 plots every other, 3 every third
+        imshow_args : dict
+            additional arguments for imshow
+
+        Returns
+        -------
+        None
+        """
         imshow_args = KERNEL_IMSHOW_ARGS_DEFAULT if imshow_args is None else imshow_args
 
         arr = np.abs(np.fft.fftshift(np.fft.ifft2(self._transfer_kernel.values)))
@@ -192,8 +212,9 @@ class ArrayPSFTransform:
 
         return visualize_grid(
             IndexedCube(self._transfer_kernel.coordinates, arr),
-            all_patches=all_patches, fig=fig,
-            fig_scale=fig_scale, colorbar_label="Transfer kernel amplitude",
+            patch_stride=patch_stride,
+            edge_trim=edge_trim,
+            fig=fig, fig_scale=fig_scale, colorbar_label="Transfer kernel amplitude",
             imshow_args=imshow_args)
 
     def save(self, path: pathlib.Path, overwrite: bool = False) -> None:
