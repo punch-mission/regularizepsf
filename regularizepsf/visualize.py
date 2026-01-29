@@ -98,7 +98,32 @@ def visualize_grid(data: IndexedCube,
                    edge_trim: int = 0,
                    imshow_args: dict | None = None,
                    colorbar_label: str  = "") -> None:  # noqa: ANN002, ANN003
-    """Visualize the PSF model."""
+    """Visualize various indexed cubes.
+
+    Parameters
+    ----------
+    data : IndexedCube
+        primary data set to visualize
+    second_data : IndexedCube
+        second set of data visualize
+    title : str
+        plot title
+    fig : mp.figure.Figure
+        the figure to plot in
+    fig_scale : int
+        increasing this will make the figure higher resolution
+    edge_trim : int
+        how many pixels to drop on each side of the PSF for plotting
+    patch_stride : int
+        multiple of how many patches to skip when plotting, 1 means no skipping, 2 plots every other, 3 every third
+    imshow_args : dict
+        additional arguments for imshow
+    colorbar_label : str
+        label for the colorbar
+    Returns
+    -------
+    None
+    """
     # Identify which patches we'll be plotting
     rows = np.unique(sorted(r for r, c in data.coordinates))
     columns = np.unique(sorted(c for r, c in data.coordinates))
