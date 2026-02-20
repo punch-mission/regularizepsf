@@ -1,1 +1,0 @@
-Expanded plot options for grid-type plots

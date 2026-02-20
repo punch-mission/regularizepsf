@@ -1,3 +1,19 @@
+Version 1.1.2: Feb 20, 2026
+===========================
+
+New Features
+------------
+
+- Expanded plot options for grid-type plots (`#252 <https://github.com/punch-mission/regularizepsf/pull/252>`__)
+
+
+Internal Changes
+----------------
+
+- Add Python 3.14 to CI workflow matrix. (`#250 <https://github.com/punch-mission/regularizepsf/pull/250>`__)
+- Update pre-commit version. (`#251 <https://github.com/punch-mission/regularizepsf/pull/251>`__)
+
+
 Version 1.1.1: Dec 5, 2025
 ==========================
 
