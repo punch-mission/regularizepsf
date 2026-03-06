@@ -83,13 +83,16 @@ def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_siz
     counts = {tuple(corner): 0 for corner in corners}
 
     for coordinate, patch in patches.items():
-        patch = patch / patch[psf_size // 2, psf_size // 2]  # normalize so the star brightness is always 1
-        match_indices = _find_matches(coordinate, x_bounds, y_bounds, psf_size)
-
-        for match_index in match_indices:
-            match_corner = tuple(corners[match_index])
-            stack[match_corner].append(patch)
-            counts[match_corner] += 1
+        try:
+            patch = patch / patch[psf_size // 2, psf_size // 2]  # normalize so the star brightness is always 1
+            match_indices = _find_matches(coordinate, x_bounds, y_bounds, psf_size)
+        except TypeError:
+            pass
+        else:
+            for match_index in match_indices:
+                match_corner = tuple(corners[match_index])
+                stack[match_corner].append(patch)
+                counts[match_corner] += 1
 
     averages = {(corner[0], corner[1]): percentile_method(stack[corner]) for corner in stack}
 
