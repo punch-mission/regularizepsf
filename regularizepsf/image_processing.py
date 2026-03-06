@@ -5,7 +5,7 @@ import scipy
 import sep
 from astropy.io import fits
 from scipy.interpolate import RectBivariateSpline
-from scipy.ndimage import binary_dilation, binary_erosion
+from scipy.ndimage import binary_dilation, binary_erosion, shift
 
 from regularizepsf.exceptions import InvalidDataError
 
