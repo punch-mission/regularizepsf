@@ -98,7 +98,7 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
                              rounded_coordinate[1] + 2 * interpolation_scale * psf_size,
         rounded_coordinate[2] + interpolation_scale * psf_size:
         rounded_coordinate[2] + 2 * interpolation_scale * psf_size]
-        shift_amount = (coordinate[1] - rounded_coordinate[1] - 0.5, coordinate[2] - rounded_coordinate[2] - 0.5)
+        shift_amount = (-coordinate[1] + rounded_coordinate[1] - 0.5, -coordinate[2] + rounded_coordinate[2] - 0.5)
         patch = shift(patch, shift=shift_amount, mode='mirror')
         mask_patch = padded_mask[rounded_coordinate[1] + interpolation_scale * psf_size:
                                  rounded_coordinate[1] + 2 * interpolation_scale * psf_size,
