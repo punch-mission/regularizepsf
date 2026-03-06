@@ -1,0 +1,1 @@
+Fix _find_patches so stars are aligned to the patch center.
