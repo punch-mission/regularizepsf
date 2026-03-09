@@ -5,7 +5,7 @@ import scipy
 import sep
 from astropy.io import fits
 from scipy.interpolate import RectBivariateSpline
-from scipy.ndimage import binary_dilation, binary_erosion
+from scipy.ndimage import binary_dilation, binary_erosion, shift
 
 from regularizepsf.exceptions import InvalidDataError
 
@@ -71,11 +71,11 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
                                         err=background.globalrms,
                                         mask=star_mask)
     except Exception:
-        return {"x":[], "y":[]}
+        return {"x": [], "y": []}
 
     coordinates = [(i,
-                    int(round(x - psf_size * interpolation_scale / 2)),
-                    int(round(y - psf_size * interpolation_scale / 2)))
+                    x - (psf_size * interpolation_scale) / 2,
+                    y - (psf_size * interpolation_scale) / 2)
                    for x, y in zip(image_star_coords["y"], image_star_coords["x"], strict=True)]
 
     # pad in case someone selects a region on the edge of the image
@@ -93,14 +93,18 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
 
     patches = {}
     for coordinate in coordinates:
-        patch = padded_image[coordinate[1] + interpolation_scale * psf_size:
-                             coordinate[1] + 2 * interpolation_scale * psf_size,
-                coordinate[2] + interpolation_scale * psf_size:
-                coordinate[2] + 2 * interpolation_scale * psf_size]
-        mask_patch = padded_mask[coordinate[1] + interpolation_scale * psf_size:
-                             coordinate[1] + 2 * interpolation_scale * psf_size,
-                            coordinate[2] + interpolation_scale * psf_size:
-                            coordinate[2] + 2 * interpolation_scale * psf_size]
+        rounded_coordinate = (coordinate[0], int(round(coordinate[1])), int(round(coordinate[2])))
+        patch = padded_image[rounded_coordinate[1] + interpolation_scale * psf_size:
+                             rounded_coordinate[1] + 2 * interpolation_scale * psf_size,
+        rounded_coordinate[2] + interpolation_scale * psf_size:
+        rounded_coordinate[2] + 2 * interpolation_scale * psf_size]
+        shift_amount = (-coordinate[1] + rounded_coordinate[1] - 0.5, -coordinate[2] + rounded_coordinate[2] - 0.5)
+        patch = shift(patch, shift=shift_amount, mode='mirror')
+        mask_patch = padded_mask[rounded_coordinate[1] + interpolation_scale * psf_size:
+                                 rounded_coordinate[1] + 2 * interpolation_scale * psf_size,
+        rounded_coordinate[2] + interpolation_scale * psf_size:
+        rounded_coordinate[2] + 2 * interpolation_scale * psf_size]
+        mask_patch = shift(mask_patch, shift=shift_amount, mode='mirror')
 
         # Separately background subtract each patch
         background_patch = calculate_background(patch)
@@ -108,13 +112,11 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
         patch_background_subtracted[patch == 0] = np.nan
 
         # we do not add patches that have saturated pixels
-        if np.all(patch_background_subtracted < saturation_threshold):
-            patch_background_subtracted[mask_patch] = np.nan
-            patches[coordinate] = patch_background_subtracted
-
-        # # we do not add patches that have central stars outside of our defined limits
+        # we do not add patches that have central stars outside of our defined limits
         center = (patch_background_subtracted.shape[1] // 2, patch_background_subtracted.shape[0] // 2)
-        if (patch_background_subtracted[center] < star_minimum) | (patch_background_subtracted[center] > star_maximum):
+        if np.all(patch_background_subtracted < saturation_threshold) and (
+                patch_background_subtracted[center] > star_minimum) and (
+                patch_background_subtracted[center] < star_maximum):
             patch_background_subtracted[mask_patch] = np.nan
             patches[coordinate] = patch_background_subtracted
     return patches
