@@ -1,3 +1,12 @@
+Version 1.2.0: Mar 28, 2026
+===========================
+
+Bug Fixes
+---------
+
+- Fix _find_patches so stars are aligned to the patch center. (`#253 <https://github.com/punch-mission/regularizepsf/pull/253>`__)
+
+
 Version 1.1.2: Feb 20, 2026
 ===========================
 
