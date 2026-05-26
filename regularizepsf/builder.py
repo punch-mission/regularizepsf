@@ -235,29 +235,7 @@ class ArrayPSFBuilder:
                 patch = downscale_local_mean(patch,(interpolation_scale, interpolation_scale))
             values_coords.append(coordinate)
 
-            patch_background = calculate_background(patch)
-            patch -= patch_background
-
-            patch[patch == 0] = np.nan
-
-            patch_central_value = patch[patch.shape[0]//2, patch.shape[1]//2]
-            this_value_mask = patch < (0.005 * patch_central_value)
-            this_value_mask = binary_erosion(this_value_mask, border_value = 1)
-
-            patch[this_value_mask] = np.nan
-
-            patch_zeroed = np.copy(patch)
-            patch_zeroed[~np.isfinite(patch_zeroed)] = 0
-
-            patch_labeled = label(patch_zeroed)[0]
-            psf_core_mask = patch_labeled == patch_labeled[patch_labeled.shape[0]//2,patch_labeled.shape[1]//2]
-
-            psf_core_mask = binary_dilation(psf_core_mask)
-
-            patch_corrected = patch_zeroed * psf_core_mask
-            patch_corrected = patch_corrected / np.nansum(patch_corrected)
-
-            values_array[i,:,:] = patch_corrected
+            values_array[i, :, :] = patch
 
         if return_patches:
             return ArrayPSF(IndexedCube(values_coords, values_array)), counts, patches
