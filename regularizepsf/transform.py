@@ -161,7 +161,7 @@ class ArrayPSFTransform:
             ],
         )
         patches = scipy.fft.fft2(apodization_window * patches, workers=workers)
-        patches = np.abs(scipy.fft.ifft2(patches * self._transfer_kernel.values),workers=workers)
+        patches = np.abs(scipy.fft.ifft2(patches * self._transfer_kernel.values,workers=workers))
         patches = patches * apodization_window
 
         reconstructed_image = np.zeros_like(padded_image)
