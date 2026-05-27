@@ -75,8 +75,8 @@ class ArrayPSFTransform:
             msg = "Source PSF coordinates do not match target PSF coordinates."
             raise InvalidCoordinateError(msg)
 
-        source_abs = abs(source.fft_evaluations)
-        target_abs = abs(target.fft_evaluations)
+        source_abs = np.abs(source.fft_evaluations)
+        target_abs = np.abs(target.fft_evaluations)
         numerator = source.fft_evaluations.conjugate() * source_abs ** (alpha - 1)
         denominator = source_abs ** (alpha + 1) + (epsilon * target_abs) ** (alpha + 1)
         cube = IndexedCube(source.coordinates, (numerator / denominator) * target.fft_evaluations)
@@ -160,9 +160,8 @@ class ArrayPSFTransform:
                 for coordinate in self.coordinates
             ],
         )
-        patches = scipy.fft.fftshift(scipy.fft.fft2(apodization_window * patches, workers=workers))
-        patches = np.abs(scipy.fft.fftshift(scipy.fft.ifft2(patches * scipy.fft.fftshift(self._transfer_kernel.values),
-                                            workers=workers)))
+        patches = scipy.fft.fft2(apodization_window * patches, workers=workers)
+        patches = np.abs(scipy.fft.ifft2(patches * self._transfer_kernel.values),workers=workers)
         patches = patches * apodization_window
 
         reconstructed_image = np.zeros_like(padded_image)
