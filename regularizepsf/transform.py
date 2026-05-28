@@ -149,9 +149,9 @@ class ArrayPSFTransform:
             return row_slice, col_slice
 
         row_arr, col_arr = np.meshgrid(np.arange(self.psf_shape[0]), np.arange(self.psf_shape[1]))
-        apodization_window = np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0])) * np.sin(
+        apodization_window = np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0]))**2 * np.sin(
             (col_arr + 0.5) * (np.pi / self.psf_shape[1]),
-        )
+        )**2
         apodization_window = np.broadcast_to(apodization_window, (len(self), self.psf_shape[0], self.psf_shape[1]))
 
         patches = np.stack(
@@ -162,7 +162,6 @@ class ArrayPSFTransform:
         )
         patches = scipy.fft.fft2(apodization_window * patches, workers=workers)
         patches = np.real(scipy.fft.ifft2(patches * self._transfer_kernel.values, workers=workers))
-        patches = patches * apodization_window
 
         reconstructed_image = np.zeros_like(padded_image)
         for coordinate, patch in zip(self.coordinates, patches, strict=True):
