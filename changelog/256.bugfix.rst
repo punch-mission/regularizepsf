@@ -1,0 +1,1 @@
+By apodizing once instead of twice by the root, we avoid grid artifacts.
