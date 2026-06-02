@@ -101,8 +101,7 @@ def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_siz
                 for corner, patch in averages.items()}
     return averages, counts
 
-def _average_patches(patches, corners, method='mean', percentile: float=None):
-    psf_size = next(iter(patches.values())).shape[0]
+def _average_patches(patches, corners, psf_size: int, method='mean', percentile: float=None):
     corners_x, corners_y = corners[:, 0], corners[:, 1]
     x_bounds = np.stack([corners_x, corners_x + psf_size], axis=-1)
     y_bounds = np.stack([corners_y, corners_y + psf_size], axis=-1)
@@ -225,7 +224,7 @@ class ArrayPSFBuilder:
         corners = calculate_covering((image_shape[0] * interpolation_scale,
                                       image_shape[1] * interpolation_scale),
                                      self.psf_size * interpolation_scale)
-        averaged_patches, counts = _average_patches(patches, corners,
+        averaged_patches, counts = _average_patches(patches, corners, self.psf_size,
                                                     method=average_method, percentile=percentile)
 
         values_coords = []
