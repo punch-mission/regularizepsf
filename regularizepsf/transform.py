@@ -21,6 +21,10 @@ if TYPE_CHECKING:
 
     from regularizepsf.psf import ArrayPSF
 
+def regularized_reciprocal(z, alpha, epsilon):
+    zstar = np.conjugate(z)
+    zabs = np.abs(z)
+    return (zstar * zabs**(alpha - 1)) / (zabs**(alpha+1) + epsilon**(alpha+1))
 
 class ArrayPSFTransform:
     """Representation of a transformation from a source to a target PSF that can be applied to images."""
@@ -75,11 +79,11 @@ class ArrayPSFTransform:
             msg = "Source PSF coordinates do not match target PSF coordinates."
             raise InvalidCoordinateError(msg)
 
-        source_abs = abs(source.fft_evaluations)
-        target_abs = abs(target.fft_evaluations)
-        numerator = source.fft_evaluations.conjugate() * source_abs ** (alpha - 1)
-        denominator = source_abs ** (alpha + 1) + (epsilon * target_abs) ** (alpha + 1)
-        cube = IndexedCube(source.coordinates, (numerator / denominator) * target.fft_evaluations)
+        source_fft = scipy.fft.fft2(source)
+        target_fft = scipy.fft.fft2(target)
+        transfer_kernel = target_fft * regularized_reciprocal(source_fft, alpha, epsilon)
+        cube = IndexedCube(source.coordinates, transfer_kernel)
+
         return ArrayPSFTransform(cube)
 
     def apply(self,
@@ -149,10 +153,15 @@ class ArrayPSFTransform:
             return row_slice, col_slice
 
         row_arr, col_arr = np.meshgrid(np.arange(self.psf_shape[0]), np.arange(self.psf_shape[1]))
-        apodization_window = np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0]))**2 * np.sin(
+        half_apodization_window = np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0])) * np.sin(
+            (col_arr + 0.5) * (np.pi / self.psf_shape[1]),
+        )
+        half_apodization_window = np.broadcast_to(half_apodization_window, (len(self), self.psf_shape[0], self.psf_shape[1]))
+
+        full_apodization_window = np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0]))**2 * np.sin(
             (col_arr + 0.5) * (np.pi / self.psf_shape[1]),
         )**2
-        apodization_window = np.broadcast_to(apodization_window, (len(self), self.psf_shape[0], self.psf_shape[1]))
+        full_apodization_window = np.broadcast_to(full_apodization_window, (len(self), self.psf_shape[0], self.psf_shape[1]))
 
         patches = np.stack(
             [
@@ -160,11 +169,12 @@ class ArrayPSFTransform:
                 for coordinate in self.coordinates
             ],
         )
-        patches = scipy.fft.fft2(apodization_window * patches, workers=workers)
-        patches = np.real(scipy.fft.ifft2(patches * self._transfer_kernel.values, workers=workers))
-
+        patches2 = scipy.fft.fft2(full_apodization_window * patches.copy(), workers=8)
+        patches3 = np.abs(scipy.fft.ifft2(patches2.copy() * self._transfer_kernel.values, workers=8))
+        patches4 = patches3.copy() * full_apodization_window
+        
         reconstructed_image = np.zeros_like(padded_image)
-        for coordinate, patch in zip(self.coordinates, patches, strict=True):
+        for coordinate, patch in zip(self.coordinates, patches4, strict=True):
             reconstructed_image[slice_padded_image(coordinate)[0], slice_padded_image(coordinate)[1]] += patch
 
         # restore the saturated values to their value before correction was applied
