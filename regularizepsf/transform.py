@@ -92,7 +92,8 @@ class ArrayPSFTransform:
               pad_mode: str = "symmetric",
               saturation_threshold: float = math.inf,
               saturation_dilation: int = 1,
-              neighborhood_width: int = 7) -> np.ndarray:
+              neighborhood_width: int = 7,
+              normalization_coefficient: float = 1.0) -> np.ndarray:
         """Apply the PSFTransform to an image.
 
         Parameters
@@ -111,6 +112,8 @@ class ArrayPSFTransform:
             a nonnegative number of times to morphologically dilate the saturation mask before application
         neighborhood_width: int
             an odd positive number indicating the size of the neighborhood used for filling saturated pixels
+        normalization_coefficient
+            a scalar multiplied to the final image to normalize due to to the overlapping regions and apodizataion
         Returns
         -------
         np.ndarray
@@ -179,7 +182,7 @@ class ArrayPSFTransform:
         return reconstructed_image[
             2 * self.psf_shape[0] : image.shape[0] + 2 * self.psf_shape[0],
             2 * self.psf_shape[1] : image.shape[1] + 2 * self.psf_shape[1],
-        ]
+        ] * normalization_coefficient
 
     def visualize(self,
                   fig: mpl.figure.Figure | None = None,
