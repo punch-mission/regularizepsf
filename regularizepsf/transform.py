@@ -165,12 +165,12 @@ class ArrayPSFTransform:
                 for coordinate in self.coordinates
             ],
         )
-        patches2 = scipy.fft.fft2(full_apodization_window * patches.copy(), workers=8)
-        patches3 = np.abs(scipy.fft.ifft2(patches2.copy() * self._transfer_kernel.values, workers=8))
-        patches4 = patches3.copy() * full_apodization_window
+        patches = scipy.fft.fft2(full_apodization_window * patches, workers=8)
+        patches = np.abs(scipy.fft.ifft2(patches * self._transfer_kernel.values, workers=8))
+        patches = patches * full_apodization_window
 
         reconstructed_image = np.zeros_like(padded_image)
-        for coordinate, patch in zip(self.coordinates, patches4, strict=True):
+        for coordinate, patch in zip(self.coordinates, patches, strict=True):
             reconstructed_image[slice_padded_image(coordinate)[0], slice_padded_image(coordinate)[1]] += patch
 
         # restore the saturated values to their value before correction was applied
