@@ -153,11 +153,7 @@ class ArrayPSFTransform:
             return row_slice, col_slice
 
         row_arr, col_arr = np.meshgrid(np.arange(self.psf_shape[0]), np.arange(self.psf_shape[1]))
-        half_apodization_window = np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0])) * np.sin(
-            (col_arr + 0.5) * (np.pi / self.psf_shape[1]),
-        )
-        half_apodization_window = np.broadcast_to(half_apodization_window, (len(self), self.psf_shape[0], self.psf_shape[1]))
-
+        
         full_apodization_window = np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0]))**2 * np.sin(
             (col_arr + 0.5) * (np.pi / self.psf_shape[1]),
         )**2
