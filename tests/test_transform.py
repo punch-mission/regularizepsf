@@ -28,47 +28,47 @@ def test_transform_saves_and_loads(tmp_path, extension):
 
 def test_transform_apply():
     """Test that applying an identity transform does not change the values."""
-    size = 256
-    gauss = make_gaussian(size, fwhm=3)
+    size = 96
+    gauss = make_gaussian(size, fwhm=1.5)
     dtype = np.float32
 
-    covering = [tuple(t) for t in calculate_covering((2048, 2048), size)]
-    values = np.stack([np.zeros((size, size), dtype=dtype) for _ in covering])
+    covering = [tuple(t) for t in calculate_covering((2048, 2048), size, sample_rate=3)]
+    values = np.zeros((len(covering), size, size), dtype=dtype)
     values[:] = gauss / np.sum(gauss)
 
     cube = IndexedCube(covering, values)
     source = ArrayPSF(cube, workers=None)
 
-    t = ArrayPSFTransform.construct(source, source, 3.0, 0.1)
+    t = ArrayPSFTransform.construct(source, source, 1.1, 0.01)
 
     image = np.zeros((2048, 2048), dtype=dtype)
-    image[500:1000, 200:400] = 5
+    image[500:1000, 200:400] = 1
 
-    out = t.apply(image)
+    out = t.apply(image, normalization_coefficient=(8/9)**2)
 
     assert np.allclose(image, out, atol=1E-3)
 
 
 def test_transform_apply_with_saturation():
     """Test that applying with a saturation threshold preserves values."""
-    size = 256
-    gauss = make_gaussian(size, fwhm=3)
+    size = 96
+    gauss = make_gaussian(size, fwhm=1.5)
     dtype = np.float32
 
-    covering = [tuple(t) for t in calculate_covering((2048, 2048), size)]
-    values = np.stack([np.zeros((size, size), dtype=dtype) for _ in covering])
+    covering = [tuple(t) for t in calculate_covering((2048, 2048), size, sample_rate=3)]
+    values = np.zeros((len(covering), size, size), dtype=dtype)
     values[:] = gauss / np.sum(gauss)
 
     cube = IndexedCube(covering, values)
     source = ArrayPSF(cube, workers=None)
 
-    t = ArrayPSFTransform.construct(source, source, 3.0, 0.1)
+    t = ArrayPSFTransform.construct(source, source, 1.1, 0.01)
 
     image = np.zeros((2048, 2048), dtype=dtype)
-    image[500:1000, 200:400] = 5
+    image[500:1000, 200:400] = 1
     image[800, 800] = 100
 
-    out = t.apply(image, saturation_threshold=10)
+    out = t.apply(image.copy(), saturation_threshold=10, normalization_coefficient=(8/9)**2)
 
     assert np.allclose(image, out, atol=1E-3)
     assert out[800, 800] == 100

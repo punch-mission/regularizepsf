@@ -176,13 +176,15 @@ class ArrayPSFTransform:
         for coordinate, patch in zip(self.coordinates, patches, strict=True):
             reconstructed_image[slice_padded_image(coordinate)[0], slice_padded_image(coordinate)[1]] += patch
 
+        reconstructed_image *= normalization_coefficient
+
         # restore the saturated values to their value before correction was applied
         reconstructed_image[saturation_mask] = raw_padded_image[saturation_mask]
 
         return reconstructed_image[
             2 * self.psf_shape[0] : image.shape[0] + 2 * self.psf_shape[0],
             2 * self.psf_shape[1] : image.shape[1] + 2 * self.psf_shape[1],
-        ] * normalization_coefficient
+        ]
 
     def visualize(self,
                   fig: mpl.figure.Figure | None = None,
