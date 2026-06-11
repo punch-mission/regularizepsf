@@ -51,15 +51,15 @@ def test_averaging():
         # Make the normalization of each patch a no-op
         patch[5, 5] = 1
 
-    averaged_collection, counts = _average_patches(collection, np.array([[0, 0]]),  method='median')
+    averaged_collection, counts = _average_patches(collection, np.array([[0, 0]]),  10, method='median')
     expected = np.nanmedian([.3, .5, .9])
     assert averaged_collection[(0, 0)][1, 1] == expected
 
-    averaged_collection, counts = _average_patches(collection, np.array([[0, 0]]), method='mean')
+    averaged_collection, counts = _average_patches(collection, np.array([[0, 0]]), 10, method='mean')
     expected = np.nanmean([.3, .5, .9])
     assert averaged_collection[(0, 0)][1, 1] == expected
 
-    averaged_collection, counts = _average_patches(collection, np.array([[0, 0]]), method='percentile', percentile=20)
+    averaged_collection, counts = _average_patches(collection, np.array([[0, 0]]), 10, method='percentile', percentile=20)
     expected = np.nanpercentile([.3, .5, .9], 20)
     assert averaged_collection[(0, 0)][1, 1] == expected
 

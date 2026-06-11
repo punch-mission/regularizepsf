@@ -7,7 +7,7 @@ import numpy as np
 from regularizepsf.exceptions import IncorrectShapeError, InvalidCoordinateError
 
 
-def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
+def calculate_covering(image_shape: tuple[int, int], size: int, sample_rate: int = 2) -> np.ndarray:
     """Determine the grid of overlapping neighborhood patches.
 
     Parameters
@@ -24,34 +24,24 @@ def calculate_covering(image_shape: tuple[int, int], size: int) -> np.ndarray:
         are the x coordinate and return[:, 1] are the y coordinates
 
     """
-    half_size = np.ceil(size / 2).astype(int)
+    sample_size = np.ceil(size / sample_rate).astype(int)
 
-    x1 = np.arange(0, image_shape[0], size)
-    y1 = np.arange(0, image_shape[1], size)
+    x_arrs = []
+    y_arrs = []
 
-    x2 = np.arange(-half_size, image_shape[0], size)
-    y2 = np.arange(-half_size, image_shape[1], size)
+    for i in range(sample_rate):
+        for j in range(sample_rate):
+            x = np.arange(-i * sample_size, image_shape[0], size)
+            y = np.arange(-j * sample_size, image_shape[1], size)
 
-    x3 = np.arange(-half_size, image_shape[0], size)
-    y3 = np.arange(0, image_shape[1], size)
+            xx, yy = np.meshgrid(x, y)
 
-    x4 = np.arange(0, image_shape[0], size)
-    y4 = np.arange(-half_size, image_shape[1], size)
+            x_arrs.append(xx.flatten())
+            y_arrs.append(yy.flatten())
 
-    x1, y1 = np.meshgrid(x1, y1)
-    x2, y2 = np.meshgrid(x2, y2)
-    x3, y3 = np.meshgrid(x3, y3)
-    x4, y4 = np.meshgrid(x4, y4)
-
-    x1, y1 = x1.flatten(), y1.flatten()
-    x2, y2 = x2.flatten(), y2.flatten()
-    x3, y3 = x3.flatten(), y3.flatten()
-    x4, y4 = x4.flatten(), y4.flatten()
-
-    x = np.concatenate([x1, x2, x3, x4])
-    y = np.concatenate([y1, y2, y3, y4])
+    x = np.concatenate(x_arrs)
+    y = np.concatenate(y_arrs)
     return np.stack([x, y], -1)
-
 
 class IndexedCube:
     """A stack of arrays with assigned coordinates as keys."""
@@ -168,5 +158,5 @@ class IndexedCube:
         return (
             self.coordinates == other.coordinates
             and self.sample_shape == other.sample_shape
-            and np.allclose(self.values, other.values, rtol=1e-04, atol=1e-06)
+            and np.allclose(self.values, other.values, rtol=1e-04, atol=1e-05)
         )

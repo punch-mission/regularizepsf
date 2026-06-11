@@ -1,0 +1,1 @@
+Small changes to remove the grid effects due to apodization and sampling.

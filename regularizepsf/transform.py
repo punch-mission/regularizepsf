@@ -21,6 +21,10 @@ if TYPE_CHECKING:
 
     from regularizepsf.psf import ArrayPSF
 
+def regularized_reciprocal(z, alpha, epsilon):
+    zstar = np.conjugate(z)
+    zabs = np.abs(z)
+    return (zstar * zabs**(alpha - 1)) / (zabs**(alpha+1) + epsilon**(alpha+1))
 
 class ArrayPSFTransform:
     """Representation of a transformation from a source to a target PSF that can be applied to images."""
@@ -75,11 +79,11 @@ class ArrayPSFTransform:
             msg = "Source PSF coordinates do not match target PSF coordinates."
             raise InvalidCoordinateError(msg)
 
-        source_abs = abs(source.fft_evaluations)
-        target_abs = abs(target.fft_evaluations)
-        numerator = source.fft_evaluations.conjugate() * source_abs ** (alpha - 1)
-        denominator = source_abs ** (alpha + 1) + (epsilon * target_abs) ** (alpha + 1)
-        cube = IndexedCube(source.coordinates, (numerator / denominator) * target.fft_evaluations)
+        source_fft = scipy.fft.fft2(source._values_cube._values)
+        target_fft = scipy.fft.fft2(target._values_cube._values)
+        transfer_kernel = target_fft * regularized_reciprocal(source_fft, alpha, epsilon)
+        cube = IndexedCube(source.coordinates, transfer_kernel)
+
         return ArrayPSFTransform(cube)
 
     def apply(self,
@@ -88,7 +92,8 @@ class ArrayPSFTransform:
               pad_mode: str = "symmetric",
               saturation_threshold: float = math.inf,
               saturation_dilation: int = 1,
-              neighborhood_width: int = 7) -> np.ndarray:
+              neighborhood_width: int = 7,
+              normalization_coefficient: float = 1.0) -> np.ndarray:
         """Apply the PSFTransform to an image.
 
         Parameters
@@ -107,6 +112,8 @@ class ArrayPSFTransform:
             a nonnegative number of times to morphologically dilate the saturation mask before application
         neighborhood_width: int
             an odd positive number indicating the size of the neighborhood used for filling saturated pixels
+        normalization_coefficient
+            a scalar multiplied to the final image to normalize due to to the overlapping regions and apodizataion
         Returns
         -------
         np.ndarray
@@ -149,10 +156,11 @@ class ArrayPSFTransform:
             return row_slice, col_slice
 
         row_arr, col_arr = np.meshgrid(np.arange(self.psf_shape[0]), np.arange(self.psf_shape[1]))
-        apodization_window = np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0])) * np.sin(
+
+        full_apodization_window = np.sin((row_arr + 0.5) * (np.pi / self.psf_shape[0]))**2 * np.sin(
             (col_arr + 0.5) * (np.pi / self.psf_shape[1]),
-        )
-        apodization_window = np.broadcast_to(apodization_window, (len(self), self.psf_shape[0], self.psf_shape[1]))
+        )**2
+        full_apodization_window = np.broadcast_to(full_apodization_window, (len(self), self.psf_shape[0], self.psf_shape[1]))
 
         patches = np.stack(
             [
@@ -160,13 +168,15 @@ class ArrayPSFTransform:
                 for coordinate in self.coordinates
             ],
         )
-        patches = scipy.fft.fft2(apodization_window * patches, workers=workers)
-        patches = np.real(scipy.fft.ifft2(patches * self._transfer_kernel.values, workers=workers))
-        patches = patches * apodization_window
+        patches = scipy.fft.fft2(full_apodization_window * patches, workers=8)
+        patches = np.abs(scipy.fft.ifft2(patches * self._transfer_kernel.values, workers=8))
+        patches = patches * full_apodization_window
 
         reconstructed_image = np.zeros_like(padded_image)
         for coordinate, patch in zip(self.coordinates, patches, strict=True):
             reconstructed_image[slice_padded_image(coordinate)[0], slice_padded_image(coordinate)[1]] += patch
+
+        reconstructed_image *= normalization_coefficient
 
         # restore the saturated values to their value before correction was applied
         reconstructed_image[saturation_mask] = raw_padded_image[saturation_mask]
