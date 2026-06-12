@@ -241,6 +241,7 @@ class ArrayPSFBuilder:
             patch -= patch_background
 
             if suppress_background:
+                original_patch = patch.copy()
                 patch[patch == 0] = np.nan
 
                 patch_central_value = patch[patch.shape[0]//2, patch.shape[1]//2]
@@ -257,10 +258,10 @@ class ArrayPSFBuilder:
 
                 psf_core_mask = binary_dilation(psf_core_mask, iterations = core_mask_dilation)
 
-                patch_corrected = patch_zeroed * psf_core_mask
+                patch_corrected = original_patch * psf_core_mask
                 patch_corrected = patch_corrected / np.nansum(patch_corrected)
             else:
-                patch_corrected = patch
+                patch_corrected = patch / np.nansum(patch)
 
             values_array[i,:,:] = patch_corrected
 
