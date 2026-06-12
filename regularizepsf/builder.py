@@ -150,6 +150,7 @@ class ArrayPSFBuilder:
               star_maximum: float = np.inf,
               sqrt_compressed: bool = False,
               return_patches: bool = False,
+              suppress_background: bool = True,
               sample_rate: int = 2) -> tuple[ArrayPSF, dict] | tuple[ArrayPSF, dict, dict]:
         """Build the PSF model.
 
@@ -238,24 +239,27 @@ class ArrayPSFBuilder:
             patch_background = calculate_background(patch)
             patch -= patch_background
 
-            patch[patch == 0] = np.nan
+            if suppress_background:
+                patch[patch == 0] = np.nan
 
-            patch_central_value = patch[patch.shape[0]//2, patch.shape[1]//2]
-            this_value_mask = patch < (0.005 * patch_central_value)
-            this_value_mask = binary_erosion(this_value_mask, border_value = 1)
+                patch_central_value = patch[patch.shape[0]//2, patch.shape[1]//2]
+                this_value_mask = patch < (0.005 * patch_central_value)
+                this_value_mask = binary_erosion(this_value_mask, border_value = 1)
 
-            patch[this_value_mask] = np.nan
+                patch[this_value_mask] = np.nan
 
-            patch_zeroed = np.copy(patch)
-            patch_zeroed[~np.isfinite(patch_zeroed)] = 0
+                patch_zeroed = np.copy(patch)
+                patch_zeroed[~np.isfinite(patch_zeroed)] = 0
 
-            patch_labeled = label(patch_zeroed)[0]
-            psf_core_mask = patch_labeled == patch_labeled[patch_labeled.shape[0]//2,patch_labeled.shape[1]//2]
+                patch_labeled = label(patch_zeroed)[0]
+                psf_core_mask = patch_labeled == patch_labeled[patch_labeled.shape[0]//2,patch_labeled.shape[1]//2]
 
-            psf_core_mask = binary_dilation(psf_core_mask)
+                psf_core_mask = binary_dilation(psf_core_mask)
 
-            patch_corrected = patch_zeroed * psf_core_mask
-            patch_corrected = patch_corrected / np.nansum(patch_corrected)
+                patch_corrected = patch_zeroed * psf_core_mask
+                patch_corrected = patch_corrected / np.nansum(patch_corrected)
+            else:
+                patch_corrected = patch
 
             values_array[i,:,:] = patch_corrected
 
