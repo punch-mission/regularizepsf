@@ -151,6 +151,7 @@ class ArrayPSFBuilder:
               sqrt_compressed: bool = False,
               return_patches: bool = False,
               suppress_background: bool = True,
+              core_mask_dilation: int = 3,
               sample_rate: int = 2) -> tuple[ArrayPSF, dict] | tuple[ArrayPSF, dict, dict]:
         """Build the PSF model.
 
@@ -254,7 +255,7 @@ class ArrayPSFBuilder:
                 patch_labeled = label(patch_zeroed)[0]
                 psf_core_mask = patch_labeled == patch_labeled[patch_labeled.shape[0]//2,patch_labeled.shape[1]//2]
 
-                psf_core_mask = binary_dilation(psf_core_mask)
+                psf_core_mask = binary_dilation(psf_core_mask, iterations = core_mask_dilation)
 
                 patch_corrected = patch_zeroed * psf_core_mask
                 patch_corrected = patch_corrected / np.nansum(patch_corrected)

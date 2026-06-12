@@ -83,7 +83,7 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
                      (psf_size * interpolation_scale, psf_size * interpolation_scale))
     padded_image = np.pad(image,
                           padding_shape,
-                          mode="reflect")
+                          mode="constant", constant_values=0)
 
     # the mask indicates which pixel should be ignored in the calculation
     if image_mask is not None:
@@ -99,12 +99,12 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
         rounded_coordinate[2] + interpolation_scale * psf_size:
         rounded_coordinate[2] + 2 * interpolation_scale * psf_size]
         shift_amount = (-coordinate[1] + rounded_coordinate[1] - 0.5, -coordinate[2] + rounded_coordinate[2] - 0.5)
-        patch = shift(patch, shift=shift_amount, mode='mirror')
+        patch = shift(patch, shift=shift_amount, mode='mirror', prefilter=False)
         mask_patch = padded_mask[rounded_coordinate[1] + interpolation_scale * psf_size:
                                  rounded_coordinate[1] + 2 * interpolation_scale * psf_size,
         rounded_coordinate[2] + interpolation_scale * psf_size:
         rounded_coordinate[2] + 2 * interpolation_scale * psf_size]
-        mask_patch = shift(mask_patch, shift=shift_amount, mode='mirror')
+        mask_patch = shift(mask_patch, shift=shift_amount, mode='mirror', prefilter=False)
 
         # Separately background subtract each patch
         background_patch = calculate_background(patch)
