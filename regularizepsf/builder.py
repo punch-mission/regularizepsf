@@ -1,8 +1,8 @@
 """Functions for building PSF models from images."""
-
+import functools
 import pathlib
-import multiprocessing
 from collections.abc import Generator
+from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 from scipy.ndimage import binary_dilation, binary_erosion, label
@@ -73,11 +73,11 @@ def _average_patches_by_mean(patches, corners, x_bounds, y_bounds, psf_size):
 
     return averages, counts
 
-def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_size, percentile: float=50):
+def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_size, percentile: float=50, num_workers: int=4):
     if percentile == 50:
-        percentile_method = lambda d: np.nanmedian(d, axis=0)
+        percentile_method = functools.partial(np.nanmedian, axis=0)# d: np.nanmedian(d, axis=0)
     else:
-        percentile_method = lambda d: np.nanpercentile(d, percentile, axis=0)
+        percentile_method = functools.partial(np.nanpercentile, percentile=percentile, axis=0)
 
     stack = {tuple(corner): [] for corner in corners}
     counts = {tuple(corner): 0 for corner in corners}
@@ -94,14 +94,20 @@ def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_siz
                 stack[match_corner].append(patch)
                 counts[match_corner] += 1
 
-    averages = {(corner[0], corner[1]): percentile_method(stack[corner]) for corner in stack}
+    def _helper(corner):
+        return percentile_method(stack[corner])
+
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        averages_raw = executor.map(_helper, stack)
+
+    averages = {(corner[0], corner[1]): value for corner, value in zip(stack, averages_raw)}
 
     # if there were no patches at all, it will be filled with a np.nan instead of an array... we handle that carefully
     averages = {corner: patch if isinstance(patch, np.ndarray) else np.full((psf_size, psf_size), np.nan)
                 for corner, patch in averages.items()}
     return averages, counts
 
-def _average_patches(patches, corners, psf_size: int, method='mean', percentile: float=None):
+def _average_patches(patches, corners, psf_size: int, method='mean', percentile: float=None, num_workers: int=4):
     corners_x, corners_y = corners[:, 0], corners[:, 1]
     x_bounds = np.stack([corners_x, corners_x + psf_size], axis=-1)
     y_bounds = np.stack([corners_y, corners_y + psf_size], axis=-1)
@@ -109,9 +115,9 @@ def _average_patches(patches, corners, psf_size: int, method='mean', percentile:
     if method == 'mean':
         averages, counts = _average_patches_by_mean(patches, corners, x_bounds, y_bounds, psf_size)
     elif method == 'percentile':
-        averages, counts = _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_size, percentile)
+        averages, counts = _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_size, percentile, num_workers=num_workers)
     elif method == "median":
-        averages, counts = _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_size, 50)
+        averages, counts = _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_size, 50, num_workers=num_workers)
     else:
         raise PSFBuilderError(f"Unknown method {method}.")
 
@@ -139,7 +145,7 @@ class ArrayPSFBuilder:
               images: list[str] | list[pathlib.Path] | np.ndarray | Generator,
               sep_mask: list[str] | list[pathlib.Path] | np.ndarray | Generator | None = None,
               hdu_choice: int | None = 0,
-              num_workers: int | None = None,
+              num_workers: int = 4,
               interpolation_scale: int = 1,
               star_threshold: int = 3,
               average_method: str = 'median',
@@ -161,8 +167,8 @@ class ArrayPSFBuilder:
             Mask to use with source extraction (sep)
         hdu_choice : int | None
             HDU index to use when loading FITS input files
-        num_workers : int | None
-            Number of worker processes for multithreaded image processing, with None using all available CPUs
+        num_workers : int
+            Number of worker processes for multithreaded image processing
         interpolation_scale : int
             Interpolation scale to apply to input images after loading
         star_threshold : int
@@ -207,8 +213,8 @@ class ArrayPSFBuilder:
             for i, (image, star_mask) in enumerate(zip(data_iterator, mask_iterator))
         ]
 
-        with multiprocessing.Pool(processes = num_workers) as pool:
-            results = pool.map(process_single_image, args)
+        with ProcessPoolExecutor(max_workers=num_workers) as executor:
+            results = executor.map(process_single_image, args)
 
         patches = {}
         image_shape = None
@@ -226,7 +232,7 @@ class ArrayPSFBuilder:
                                       image_shape[1] * interpolation_scale),
                                      self.psf_size * interpolation_scale, sample_rate=sample_rate)
         averaged_patches, counts = _average_patches(patches, corners, self.psf_size,
-                                                    method=average_method, percentile=percentile)
+                                                    method=average_method, percentile=percentile, num_workers=num_workers)
 
         values_coords = []
         values_array = np.zeros((len(averaged_patches), self.psf_size, self.psf_size))
