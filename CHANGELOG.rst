@@ -1,3 +1,18 @@
+Version 1.2.1: Jul 28, 2026
+===========================
+
+Bug Fixes
+---------
+
+- Small changes to remove the grid effects due to apodization and sampling. (`#256 <https://github.com/punch-mission/regularizepsf/pull/256>`__)
+
+
+Internal Changes
+----------------
+
+- Remove old CI test suite. (`#260 <https://github.com/punch-mission/regularizepsf/pull/260>`__)
+
+
 Version 1.2.0: Mar 28, 2026
 ===========================
 
