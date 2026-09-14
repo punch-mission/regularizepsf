@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import inspect
 import pathlib
-from functools import partial
 from typing import TYPE_CHECKING, Any, cast
+from functools import partial
 
 import h5py
 import matplotlib as mpl
@@ -18,8 +18,8 @@ from regularizepsf.util import IndexedCube
 from regularizepsf.visualize import KERNEL_IMSHOW_ARGS_DEFAULT, PSF_IMSHOW_ARGS_DEFAULT, visualize_grid
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
     from numbers import Real
+    from collections.abc import Callable
 
 
 class SimpleFunctionalPSF:
