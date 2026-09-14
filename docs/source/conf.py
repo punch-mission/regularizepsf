@@ -8,6 +8,7 @@
 import os
 import sys
 from importlib.metadata import version as get_version
+
 from packaging.version import Version
 
 sys.path.insert(0, os.path.abspath("../.."))

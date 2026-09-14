@@ -8,9 +8,11 @@ from .transform import ArrayPSFTransform
 
 __version__ = importlib.metadata.version("regularizepsf")
 
-__all__ = ["simple_functional_psf",
-           "varied_functional_psf",
+__all__ = [
            "ArrayPSF",
            "ArrayPSFBuilder",
            "ArrayPSFTransform",
-           "__version__"]
+           "__version__",
+           "simple_functional_psf",
+           "varied_functional_psf",
+]
