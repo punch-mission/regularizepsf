@@ -58,7 +58,7 @@ class IndexedCube:
             where x and y are the dimensions of the patches
 
         """
-        if len(values.shape) != 3:  # noqa: PLR2004
+        if len(values.shape) != 3:
             msg = "Values must be three dimensional"
             raise IncorrectShapeError(msg)
 

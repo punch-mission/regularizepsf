@@ -191,7 +191,7 @@ class ArrayPSFTransform:
                   fig_scale: int = 1,
                   patch_stride: int = 1,
                   edge_trim: int = 1,
-                  imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+                  imshow_args: dict | None = None) -> None:
         """Visualize the transform kernels.
 
         Parameters

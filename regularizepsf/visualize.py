@@ -51,8 +51,8 @@ def visualize_patch_counts(counts: dict[tuple[int, int], int],
         fig = plt.figure()
         ax = fig.subplots()
 
-    rows = [k[0] for k in counts.keys()]
-    columns = [k[1] for k in counts.keys()]
+    rows = [k[0] for k in counts]
+    columns = [k[1] for k in counts]
     rows = np.unique(sorted(rows))
     columns = np.unique(sorted(columns))
     dr = rows[1] - rows[0]
@@ -97,7 +97,7 @@ def visualize_grid(data: IndexedCube,
                    patch_stride: int = 1,
                    edge_trim: int = 0,
                    imshow_args: dict | None = None,
-                   colorbar_label: str  = "") -> None:  # noqa: ANN002, ANN003
+                   colorbar_label: str  = "") -> None:
     """Visualize various indexed cubes.
 
     Parameters
