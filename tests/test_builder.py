@@ -67,10 +67,18 @@ def test_averaging():
 @pytest.mark.parametrize("method", ["mean", "median", "percentile"])
 def test_find_stars_and_average_path(method):
     img_path = str(TEST_DIR / "data/compressed_dash.fits")
-    builder = ArrayPSFBuilder(32)
+    builder = ArrayPSFBuilder(33)
     example, _ = builder.build([img_path], average_method=method, hdu_choice=1)
     assert isinstance(example, ArrayPSF)
-    assert example.sample_shape == (32, 32)
+    assert example.sample_shape == (33, 33)
+
+@pytest.mark.parametrize("method", ["mean", "median", "percentile"])
+def test_find_stars_and_average_path_different_psf_and_patch_sizes(method):
+    img_path = str(TEST_DIR / "data/compressed_dash.fits")
+    builder = ArrayPSFBuilder(33, 255)
+    example, _ = builder.build([img_path], average_method=method, hdu_choice=1)
+    assert isinstance(example, ArrayPSF)
+    assert example.sample_shape == (255, 255)
 
 @pytest.mark.parametrize("method", ["mean", "median", "percentile"])
 def test_find_stars_and_average_array(method):
@@ -82,10 +90,10 @@ def test_find_stars_and_average_array(method):
     mask = np.ones_like(image_array, dtype=bool)
     mask[:, :800, :800] = 0
 
-    builder = ArrayPSFBuilder(32)
+    builder = ArrayPSFBuilder(33)
     example, _ = builder.build(image_array, mask, average_method=method)
     assert isinstance(example, ArrayPSF)
-    assert example.sample_shape == (32, 32)
+    assert example.sample_shape == (33, 33)
 
 @pytest.mark.parametrize("method", ["mean", "median", "percentile"])
 def test_find_stars_and_average_array_with_mask_and_saturation(method):
@@ -97,12 +105,12 @@ def test_find_stars_and_average_array_with_mask_and_saturation(method):
     mask = np.ones_like(image_array, dtype=bool)
     mask[:, :800, :800] = 0
 
-    builder = ArrayPSFBuilder(32)
+    builder = ArrayPSFBuilder(33)
     example, _ = builder.build(image_array, mask, average_method=method,
                                image_mask=mask[0],
                                saturation_threshold=1_000_000)
     assert isinstance(example, ArrayPSF)
-    assert example.sample_shape == (32, 32)
+    assert example.sample_shape == (33, 33)
 
 @pytest.mark.parametrize("method", ["mean", "median", "percentile"])
 def test_find_stars_and_average_generator(method):
@@ -112,7 +120,7 @@ def test_find_stars_and_average_generator(method):
     def generator():
         yield image_array[0]
 
-    builder = ArrayPSFBuilder(32)
+    builder = ArrayPSFBuilder(33)
     example, _ = builder.build(generator(), average_method=method)
     assert isinstance(example, ArrayPSF)
-    assert example.sample_shape == (32, 32)
+    assert example.sample_shape == (33, 33)

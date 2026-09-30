@@ -127,13 +127,47 @@ def _average_patches(patches, corners, psf_size: int, method='mean', percentile:
 class ArrayPSFBuilder:
     """A builder that will take a series of images and construct an ArrayPSF to represent their implicit PSF."""
 
-    def __init__(self, psf_size: int) -> None:
-        """Initialize an ArrayPSFBuilder."""
+    def __init__(self, psf_size: int, patch_size: int | None = None) -> None:
+        """
+        Initialize an ArrayPSFBuilder.
+
+        An ``ArrayPSFBuilder`` is responsible for taking in a set of images and creating an ``ArrayPSF`` by finding
+        stars in the images. A ``psf_size`` is required and sets the size of cutouts to use for each star.
+        If you pass in a ``patch_size`` as well, then stars are sampled at the ``psf_size`` but the model is built
+        on the courser ``patch_size`` by padding zeros around the star measurement until the cutouts are
+        ``patch_size``.
+
+        Parameters
+        ----------
+        psf_size : int
+            an odd integer for the size of the star cutouts
+        patch_size : int | None
+            If None, it defaults to using ``psf_size``. Must be an odd integer >= ``psf_size``.
+        """
         self._psf_size = psf_size
+
+        if patch_size is None:
+            self._patch_size = psf_size
+        else:
+            self._patch_size = patch_size
+
+        if self._patch_size < self._psf_size:
+            raise ValueError(f"The patch size must be greater than or equal to the psf size but found "
+                             f"{self._psf_size} > {self._patch_size}.")
+
+        if self._psf_size % 2 != 1:
+            raise ValueError(f"psf_size must be odd. Found {self._psf_size}")
+
+        if self._patch_size %2 != 1:
+            raise ValueError(f"patch_size must be odd. Found {self._patch_size}")
 
     @property
     def psf_size(self):
         return self._psf_size
+
+    @property
+    def patch_size(self):
+        return self._patch_size
 
     def build(self,
               images: list[str] | list[pathlib.Path] | np.ndarray | Generator,
@@ -224,7 +258,7 @@ class ArrayPSFBuilder:
 
         corners = calculate_covering((image_shape[0] * interpolation_scale,
                                       image_shape[1] * interpolation_scale),
-                                     self.psf_size * interpolation_scale, sample_rate=sample_rate)
+                                     self.patch_size * interpolation_scale, sample_rate=sample_rate)
         averaged_patches, counts = _average_patches(patches, corners, self.psf_size,
                                                     method=average_method, percentile=percentile)
 
@@ -258,6 +292,10 @@ class ArrayPSFBuilder:
             patch_corrected = patch_corrected / np.nansum(patch_corrected)
 
             values_array[i,:,:] = patch_corrected
+
+        if self._psf_size != self._patch_size:
+            pad_amount = (self._patch_size - self._psf_size) // 2
+            values_array = np.pad(values_array, ((0, 0), (pad_amount, pad_amount), (pad_amount, pad_amount)))
 
         if return_patches:
             return ArrayPSF(IndexedCube(values_coords, values_array)), counts, patches
