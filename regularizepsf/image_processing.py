@@ -70,7 +70,7 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
                                         star_threshold,
                                         err=background.globalrms,
                                         mask=star_mask)
-    except Exception:
+    except Exception: # noqa BLE001, we catch any exception because it's not clear how many ways it can fail
         return {"x": [], "y": []}
 
     coordinates = [(i,
@@ -93,7 +93,7 @@ def _find_patches(image, star_threshold, star_mask, interpolation_scale, psf_siz
 
     patches = {}
     for coordinate in coordinates:
-        rounded_coordinate = (coordinate[0], int(round(coordinate[1])), int(round(coordinate[2])))
+        rounded_coordinate = (coordinate[0], round(coordinate[1]), round(coordinate[2]))
         patch = padded_image[rounded_coordinate[1] + interpolation_scale * psf_size:
                              rounded_coordinate[1] + 2 * interpolation_scale * psf_size,
         rounded_coordinate[2] + interpolation_scale * psf_size:

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import inspect
 import pathlib
-from typing import TYPE_CHECKING, Any, cast
 from functools import partial
+from typing import TYPE_CHECKING, Any, cast
 
 import h5py
 import matplotlib as mpl
@@ -18,8 +18,8 @@ from regularizepsf.util import IndexedCube
 from regularizepsf.visualize import KERNEL_IMSHOW_ARGS_DEFAULT, PSF_IMSHOW_ARGS_DEFAULT, visualize_grid
 
 if TYPE_CHECKING:
-    from numbers import Real
     from collections.abc import Callable
+    from numbers import Real
 
 
 class SimpleFunctionalPSF:
@@ -170,7 +170,7 @@ def _varied_functional_psf(base_psf: SimpleFunctionalPSF) -> VariedFunctionalPSF
         msg = "A base_psf must be provided to the varied_psf decorator."
         raise TypeError(msg)
 
-    def inner(__fn: Callable = None, *, check_at_call: bool = True) -> Callable:  # noqa: RUF013
+    def inner(__fn: Callable | None = None, /, *, check_at_call: bool = True) -> Callable:
         if __fn:
             return VariedFunctionalPSF(__fn, base_psf, validate_at_call=check_at_call)
         return partial(inner, check_at_call=check_at_call)
