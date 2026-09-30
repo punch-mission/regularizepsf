@@ -1,7 +1,7 @@
 """Functions for building PSF models from images."""
 
-import multiprocessing
 import pathlib
+import multiprocessing
 from collections.abc import Generator
 
 import numpy as np
