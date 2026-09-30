@@ -47,7 +47,7 @@ dev = ["regularizepsf[test, docs]", "pre-commit"]
 exclude = ['tests/*']
 line-length = 120
 # lint.select = ["ALL"]
-lint.ignore = [ "FBT001", "FBT002", "ANN401", "E731"]
+lint.ignore = [ "FBT001", "FBT002", "ANN401", "E731", "I001"]
 
 #[tool.ruff.lint]
 #select = ["NPY201"]
