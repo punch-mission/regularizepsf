@@ -1,0 +1,1 @@
+Minor style changes so Ruff passes.

@@ -31,10 +31,9 @@ def _convert_to_generator(images:  list[pathlib.Path] | np.ndarray | Generator,
         else:
             msg = "Image data array must be 3D"
             raise IncorrectShapeError(msg)
-    elif isinstance(images, list) and (isinstance(images[0], str) or isinstance(images[0], pathlib.Path)):
+    elif isinstance(images, list) and isinstance(images[0], (str, pathlib.Path)):
         def generator() -> np.ndarray:
-            for image_path in images:
-                yield image_path
+            yield from images
         data_iterator = generator()
     else:
         msg = "Unsupported type for `images`"
@@ -101,7 +100,8 @@ def _average_patches_by_percentile(patches, corners, x_bounds, y_bounds, psf_siz
                 for corner, patch in averages.items()}
     return averages, counts
 
-def _average_patches(patches, corners, psf_size: int, method='mean', percentile: float=None):
+def _average_patches(patches, corners, psf_size: int, method='mean',
+                     percentile: float | None =None):
     corners_x, corners_y = corners[:, 0], corners[:, 1]
     x_bounds = np.stack([corners_x, corners_x + psf_size], axis=-1)
     y_bounds = np.stack([corners_y, corners_y + psf_size], axis=-1)

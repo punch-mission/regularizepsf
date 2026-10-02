@@ -39,7 +39,7 @@ class SimpleFunctionalPSF:
         self._signature: inspect.Signature = inspect.signature(function)
         self._parameters: set[str] = set()
 
-        if len(self._signature.parameters) < 2:  # noqa: PLR2004
+        if len(self._signature.parameters) < 2:
             msg = "row and col must be the first two arguments in your model equation."
             raise InvalidFunctionError(msg)
 
@@ -50,7 +50,7 @@ class SimpleFunctionalPSF:
             if i == 1 and variable != "col":
                 msg = "col must be the second arguments in your model equation"
                 raise InvalidFunctionError(msg)
-            if i >= 2:  # noqa: PLR2004
+            if i >= 2:
                 self._parameters.add(variable)
 
     def __call__(self, row: Real | np.ndarray, col: Real | np.ndarray, **kwargs: dict[str, Any]) -> Real | np.ndarray:
@@ -62,7 +62,7 @@ class SimpleFunctionalPSF:
         """Get the parameters of this PSF."""
         return self._parameters
 
-    def as_array_psf(self, coordinates: list[tuple[int, int]], size: int, **kwargs) -> ArrayPSF:  # noqa: ANN003
+    def as_array_psf(self, coordinates: list[tuple[int, int]], size: int, **kwargs) -> ArrayPSF:
         """Convert FunctionalPSF to an ArrayPSF."""
         rr, cc = np.meshgrid(np.arange(size), np.arange(size))
         evaluation = self(rr, cc, **kwargs)
@@ -104,11 +104,11 @@ class VariedFunctionalPSF:
         self.validate_at_call = validate_at_call
 
         self.parameterization_signature = inspect.signature(vary_function)
-        if len(self.parameterization_signature.parameters) < 2:  # noqa: PLR2004
+        if len(self.parameterization_signature.parameters) < 2:
             msg = f"Found {len(self.parameterization_signature.parameters)}"
             raise InvalidFunctionError(msg)
 
-        if len(self.parameterization_signature.parameters) > 2:  # noqa: PLR2004
+        if len(self.parameterization_signature.parameters) > 2:
             msg = (
                 "Found function requiring"
                 f"{len(self.parameterization_signature.parameters)}"
@@ -156,7 +156,7 @@ class VariedFunctionalPSF:
         variance = self._vary_function(row, col)
         return simple_functional_psf(partial(self._base_psf.f, **variance))
 
-    def as_array_psf(self, coordinates: list[tuple[int, int]], size: int, **kwargs) -> ArrayPSF:  # noqa: ANN003
+    def as_array_psf(self, coordinates: list[tuple[int, int]], size: int, **kwargs) -> ArrayPSF:
         """Convert FunctionalPSF to an ArrayPSF."""
         values = []
         rr, cc = np.meshgrid(np.arange(size), np.arange(size))
@@ -170,7 +170,7 @@ def _varied_functional_psf(base_psf: SimpleFunctionalPSF) -> VariedFunctionalPSF
         msg = "A base_psf must be provided to the varied_psf decorator."
         raise TypeError(msg)
 
-    def inner(__fn: Callable = None, *, check_at_call: bool = True) -> Callable:  # noqa: RUF013
+    def inner(__fn: Callable | None = None, /, *, check_at_call: bool = True) -> Callable:
         if __fn:
             return VariedFunctionalPSF(__fn, base_psf, validate_at_call=check_at_call)
         return partial(inner, check_at_call=check_at_call)
@@ -334,7 +334,7 @@ class ArrayPSF:
                   fig_scale: int = 1,
                   edge_trim: int = 1,
                   patch_stride: int = 1,
-                  imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+                  imshow_args: dict | None = None) -> None:
         """Visualize the PSFs.
 
         Parameters
@@ -364,7 +364,7 @@ class ArrayPSF:
                   fig_scale: int = 1,
                   edge_trim: int = 1,
                   patch_stride: int = 1,
-                  imshow_args: dict | None = None) -> None:  # noqa: ANN002, ANN003
+                  imshow_args: dict | None = None) -> None:
         """Visualize the FFT kernels.
 
         Parameters
